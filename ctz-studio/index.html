@@ -1,0 +1,2098 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CTZ Studio | Criação de carrosséis</title>
+<meta name="description" content="CTZ Studio — crie, personalize e exporte carrosséis profissionais para redes sociais." />
+<meta name="theme-color" content="#070605" />
+<meta property="og:type" content="website" />
+<meta property="og:locale" content="pt_BR" />
+<meta property="og:title" content="CTZ Studio | Criação de carrosséis" />
+<meta property="og:description" content="Crie, personalize e exporte carrosséis profissionais para redes sociais." />
+<meta name="twitter:card" content="summary" />
+<meta name="twitter:title" content="CTZ Studio | Criação de carrosséis" />
+<meta name="twitter:description" content="Crie, personalize e exporte carrosséis profissionais para redes sociais." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23070605'/%3E%3Cpath d='M43 18H27c-7 0-12 6-12 14s5 14 12 14h16v-8H28c-3 0-5-2-5-6s2-6 5-6h15z' fill='%23FF5A0A'/%3E%3C/svg%3E" />
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  /* Paleta da CTZ Studio: preto quente, vermelho e laranja de alto impacto,
+     cantos retos/discretos em vez de muito arredondados. Isso é
+     só o visual do APP (abas, cards, botões) — as cores do cartão do
+     carrossel em si (Estilo Tweet/X e Padrão Tecnológico) seguem a mesma
+     identidade vibrante da marca. */
+  :root {
+    --bg: #070605;
+    --panel: #0E0C0B;
+    --panel-2: #171310;
+    --border: rgba(255,106,26,0.18);
+    --text: #FFFDFC;
+    --text-dim: #A99E97;
+    --accent: #FF5A0A;
+    --accent-2: #FF8A32;
+    --danger: #FF5A45;
+    --ok: #FFB02E;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: 'Inter', Arial, sans-serif;
+    background:
+      radial-gradient(circle at 82% -10%, rgba(255,90,10,.15), transparent 34rem),
+      linear-gradient(rgba(255,106,26,.025) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,106,26,.025) 1px, transparent 1px), var(--bg);
+    background-size: auto,48px 48px,48px 48px,auto;
+    color: var(--text);
+  }
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 24px;
+    border-bottom: 1px solid var(--border);
+    background: rgba(14,12,11,.92);
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 36px rgba(0,0,0,.32);
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  header h1 { font-size: 17px; margin: 0; font-weight: 800; font-family: 'Sora', 'Inter', sans-serif; }
+  header h1 span { color: var(--accent); }
+  header .byline { font-size: 11px; color: var(--text-dim); margin-top: 2px; letter-spacing: 0.02em; }
+  .header-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .swatch-row { display: flex; gap: 10px; flex-wrap: wrap; }
+  .swatch { display: flex; align-items: center; gap: 8px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 6px 10px; font-size: 12px; }
+  .swatch-dot { width: 16px; height: 16px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.25); flex-shrink: 0; }
+  .app {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    min-height: calc(100vh - 58px);
+  }
+  .sidebar {
+    flex: 1 1 480px;
+    min-width: 340px;
+    max-height: calc(100vh - 58px);
+    overflow-y: auto;
+    padding: 18px;
+    border-right: 1px solid var(--border);
+  }
+  .preview-col {
+    flex: 0 0 420px;
+    position: sticky;
+    top: 0;
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    max-height: calc(100vh - 58px);
+    overflow-y: auto;
+  }
+  /* Em telas estreitas (celular), o layout de 2 colunas lado a lado não
+     cabe — sem isso, a prévia/timeline/exportação (que ficam na coluna da
+     direita) saem da tela e só aparecem rolando pro lado, o que ninguém
+     faz. Abaixo de 860px, empilha tudo numa coluna só, com a prévia +
+     timeline + exportação PRIMEIRO (é o que se quer achar mais rápido) e
+     os campos de edição depois. */
+  @media (max-width: 860px) {
+    .app { flex-direction: column-reverse; }
+    .sidebar, .preview-col {
+      flex: 1 1 auto; width: 100%; min-width: 0; max-width: 100%;
+      max-height: none; overflow-y: visible; position: static;
+    }
+    .sidebar { border-right: none; border-top: 1px solid var(--border); }
+    .tabs { flex-wrap: wrap; }
+    .tab-btn { flex: 1 1 140px; }
+    .grid-3 { grid-template-columns: 1fr; }
+  }
+  h2 { font-size: 12px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--text-dim); margin: 20px 0 8px; font-weight: 700; }
+  h2:first-child { margin-top: 0; }
+  .card {
+    background: linear-gradient(145deg,rgba(23,19,16,.96),rgba(10,9,8,.96));
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 16px;
+  }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .field { margin-bottom: 10px; }
+  .field label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 4px; }
+  select, input[type=text], textarea {
+    width: 100%;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    padding: 9px 11px;
+    font-family: inherit;
+    font-size: 13px;
+  }
+  select:focus, input[type=text]:focus, textarea:focus { outline: none; border-color: var(--accent); }
+  textarea { resize: vertical; min-height: 70px; line-height: 1.4; }
+  input[type=file] { font-size: 12px; color: var(--text-dim); }
+  .btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text);
+    border-radius: 4px;
+    padding: 9px 16px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn:hover { border-color: var(--accent); color: var(--accent); }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+  .btn-primary { background: linear-gradient(135deg,var(--accent),var(--accent-2)); color: #130703; border-color: var(--accent); text-transform: uppercase; box-shadow: 0 8px 24px rgba(255,90,10,.2); }
+  .btn-primary:hover { filter: brightness(1.08); color: #170604; }
+  .btn-danger { color: var(--danger); }
+  .btn-sm { padding: 5px 10px; font-size: 11.5px; }
+  .part-card { margin-bottom: 14px; }
+  .part-card-head {
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;
+  }
+  .part-card-head strong { font-size: 14px; }
+  .part-card-head .actions { display: flex; gap: 6px; }
+  .row { display: flex; gap: 10px; }
+  .row > * { flex: 1; }
+  .thumb-row { display: flex; align-items: center; gap: 10px; margin-top: 6px; }
+  .thumb { width: 56px; height: 100px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); background: var(--panel-2); }
+  .dur-badge { font-size: 11px; color: var(--text-dim); }
+  .filename { font-size: 11px; color: var(--text-dim); word-break: break-all; }
+  .preview-stage { position: relative; width: 100%; max-width: 340px; aspect-ratio: 9 / 16; }
+  canvas#preview {
+    position: absolute; inset: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .clip-preview {
+    position: absolute; inset: 0;
+    border-radius: 14px;
+    overflow: hidden;
+    background: #000;
+    border: 1px solid var(--border);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+  }
+  .clip-preview video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .clip-caption-overlay {
+    position: absolute; left: 20px; right: 20px; bottom: 56px;
+    color: #fff; font-family: 'Inter', Arial, sans-serif; font-weight: 700;
+    font-size: 15px; line-height: 1.4; text-align: center;
+    text-shadow: 0 2px 8px rgba(0,0,0,.7);
+    background: rgba(0,0,0,.38); border-radius: 10px; padding: 10px 14px;
+    white-space: pre-wrap;
+  }
+  .clip-caption-overlay:empty { display: none; }
+  .overlay-badge-layer { position: absolute; inset: 0; pointer-events: none; z-index: 5; }
+  .overlay-badge {
+    position: absolute; transform: translate(-50%, -50%);
+    background: var(--accent); color: #170604; font-family: 'Sora', Arial, sans-serif;
+    font-weight: 800; font-size: 13px; letter-spacing: .02em; text-transform: uppercase;
+    padding: 7px 14px; border-radius: 999px; white-space: nowrap; cursor: grab;
+    box-shadow: 0 6px 16px rgba(0,0,0,.4); pointer-events: auto; touch-action: none;
+    max-width: 78%; overflow: hidden; text-overflow: ellipsis;
+  }
+  .overlay-badge:active { cursor: grabbing; }
+  .edit-timeline { position: relative; width: 100%; max-width: 340px; }
+  .et-ruler {
+    position: relative; height: 14px; margin-bottom: 4px; border-radius: 4px;
+    background: var(--panel-2); border: 1px solid var(--border); cursor: pointer; touch-action: none;
+  }
+  .et-track {
+    position: relative; display: flex; height: 46px; border-radius: 8px;
+    background: var(--panel-2); border: 1px solid var(--border); overflow: hidden;
+  }
+  .et-seg {
+    position: relative; height: 100%; flex: 0 0 auto; display: flex; align-items: center; justify-content: center;
+    overflow: hidden; cursor: grab; border-right: 1px solid var(--bg);
+    font-size: 10px; font-weight: 700; color: #170604; user-select: none; touch-action: none;
+  }
+  .et-seg:last-child { border-right: none; }
+  .et-seg.animado { background: #FFD34A; }
+  .et-seg.video { background: #ffb74d; }
+  .et-seg.dragging { opacity: .55; }
+  .et-seg-label { padding: 0 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; pointer-events: none; }
+  .et-trim-handle {
+    position: absolute; top: 0; bottom: 0; width: 11px; cursor: ew-resize;
+    background: rgba(11,11,18,.32); touch-action: none;
+  }
+  .et-trim-handle.left { left: 0; } .et-trim-handle.right { right: 0; }
+  .et-trim-handle::after {
+    content: ''; position: absolute; top: 50%; left: 50%; width: 3px; height: 16px;
+    background: #170604; transform: translate(-50%, -50%); border-radius: 2px;
+  }
+  .et-drop-indicator {
+    position: absolute; top: -3px; bottom: -3px; width: 3px; background: var(--text);
+    border-radius: 2px; pointer-events: none; display: none; z-index: 4;
+  }
+  .et-playhead {
+    position: absolute; top: 0; bottom: 0; width: 2px; background: var(--text);
+    pointer-events: none; box-shadow: 0 0 6px rgba(255,255,255,.6); z-index: 3;
+  }
+  .et-playhead::before {
+    content: ''; position: absolute; top: -3px; left: 50%; transform: translate(-50%, 0);
+    width: 8px; height: 8px; border-radius: 50%; background: var(--text);
+  }
+  .et-empty { font-size: 11px; color: var(--text-dim); padding: 14px; text-align: center; width: 100%; }
+  .et-disabled { pointer-events: none; opacity: .5; }
+  .trim-info:empty { display: none; }
+  .part-card.et-focus { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 12px; transition: outline-color .3s ease; }
+  .trim-info { font-size: 11px; color: var(--text-dim); margin-top: 4px; }
+  .kind-switch { display: flex; gap: 8px; margin-bottom: 14px; }
+  .kind-switch .btn { flex: 1; }
+  .kind-badge {
+    font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: .04em;
+    padding: 3px 8px; border-radius: 999px; margin-left: 8px;
+  }
+  .kind-badge.animado { background: rgba(255,211,74,.15); color: #FFD34A; }
+  .kind-badge.video { background: rgba(255,183,77,.15); color: #ffb74d; }
+  .take-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; padding: 8px; }
+  .take-row input[type=text] { flex: 1 1 160px; }
+  .video-thumb { width: 100%; max-width: 220px; border-radius: 8px; border: 1px solid var(--border); background: #000; display: block; margin-top: 6px; }
+  .controls { display: flex; align-items: center; gap: 10px; width: 100%; max-width: 340px; }
+  .controls input[type=range] { flex: 1; }
+  .time-label { font-size: 12px; color: var(--text-dim); font-variant-numeric: tabular-nums; white-space: nowrap; }
+  .export-box { width: 100%; max-width: 340px; display: flex; flex-direction: column; gap: 8px; }
+  .note { font-size: 11px; color: var(--text-dim); line-height: 1.5; background: transparent; border-left: 2px solid var(--border); border-radius: 0; padding: 2px 0 2px 10px; }
+  .note b { color: var(--text); }
+  .tabs { display: flex; gap: 4px; margin-bottom: 18px; border-bottom: 1px solid var(--border); }
+  .tab-btn {
+    flex: 1;
+    background: transparent;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--text-dim);
+    border-radius: 0;
+    padding: 10px 10px;
+    font-size: 12.5px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .tab-btn.active { color: var(--accent); background: transparent; border-bottom-color: var(--accent); }
+  .cs-switcher { display: flex; gap: 6px; background: var(--panel); border: 1px solid var(--border); padding: 4px; border-radius: 4px; margin-bottom: 14px; }
+  .cs-switch-btn {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 3px;
+    border: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-weight: 700;
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    color: var(--text-dim);
+    background: transparent;
+  }
+  .cs-switch-btn.active { background: linear-gradient(135deg,#FF5A0A,#FF8A32); color: #130703; box-shadow: 0 8px 22px rgba(255,90,10,.22); }
+  .cs-switch-btn:disabled { opacity: .45; cursor: not-allowed; }
+  .mb-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+  .mb-chip {
+    background: var(--panel-2); border: 1px solid var(--border); color: var(--text-dim);
+    border-radius: 999px; padding: 5px 12px; font-size: 12px; font-weight: 600;
+    cursor: pointer; font-family: inherit;
+  }
+  .mb-chip.active { background: var(--accent); color: #170604; border-color: var(--accent); }
+  .mb-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 12px; margin-top: 12px; }
+  .mb-card { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }
+  .mb-thumb-wrap { position: relative; width: 100%; aspect-ratio: 3 / 4; background: var(--panel-2); overflow: hidden; }
+  .mb-thumb-wrap img, .mb-thumb-wrap video { width: 100%; height: 100%; object-fit: cover; display: block; }
+  .mb-video-badge {
+    position: absolute; top: 6px; right: 6px; background: rgba(0,0,0,.65); color: #fff;
+    font-size: 9.5px; font-weight: 800; letter-spacing: .04em; padding: 3px 6px; border-radius: 4px;
+    pointer-events: none;
+  }
+  .mb-body { padding: 8px; display: flex; flex-direction: column; gap: 6px; }
+  .mb-credit { font-size: 10.5px; color: var(--text-dim); line-height: 1.3; }
+  .mb-actions { display: flex; flex-direction: column; gap: 5px; }
+  .mb-actions .btn { width: 100%; text-align: center; }
+  .mb-empty { grid-column: 1 / -1; text-align: center; color: var(--text-dim); font-size: 13px; padding: 30px 10px; }
+  .mb-toast {
+    position: fixed; bottom: 22px; left: 50%; transform: translateX(-50%);
+    background: var(--accent); color: #170604; font-weight: 700; font-size: 13px;
+    padding: 10px 18px; border-radius: 999px; box-shadow: 0 10px 30px rgba(0,0,0,.4);
+    z-index: 999; opacity: 0; pointer-events: none; transition: opacity .2s ease;
+  }
+  .mb-toast.show { opacity: 1; }
+  .cs-iframe-wrap { width: 100%; border-radius: 12px; overflow: hidden; border: 1px solid var(--border); background: #170604; }
+  .cs-iframe { width: 100%; height: 640px; border: none; display: block; }
+  .cs-tweet-editor { display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px; }
+  .cs-tweet-slide-edit { background: var(--panel); border: 1px solid var(--border); border-radius: 4px; padding: 14px; display: flex; flex-direction: column; gap: 8px; }
+  .cs-tweet-slide-edit textarea { width: 100%; min-height: 70px; background: var(--panel-2); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-family: inherit; font-size: 12.5px; padding: 8px; resize: vertical; }
+  .cs-tweet-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .cs-tweet-thumb { width: 52px; height: 52px; border-radius: 8px; object-fit: cover; background: var(--panel-2); flex: 0 0 auto; }
+  .cs-tweet-rail-wrap { border-radius: 4px; overflow: hidden; border: 1px solid var(--border); background: radial-gradient(circle at 50% 0,rgba(255,90,10,.1),transparent 45%),#070605; padding: 16px; margin-top: 4px; }
+  .cs-tweet-rail { display: flex; gap: 20px; overflow-x: auto; padding-bottom: 8px; }
+  .tw-frame-item { flex: 0 0 auto; width: 302px; display: flex; flex-direction: column; gap: 8px; }
+  .tw-frame-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .tw-frame-label { font-size: 11px; color: var(--text-dim); }
+  .tw-frame { flex: 0 0 auto; width: 302px; height: 378px; overflow: hidden; position: relative; border-radius: 6px; box-shadow: 0 8px 30px rgba(0,0,0,.45); background: #fff; }
+  /* Regras de borda do card Tweet/X (padrão pra todos os posts deste modelo):
+     64px de margem segura nos 4 lados. De cima pra baixo: cabeçalho (perfil),
+     texto (ocupa todo o espaço que sobra — "zona amarela" — e cresce a
+     fonte de acordo com o espaço disponível) e imagem (nunca a página
+     inteira: altura fixa em metade da proporção 4:5 do card, ou seja, a
+     imagem sozinha fica no formato ~8:5 — "zona vermelha" — cantos
+     arredondados). Sem imagem, o texto usa livremente o cartão inteiro. */
+  /* O grupo perfil + texto (+ imagem, quando houver) é tratado como um
+     bloco só e centralizado dentro do quadrado 4:5 — em vez de ficar
+     sempre colado no topo/base, sobra o mesmo respiro acima e abaixo
+     quando o conteúdo não preenche o cartão inteiro. */
+  .tw-card { width: 1080px; height: 1350px; transform: scale(.2796); transform-origin: top left; box-sizing: border-box; padding: 64px; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(circle at 88% 8%,rgba(255,90,10,.14),transparent 28%),#FFFDF9; font-family: 'Inter', Arial, sans-serif; color: #12100F; border-top: 18px solid #FF5A0A; }
+  .tw-header { display: flex; align-items: flex-start; gap: 20px; padding-bottom: 32px; flex: 0 0 auto; }
+  .tw-avatar { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; background: #eee; }
+  .tw-namecol { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
+  .tw-name-row { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 32px; color: #170604; }
+  .tw-check { width: 26px; height: 26px; flex: 0 0 auto; }
+  .tw-handle { font-size: 26px; color: #9B3F2E; }
+  /* Alinhado ao topo (em vez de centralizado) — assim o perfil "acompanha"
+     a altura do texto: o espaçamento entre cabeçalho e texto fica sempre
+     o mesmo, e é o espaço sobrando (abaixo do texto / acima da imagem)
+     que varia conforme o tamanho do conteúdo, não o contrário. */
+  /* position:relative pra ancorar os dois indicadores de canto (crédito da
+     fonte à esquerda, continuidade "..." à direita) na ponta da folha, sem
+     depender de onde a última linha do texto termina — e sem entrar no
+     fluxo do flex (que antes fazia o crédito "sem imagem" encavalar em
+     cima do texto, já que .tw-body-wrap é flex em linha). */
+  .tw-body-wrap { position: relative; flex: 0 1 auto; overflow: hidden; padding-bottom: 32px; display: flex; align-items: flex-start; }
+  .tw-body-wrap.no-image { padding-bottom: 46px; }
+  .tw-text-col { width: 100%; }
+  /* Indicador de continuidade: some quando ainda há mais páginas pra ler.
+     Fica ancorado no canto inferior direito do bloco de texto, na ponta da
+     folha — sutil, sem competir com os pontos de posição sobre a imagem. */
+  .tw-continue { position: absolute; right: 0; bottom: 0; font-size: 30px; font-weight: 800; letter-spacing: 5px; color: rgba(15, 20, 25, .32); }
+  /* Título opcional (1ª linha antes de uma linha em branco no texto da
+     página — ver convenção documentada na aba Texto / Script): maior e
+     mais forte que o corpo, pensado pra capa e CTA. */
+  .tw-title { font-family:'Sora','Inter',sans-serif; font-weight: 800; line-height: 1.08; letter-spacing:-.035em; color: #12100F; margin-bottom: 18px; white-space: pre-wrap; }
+  .tw-body { font-size: 34px; line-height: 1.5; color: #12100F; white-space: pre-wrap; }
+  /* Negrito com leve destaque de escala (em vez de só peso/cor) — cresce
+     proporcionalmente ao tamanho do corpo de cada slide, mas pouco, pra não
+     quebrar a linha nem chamar atenção demais. */
+  .tw-body b { font-weight: 800; color: #F04A00; font-size: 1.08em; }
+  /* Imagem sempre limitada a metade da altura do formato 4:5 do card
+     (proporção própria ~8:5), nunca "flex: 1" — é isso que garante que ela
+     nunca vira o slide inteiro e que sobra espaço grande pro texto acima. */
+  .tw-image-wrap { position: relative; flex: 0 0 auto; width: 100%; aspect-ratio: 8 / 5; border-radius: 24px; overflow: hidden; background: #e8ebee; min-height: 0; }
+  .tw-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transform-origin: center; cursor: grab; touch-action: none; }
+  .tw-image-wrap img:active { cursor: grabbing; }
+  .tw-dots { position: absolute; bottom: 18px; left: 50%; transform: translateX(-50%); display: flex; gap: 6px; }
+  .tw-dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,.55); }
+  .tw-dot.active { background: #fff; width: 20px; border-radius: 5px; }
+  .tw-arrow { position: absolute; top: 50%; transform: translateY(-50%); width: 44px; height: 44px; border-radius: 50%; background: rgba(255,255,255,.92); display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 10px rgba(0,0,0,.25); font-size: 24px; color: #0f1419; font-weight: 700; }
+  .tw-arrow.left { left: 16px; }
+  .tw-arrow.right { right: 16px; }
+  .tw-noimg { display: flex; align-items: center; justify-content: center; height: 100%; color: #9aa5b1; font-size: 26px; text-align: center; padding: 40px; }
+
+  /* ---- Padrão Tecnológico — identidade oficial da CTZ Studio ----
+     Mesmas dimensões/escala do card Tweet/X (1080x1350, 4:5) e a mesma
+     regra de imagem em metade do card (aspect-ratio 8:5) pra manter
+     consistência entre os dois modelos. */
+  .b4-card {
+    width: 1080px; height: 1350px; transform: scale(.2796); transform-origin: top left;
+    box-sizing: border-box; padding: 64px; display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    background:
+      radial-gradient(ellipse 780px 680px at 50% 86%, rgba(255,74,0,.72) 0%, rgba(255,74,0,.2) 36%, transparent 67%),
+      linear-gradient(rgba(255,106,26,.13) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,106,26,.13) 1px, transparent 1px),
+      linear-gradient(155deg,#050403 0%,#120B07 54%,#070605 100%);
+    background-size: auto,86px 86px,86px 86px,auto;
+    font-family: 'Inter', Arial, sans-serif; color: #FFFFFF;
+  }
+  /* Agrupa logo + texto + imagem num bloco só, que fica centralizado
+     verticalmente dentro do espaço acima do rodapé — mesma regra de
+     "centralizar dentro do quadrado 4:5" do Estilo Tweet/X, mas mantendo
+     o rodapé (@perfil / crédito) sempre colado na base do cartão. */
+  .b4-content { flex: 1 1 auto; min-height: 0; display: flex; flex-direction: column; justify-content: center; }
+  .b4-topbar { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; padding-bottom: 34px; }
+  .b4-logo { display: flex; align-items: center; gap: 14px; }
+  .b4-logo-mark { display: block; width: 46px; height: 46px; flex: 0 0 auto; overflow: hidden; border-radius: 8px; }
+  .b4-logo-mark img, .b4-logo-mark > div { width: 100%; height: 100%; }
+  .b4-logo span:last-child { font-family: 'Sora', 'Inter', sans-serif; font-weight: 800; font-size: 20px; letter-spacing: .04em; }
+  .b4-page-index { font-size: 18px; color: #FF6A18; letter-spacing: .12em; font-weight: 700; }
+  /* Alinhado ao topo (mesma regra do Estilo Tweet/X): o cabeçalho/logo
+     acompanha a altura do texto com espaçamento fixo, em vez do texto
+     flutuar centralizado no espaço disponível. O bloco inteiro (ver
+     .b4-content acima) é que fica centralizado no cartão. */
+  .b4-text-col { flex: 0 1 auto; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; padding-bottom: 24px; }
+  .b4-continue { text-align: right; margin-top: 14px; font-size: 26px; font-weight: 800; letter-spacing: 4px; color: rgba(255, 211, 74, .65); }
+  .b4-title { font-family: 'Sora', 'Inter', sans-serif; font-weight: 800; line-height: 1.04; letter-spacing: -.045em; color: #FFFFFF; margin-bottom: 20px; white-space: pre-wrap; text-transform: uppercase; text-shadow: 0 0 34px rgba(255,90,10,.22); }
+  .b4-body { line-height: 1.5; color: #FFFFFF; white-space: pre-wrap; }
+  /* Destaque amarelo quente, inspirado na referência visual. */
+  .b4-body b { font-weight: 800; color: #FF7A28; font-size: 1.08em; }
+  .b4-image-wrap { position: relative; flex: 0 0 auto; width: 100%; aspect-ratio: 8 / 5; border-radius: 4px; overflow: hidden; background: #140B07; border: 1px solid rgba(255,106,26,.5); box-shadow: 0 20px 70px rgba(255,70,0,.22); }
+  .b4-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transform-origin: center; cursor: grab; touch-action: none; }
+  .b4-image-wrap img:active { cursor: grabbing; }
+  .b4-footer { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; padding-top: 24px; font-size: 17px; }
+  .b4-handle { color: #FF6A18; font-weight: 700; }
+  .b4-credit { color: #CDBEB6; max-width: 60%; text-align: right; line-height: 1.4; }
+  .chat-messages { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; max-height: 50vh; overflow-y: auto; padding-right: 2px; }
+  .bubble { padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
+  .bubble.user { background: var(--accent); color: #170604; align-self: flex-end; max-width: 85%; font-weight: 600; }
+  .bubble.assistant { background: var(--panel-2); border: 1px solid var(--border); align-self: flex-start; max-width: 92%; }
+  ::-webkit-scrollbar { width: 10px; }
+  ::-webkit-scrollbar-thumb { background: #8F1B0D; border-radius: 6px; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>CTZ <span>Studio</span></h1>
+    <div class="byline">Sistema da CTZ Studio para criação de carrosséis</div>
+  </div>
+  <div class="header-actions">
+    <button class="btn" id="btnOpenProject">Abrir projeto</button>
+    <button class="btn" id="btnSaveProject">Salvar projeto</button>
+    <input type="file" id="fileOpenProject" accept="application/json" style="display:none" />
+  </div>
+</header>
+
+<div class="app">
+  <div class="sidebar" style="flex:1 1 auto;max-width:900px;margin:0 auto;border-right:none;">
+    <div class="tabs">
+      <button class="tab-btn active" id="tabBtnScript" data-tab="script">Texto / Script</button>
+      <button class="tab-btn" id="tabBtnCarousel" data-tab="carousel">Carousel Studio</button>
+      <button class="tab-btn" id="tabBtnMedia" data-tab="media">Banco de Mídia</button>
+      <button class="tab-btn" id="tabBtnMaterials" data-tab="materials">Materiais</button>
+    </div>
+
+    <div id="tabPanelCarousel" class="tab-panel" style="display:none;">
+      <h2>Carousel Studio</h2>
+
+      <div id="csLogoSection" style="display:none;">
+        <h2>Logo CTZ Studio</h2>
+        <div class="card">
+          <div class="thumb-row">
+            <img id="logoThumb" class="thumb" style="width:80px;height:56px;object-fit:contain;" />
+            <div>
+              <input type="file" id="fileLogo" accept="image/*" />
+              <div class="filename" id="logoFilename">Nenhum logo enviado (PNG com fundo transparente).</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="cs-switcher">
+        <button class="cs-switch-btn active" id="csBtnModel2" data-cs-target="model2">Estilo Tweet/X</button>
+        <button class="cs-switch-btn" id="csBtnModel1" data-cs-target="model1">Padrão Tecnológico</button>
+      </div>
+
+      <div class="card cs-autogen-card" style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Gerar carrossel automaticamente</div>
+        <textarea id="csAutogenText" placeholder="Cole aqui o texto completo do carrossel..." style="width:100%;min-height:110px;background:var(--panel-2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:12.5px;padding:9px 11px;resize:vertical;"></textarea>
+        <div class="cs-tweet-row" style="margin-top:10px;">
+          <label style="font-size:11.5px;color:var(--text-dim);flex:0 0 auto;">Páginas</label>
+          <input type="number" id="csAutogenCount" min="1" max="15" value="5" style="width:60px;background:var(--panel-2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:12.5px;padding:7px 8px;">
+          <button type="button" class="btn btn-primary" id="btnAutogenCarousel" style="margin-left:auto;">Gerar páginas</button>
+        </div>
+        <div class="note" style="margin-top:10px;">
+          O gerador corrige espaçamento e pontuação, remove instruções de produção,
+          adiciona emojis com moderação e destaca automaticamente palavras importantes.
+        </div>
+      </div>
+
+      <div id="csModel2Wrap" style="margin-bottom:20px;">
+        <div class="cs-tweet-rail-wrap">
+          <div class="cs-tweet-rail" id="csTweetRail"></div>
+        </div>
+        <div class="cs-tweet-row" style="margin-top:10px;">
+          <div class="note" style="flex:1;">
+            Perfil fixo: CTZ Studio | Creatorize. Arraste a imagem pra
+            reposicionar; zoom e crédito ficam no editor abaixo.
+          </div>
+          <button type="button" class="btn" data-export-all="model2" style="flex:0 0 auto;">Baixar todas (PNG)</button>
+        </div>
+      </div>
+
+      <div id="csModel1Wrap" style="display:none;margin-bottom:20px;">
+        <div class="cs-tweet-rail-wrap">
+          <div class="cs-tweet-rail" id="csBrandRail"></div>
+        </div>
+        <div class="cs-tweet-row" style="margin-top:10px;">
+          <div class="note" style="flex:1;">
+            Identidade oficial CTZ Studio — mesmo texto/imagem do
+            editor abaixo, logo enviado no card <b>Logo CTZ Studio</b>.
+          </div>
+          <button type="button" class="btn" data-export-all="model1" style="flex:0 0 auto;">Baixar todas (PNG)</button>
+        </div>
+      </div>
+
+      <div class="cs-tweet-editor" id="csTweetEditor"></div>
+      <button class="btn" id="btnAddTweetSlide">+ Adicionar página</button>
+    </div>
+
+    <div id="tabPanelMedia" class="tab-panel" style="display:none;">
+      <h2>Banco de Mídia</h2>
+      <div class="note" style="margin-bottom:12px;">
+        Fotos gratuitas (Unsplash/Pixabay). Busque, baixe ou mande direto
+        pro carrossel com um clique.
+      </div>
+      <div class="card">
+        <div class="field" style="margin-bottom:0;">
+          <label>Buscar por palavra-chave</label>
+          <input type="text" id="mediaBankSearch" placeholder="ex: dinheiro, carro, tempo, equipe, casa...">
+        </div>
+        <div class="mb-chips" id="mediaBankChips"></div>
+      </div>
+      <div class="mb-grid" id="mediaBankGrid"></div>
+    </div>
+
+    <div id="tabPanelMaterials" class="tab-panel" style="display:none;">
+      <h2>Materiais</h2>
+      <div class="note" style="margin-bottom:12px;">
+        Envie aqui suas próprias imagens (fotos, prints, artes) pra usar nos
+        carrosséis. Elas ficam guardadas neste projeto — dá pra usar direto
+        como imagem de uma página no Carousel Studio (Estilo Tweet/X) com um
+        clique, ou baixar de volta quando quiser.
+      </div>
+      <div class="card">
+        <div class="field" style="margin-bottom:0;">
+          <label>Adicionar imagens</label>
+          <input type="file" id="fileMaterials" accept="image/*" multiple>
+        </div>
+      </div>
+      <div class="mb-grid" id="materialsGrid"></div>
+    </div>
+
+    <div id="tabPanelScript" class="tab-panel">
+      <h2>Texto / Script</h2>
+
+      <div class="field" style="margin-bottom:14px;">
+        <label>Gerar no modelo</label>
+        <div class="cs-switcher" style="margin-bottom:0;">
+          <button type="button" class="cs-switch-btn active" id="scriptBtnModel2" data-cs-target="model2">Estilo Tweet/X</button>
+          <button type="button" class="cs-switch-btn" id="scriptBtnModel1" data-cs-target="model1">Padrão Tecnológico</button>
+        </div>
+      </div>
+
+      <div class="note" style="margin-bottom:12px;">
+        Cole o roteiro, escolha o nº de páginas e clique em <b>Gerar
+        carrossel</b> — substitui as páginas atuais.
+        <br><br>
+        Também reconhece automaticamente <b>tabela</b> (colunas #, Papel,
+        Texto do slide) e <b>briefing detalhado</b> (Slide N, Título/Texto,
+        Negrito: "..."), já limpando o que não é pro público final.
+        <br><br>
+        <code>**palavra**</code> = negrito. 1ª linha curta + linha em
+        branco = vira título.
+      </div>
+      <div class="card">
+        <textarea id="scriptTextArea" placeholder="Cole ou escreva aqui o texto/script do conteúdo..." style="width:100%;min-height:320px;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:12.5px;padding:10px 12px;resize:vertical;"></textarea>
+        <div class="cs-tweet-row" style="margin-top:10px;">
+          <span id="scriptTextCount" style="font-size:11.5px;color:var(--text-dim);"></span>
+        </div>
+        <div class="cs-tweet-row" style="margin-top:10px;">
+          <label style="font-size:11.5px;color:var(--text-dim);flex:0 0 auto;">Quantidade de páginas</label>
+          <input type="number" id="scriptAutogenCount" min="1" max="15" value="5" style="width:70px;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:12.5px;padding:6px 8px;">
+          <button type="button" class="btn btn-primary" id="btnGenerateFromScript" style="margin-left:auto;">Gerar carrossel</button>
+        </div>
+      </div>
+
+      <div class="card" id="scriptComplianceCard" style="margin-top:12px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px;">Vocabulário de marca</div>
+        <div style="font-size:11px;color:var(--text-dim);margin-bottom:8px;">
+          Alerta (não bloqueia) se o texto usar termos como "investimento" ou
+          "renda passiva" fora do contexto de consórcio/imóvel pro cliente
+          final — revise antes de publicar.
+        </div>
+        <div id="scriptComplianceResult" style="font-size:12px;line-height:1.6;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+(function () {
+  'use strict';
+
+  // ---------------------------------------------------------------------
+  // CTZ Studio — ferramenta independente pra montar carrosséis
+  // (Padrão Tecnológico + Estilo Tweet/X), 100% no navegador, sem instalar
+  // nada e sem servidor por trás. A edição de vídeo virou um projeto
+  // separado, em Remotion — este arquivo cuida só de carrossel + banco de
+  // mídia.
+  // ---------------------------------------------------------------------
+
+  // ---------------------------------------------------------------------
+  // Banco de Mídia — biblioteca curada de fotos gratuitas do Unsplash (uso
+  // livre, sem direitos autorais, licença Unsplash). Não é busca ao vivo
+  // (o app não tem servidor por trás) — é uma seleção fixa organizada por
+  // tema, pensada pros assuntos que a CTZ Studio mais
+  // usam. Baixar vídeo/foto de link de rede social (Instagram, TikTok,
+  // YouTube) não entra aqui — violaria os Termos de Uso dessas plataformas.
+  const MEDIA_BANK_CATEGORIES = {
+    'crescimento': 'Crescimento',
+    'dinheiro': 'Dinheiro',
+    'seguranca': 'Segurança',
+    'tempo': 'Tempo',
+    'estrategia': 'Estratégia',
+    'comunidade': 'Comunidade',
+    'tecnologia': 'Tecnologia',
+    'carro': 'Carro',
+    'casa': 'Casa / Imóvel',
+    'aposentadoria': 'Aposentadoria',
+    'cidade': 'Cidade',
+    'reuniao': 'Reunião',
+  };
+  function mbUrl(id) {
+    return 'https://images.unsplash.com/photo-' + id + '?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080';
+  }
+  const MEDIA_BANK = [
+    // Crescimento
+    { id: 'mb-1', category: 'crescimento', label: 'Gráfico de mercado no notebook', credit: 'Markus Winkler · Unsplash', url: mbUrl('1591696205602-2f950c417cb9') },
+    { id: 'mb-2', category: 'crescimento', label: 'Gráfico de velas na tela escura', credit: 'Maxim Hopman · Unsplash', url: mbUrl('1611974789855-9c2a0a7236a3') },
+    { id: 'mb-3', category: 'crescimento', label: 'Jornal financeiro com gráfico', credit: 'Markus Spiske · Unsplash', url: mbUrl('1618044733300-9472054094ee') },
+    { id: 'mb-4', category: 'crescimento', label: 'Gráfico de barras em fundo azul', credit: 'Алекс Арцибашев · Unsplash', url: mbUrl('1634117622592-114e3024ff27') },
+    // Dinheiro
+    { id: 'mb-5', category: 'dinheiro', label: 'Notas de dólar em leque', credit: 'Alexander Mils · Unsplash', url: mbUrl('1553729459-efe14ef6055d') },
+    { id: 'mb-6', category: 'dinheiro', label: 'Miniatura sentada sobre moedas lendo jornal', credit: 'Mathieu Stern · Unsplash', url: mbUrl('1604594849809-dfedbc827105') },
+    { id: 'mb-7', category: 'dinheiro', label: 'Moedas de ouro empilhadas', credit: 'Ibrahim Rifath · Unsplash', url: mbUrl('1534951009808-766178b47a4f') },
+    { id: 'mb-8', category: 'dinheiro', label: 'Casa feita de dinheiro', credit: 'Kostiantyn Li · Unsplash', url: mbUrl('1634757439914-23b8acb9d411') },
+    // Segurança
+    { id: 'mb-9', category: 'seguranca', label: 'Cadeado vermelho sobre teclado', credit: 'FlyD · Unsplash', url: mbUrl('1614064641938-3bbee52942c7') },
+    { id: 'mb-10', category: 'seguranca', label: 'Cadeado dourado sobre teclado', credit: 'Towfiqu barbhuiya · Unsplash', url: mbUrl('1633265486064-086b219458ec') },
+    { id: 'mb-11', category: 'seguranca', label: 'Cadeado prateado', credit: 'Zaqy Al Fattah · Unsplash', url: mbUrl('1555529902-5261145633bf') },
+    { id: 'mb-12', category: 'seguranca', label: 'Cadeado de aço em close', credit: 'Jose Fontano · Unsplash', url: mbUrl('1493129922668-fcb1a8514643') },
+    // Tempo
+    { id: 'mb-13', category: 'tempo', label: 'Relógios marrom e branco', credit: 'Akram Huseyn · Unsplash', url: mbUrl('1533749047139-189de3cf06d3') },
+    { id: 'mb-14', category: 'tempo', label: 'Despertador analógico preto e branco', credit: 'Virginia Marinova · Unsplash', url: mbUrl('1541480601022-2308c0f02487') },
+    { id: 'mb-15', category: 'tempo', label: 'Relógio analógico às 12h', credit: 'Djim Loic · Unsplash', url: mbUrl('1456574808786-d2ba7a6aa654') },
+    { id: 'mb-16', category: 'tempo', label: 'Relógio analógico redondo', credit: 'Thomas Bormans · Unsplash', url: mbUrl('1504197832061-98356e3dcdcf') },
+    // Estratégia
+    { id: 'mb-17', category: 'estrategia', label: 'Papel com "Marketing Strategy"', credit: 'Campaign Creators · Unsplash', url: mbUrl('1533750349088-cd871a92f312') },
+    { id: 'mb-18', category: 'estrategia', label: 'Equipe colaborando com post-its', credit: 'UX Indonesia · Unsplash', url: mbUrl('1586936893354-362ad6ae47ba') },
+    { id: 'mb-19', category: 'estrategia', label: 'Pessoa escrevendo no quadro branco', credit: 'Campaign Creators · Unsplash', url: mbUrl('1542744094-24638eff58bb') },
+    { id: 'mb-20', category: 'estrategia', label: 'Equipe diversa colaborando no escritório', credit: 'Vitaly Gariev · Unsplash', url: mbUrl('1758873269811-4e62e346b4b7') },
+    // Comunidade
+    { id: 'mb-21', category: 'comunidade', label: 'Grupo com mãos empilhadas', credit: 'Hannah Busing · Unsplash', url: mbUrl('1582213782179-e0d53f98f2ca') },
+    { id: 'mb-22', category: 'comunidade', label: 'Equipe em união de mãos', credit: 'Rineshkumar Ghirao · Unsplash', url: mbUrl('1630068846062-3ffe78aa5049') },
+    { id: 'mb-23', category: 'comunidade', label: 'Grupo unindo as mãos', credit: 'Outward Bound Costa Rica · Unsplash', url: mbUrl('1704386651981-0729a60da579') },
+    { id: 'mb-24', category: 'comunidade', label: 'Grupo de mãos dadas', credit: 'Marlis Trio Akbar · Unsplash', url: mbUrl('1651372381086-9861c9c81db5') },
+    // Tecnologia
+    { id: 'mb-25', category: 'tecnologia', label: 'Escritório com monitores', credit: 'Austin Distel · Unsplash', url: mbUrl('1556761175-4b46a572b786') },
+    { id: 'mb-26', category: 'tecnologia', label: 'Equipe colaborando em escritório aberto', credit: 'LYCS Architecture · Unsplash', url: mbUrl('1531973576160-7125cd663d86') },
+    { id: 'mb-27', category: 'tecnologia', label: 'Pessoas trabalhando no escritório', credit: 'Alex Kotliarskyi · Unsplash', url: mbUrl('1504384308090-c894fdcc538d') },
+    { id: 'mb-28', category: 'tecnologia', label: 'Monitor em mesa de madeira', credit: 'Annie Spratt · Unsplash', url: mbUrl('1498409785966-ab341407de6e') },
+    // Carro
+    { id: 'mb-29', category: 'carro', label: 'Carro vermelho sob árvore', credit: 'Adam Stefanca · Unsplash', url: mbUrl('1550355291-bbee04a92027') },
+    { id: 'mb-30', category: 'carro', label: 'BMW azul', credit: 'Stephan Louis · Unsplash', url: mbUrl('1614687153862-b0e115ebcef1') },
+    { id: 'mb-31', category: 'carro', label: 'Chave do carro na mão', credit: 'Swansway Motor Group · Unsplash', url: mbUrl('1671719367451-7bf05ae9549c') },
+    { id: 'mb-32', category: 'carro', label: 'Sedan cinza na estrada', credit: 'TopSphere Media · Unsplash', url: mbUrl('1578659258511-4a4e7dee7344') },
+    // Casa / Imóvel
+    { id: 'mb-33', category: 'casa', label: 'Miniatura de casa branca e vermelha', credit: 'Tierra Mallorca · Unsplash', url: mbUrl('1560518883-ce09059eeffa') },
+    { id: 'mb-34', category: 'casa', label: 'Segurando as chaves na entrada de casa', credit: 'Jakub Żerdzicki · Unsplash', url: mbUrl('1741156386380-0236c72eb6f9') },
+    { id: 'mb-35', category: 'casa', label: 'Chaves novas da casa com dinheiro', credit: 'Jakub Żerdzicki · Unsplash', url: mbUrl('1742318592061-15c5f19e1e47') },
+    { id: 'mb-36', category: 'casa', label: 'Molho de chaves sobre mesa de madeira', credit: 'Filip Szalbot · Unsplash', url: mbUrl('1643804926339-e94f0a655185') },
+    // Aposentadoria
+    { id: 'mb-37', category: 'aposentadoria', label: 'Casal sênior sorrindo no sofá', credit: 'Vitaly Gariev · Unsplash', url: mbUrl('1758691031402-5cfbeebc6162') },
+    { id: 'mb-38', category: 'aposentadoria', label: 'Casal sênior sorrindo um pro outro', credit: 'Vitaly Gariev · Unsplash', url: mbUrl('1758686253861-bbfd56e5ba7a') },
+    { id: 'mb-39', category: 'aposentadoria', label: 'Idosos tomando chá e compartilhando foto', credit: 'Vitaly Gariev · Unsplash', url: mbUrl('1758691031213-116dedd71c0f') },
+    { id: 'mb-40', category: 'aposentadoria', label: 'Três idosos fazendo quebra-cabeça juntos', credit: 'Vitaly Gariev · Unsplash', url: mbUrl('1758691031197-3ce709db9640') },
+    // Cidade
+    { id: 'mb-41', category: 'cidade', label: 'Skyline ao entardecer', credit: 'Calvin Ma · Unsplash', url: mbUrl('1672279410716-c676739163e9') },
+    { id: 'mb-42', category: 'cidade', label: 'Prédios altos durante o dia', credit: 'Venti Views · Unsplash', url: mbUrl('1601783210890-d921f8d008b3') },
+    { id: 'mb-43', category: 'cidade', label: 'Skyline com água em primeiro plano', credit: 'Jorge Ramírez · Unsplash', url: mbUrl('1650570725926-cd88ef8784bd') },
+    { id: 'mb-44', category: 'cidade', label: 'Vista aérea de prédios ao entardecer', credit: 'Andre Benz · Unsplash', url: mbUrl('1562351768-f68650f3ec54') },
+    // Reunião
+    { id: 'mb-45', category: 'reuniao', label: 'Aperto de mãos entre duas pessoas', credit: 'Cytonn Photography · Unsplash', url: mbUrl('1521791136064-7986c2920216') },
+    { id: 'mb-46', category: 'reuniao', label: 'Aperto de mãos sobre mesa de madeira', credit: 'Rock Staar · Unsplash', url: mbUrl('1638262052640-82e94d64664a') },
+    { id: 'mb-47', category: 'reuniao', label: 'Aperto de mãos em frente ao notebook', credit: 'Hunters Race · Unsplash', url: mbUrl('1686771416282-3888ddaf249b') },
+    { id: 'mb-48', category: 'reuniao', label: 'Sala de reunião com mesa oval', credit: 'Benjamin Child · Unsplash', url: mbUrl('1431540015161-0bf868a2d407') },
+    // Mais fotos gratuitas (Pixabay — licença Pixabay Content License, uso
+    // livre sem exigir crédito, mas mostramos o autor por boa prática).
+    { id: 'mb-73', category: 'dinheiro', type: 'image', label: 'Notas de dólar americano', credit: 'TBIT · Pixabay', url: 'https://cdn.pixabay.com/photo/2015/09/15/15/53/bank-notes-941246_1280.jpg' },
+    { id: 'mb-74', category: 'estrategia', type: 'image', label: 'Quadro de planejamento de ideias', credit: 'geralt · Pixabay', url: 'https://cdn.pixabay.com/photo/2018/09/17/12/46/business-idea-3683781_1280.jpg' },
+    { id: 'mb-75', category: 'comunidade', type: 'image', label: 'Equipe em brainstorming', credit: 'Mohamed_hassan · Pixabay', url: 'https://cdn.pixabay.com/photo/2018/03/10/12/00/teamwork-3213924_1280.jpg' },
+    { id: 'mb-76', category: 'crescimento', type: 'image', label: 'Alvo com dardo — meta atingida', credit: 'geralt · Pixabay', url: 'https://cdn.pixabay.com/photo/2018/07/13/09/33/target-3535310_1280.jpg' },
+    { id: 'mb-77', category: 'tecnologia', type: 'image', label: 'Escritório de startup, mesa de trabalho', credit: 'StartupStockPhotos · Pixabay', url: 'https://cdn.pixabay.com/photo/2015/01/09/11/11/office-594132_1280.jpg' },
+    { id: 'mb-78', category: 'reuniao', type: 'image', label: 'Reunião de negócios em escritório', credit: 'mwitt1337 · Pixabay', url: 'https://cdn.pixabay.com/photo/2017/05/04/16/37/meeting-2284501_1280.jpg' },
+  ];
+
+  // ---------------------------------------------------------------------
+  // Carousel Studio — Estilo Tweet/X: modelo próprio (o arquivo original
+  // nunca foi enviado / se perdeu), recriado do zero a partir dos prints
+  // de referência que você mandou. Perfil fixo (foto real, recortada do
+  // print de referência), com texto e imagem editáveis
+  // por página — veja renderTweetEditor()/renderTweetRail() mais abaixo.
+  // ---------------------------------------------------------------------
+  const TWEET_PROFILE = {
+    name: 'CTZ Studio | Creatorize',
+    handle: '@caiocreatorize · @creatorizebrasil',
+    avatar: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjRkYyQTBBIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjRkY4NTFCIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMDAiIGZpbGw9IiMxNzA2MDQiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9Ijg4IiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iMTAwIiB5PSIxMjIiIGZvbnQtZmFtaWx5PSJBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjYwIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjRkZGOEYzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5DVFo8L3RleHQ+PC9zdmc+',
+  };
+  const TWEET_CHECK_SVG = '<svg viewBox="0 0 24 24" class="tw-check"><path fill="#FF3B12" d="M12 0l2.3 2.1 3.1-.9.9 3.1 3.1.9-.4 3.2L24 12l-2.9 2.6.4 3.2-3.1.9-.9 3.1-3.1-.9L12 24l-2.3-2.1-3.1.9-.9-3.1-3.1-.9.4-3.2L0 12l2.9-2.6-.4-3.2 3.1-.9.9-3.1 3.1.9z"/><path fill="#fff" d="M9.6 16.2 6 12.6l1.4-1.4 2.2 2.2 5-5L16 9.8z"/></svg>';
+  // Imagens padrão (Unsplash) usadas até você anexar as suas em cada página.
+  const TWEET_DEFAULT_IMAGES = [
+    'https://images.unsplash.com/photo-1608303588026-884930af2559?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+    'https://images.unsplash.com/photo-1729855637715-99192904aac5?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+    'https://images.unsplash.com/photo-1512531123205-560f5974e686?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+    'https://images.unsplash.com/photo-1591759220700-f791b2ea6db4?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&q=80&w=1080',
+  ];
+
+  let tweetIdCounter = 1;
+  function nextTweetId() { return 'tw-' + (tweetIdCounter++); }
+
+  const state = {
+    logoDataUrl: null,
+    logoImg: null,
+    // Estilo de preview ativo do carrossel: 'model2' (Estilo Tweet/X) ou
+    // 'model1' (Padrão Tecnológico) — os dois renderizam o MESMO conteúdo
+    // de tweetCarousel.slides, só com skins visuais diferentes.
+    carouselStyle: 'model2',
+    // Filtro atual do Banco de Mídia (não faz parte do projeto salvo — é só
+    // estado de navegação da biblioteca curada, não conteúdo do usuário).
+    mediaBankFilter: { category: 'todas', query: '' },
+    // Materiais — imagens próprias enviadas pelo usuário (aba "Materiais"),
+    // guardadas como data URL direto no projeto.
+    materials: [],
+    // Texto / Script — roteiro/conteúdo em texto livre (aba "Texto / Script").
+    scriptText: '',
+    tweetCarousel: {
+      slides: [
+        {
+          id: nextTweetId(),
+          text: 'O carro parado na garagem não é o único que perde valor com o tempo.\n\nSeu dinheiro parado na poupança também está perdendo poder de compra todo mês — só que ninguém fala sobre isso.',
+          imageUrl: TWEET_DEFAULT_IMAGES[0], imageDataUrl: null, imageZoom: 1, imagePos: { x: 0, y: 0 }, credit: '',
+        },
+        {
+          id: nextTweetId(),
+          text: 'Em 2021 te venderam a ideia de que esperar era a jogada mais segura.\n\nHoje, quem começou um plano de consórcio naquela época já está com a carta em mãos — e quem esperou, ainda está esperando.',
+          imageUrl: TWEET_DEFAULT_IMAGES[1], imageDataUrl: null, imageZoom: 1, imagePos: { x: 0, y: 0 }, credit: '',
+        },
+        {
+          id: nextTweetId(),
+          text: 'Não é sobre ter sorte no sorteio.\n\nÉ sobre ter uma estratégia clara pra usar o consórcio a seu favor — com lances planejados e visão de longo prazo.',
+          imageUrl: TWEET_DEFAULT_IMAGES[2], imageDataUrl: null, imageZoom: 1, imagePos: { x: 0, y: 0 }, credit: '',
+        },
+        {
+          id: nextTweetId(),
+          text: 'A pergunta não é "quando vou conseguir comprar".\n\nA pergunta é: você tem um plano rodando agora, ou ainda está só pensando nele?',
+          imageUrl: TWEET_DEFAULT_IMAGES[3], imageDataUrl: null, imageZoom: 1, imagePos: { x: 0, y: 0 }, credit: '',
+        },
+      ],
+    },
+  };
+
+  // ---- Logo ----
+  const fileLogo = document.getElementById('fileLogo');
+  const logoThumb = document.getElementById('logoThumb');
+  const logoFilename = document.getElementById('logoFilename');
+
+  fileLogo.addEventListener('change', function () {
+    const file = fileLogo.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function () {
+      state.logoDataUrl = reader.result;
+      const img = new Image();
+      img.onload = function () { state.logoImg = img; };
+      img.src = reader.result;
+      logoThumb.src = reader.result;
+      logoFilename.textContent = file.name;
+      renderTweetRail();
+    };
+    reader.readAsDataURL(file);
+  });
+
+  // ---------------------------------------------------------------------
+  // Carousel Studio — aba. Os dois modelos (Estilo Tweet/X e Padrão
+  // Tecnológico) renderizam o MESMO conteúdo (state.tweetCarousel.slides,
+  // editado uma única vez no editor compartilhado) com skins visuais
+  // diferentes — ver renderTweetSlideCardHtml (Tweet/X) e
+  // renderBrandSlideCardHtml (Padrão Tecnológico, identidade CTZ Studio) mais
+  // abaixo. O cs-switcher só troca qual rail fica visível.
+  // ---------------------------------------------------------------------
+  function logoMarkHtml() {
+    if (state.logoDataUrl) {
+      return '<img src="' + state.logoDataUrl + '" class="logo-mark" alt="CTZ Studio" style="width:100%;height:100%;object-fit:contain;">';
+    }
+    return '<div style="width:100%;height:100%;border-radius:4px;background:linear-gradient(135deg,#FF3B12,#FF851B);display:flex;align-items:center;justify-content:center;font-family:\'Sora\',sans-serif;font-weight:800;color:#170604;font-size:13px;">CTZ</div>';
+  }
+
+  const csSwitchButtons = [document.getElementById('csBtnModel1'), document.getElementById('csBtnModel2')];
+  const csWraps = { model1: document.getElementById('csModel1Wrap'), model2: document.getElementById('csModel2Wrap') };
+  const csLogoSection = document.getElementById('csLogoSection');
+
+  // Estilo do carrossel é um estado único (state.carouselStyle) com duas UIs
+  // que o controlam em sincronia: o switcher dentro de Carousel Studio e a
+  // pergunta "Gerar no modelo" na aba Texto / Script (onde o carrossel é
+  // gerado) — as duas sempre refletem a mesma escolha.
+  function setCarouselStyle(style) {
+    state.carouselStyle = style === 'model1' ? 'model1' : 'model2';
+    csSwitchButtons.forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-cs-target') === state.carouselStyle);
+    });
+    Object.keys(csWraps).forEach(function (key) {
+      csWraps[key].style.display = key === state.carouselStyle ? 'block' : 'none';
+    });
+    scriptStyleButtons.forEach(function (b) {
+      b.classList.toggle('active', b.getAttribute('data-cs-target') === state.carouselStyle);
+    });
+    // Logo só é usado no Padrão Tecnológico — no Estilo Tweet/X (modelo
+    // principal) esse card fica escondido, sem sentido pra quem só usa o
+    // Tweet/X nunca precisar ver isso.
+    if (csLogoSection) csLogoSection.style.display = state.carouselStyle === 'model1' ? 'block' : 'none';
+  }
+
+  csSwitchButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      setCarouselStyle(btn.getAttribute('data-cs-target'));
+    });
+  });
+
+  // ---- Estilo Tweet/X — editor de páginas + preview ao vivo ----
+  function escapeHtml(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+
+  function tweetSlideImageSrc(slide) {
+    return slide.imageDataUrl || slide.imageUrl || '';
+  }
+
+  // ---------------------------------------------------------------------
+  // Convenção de autoria pro texto de cada página (documentada na aba
+  // Texto / Script):
+  //  - **palavra** vira negrito dentro do corpo (ou do título).
+  //  - Se o texto tiver uma linha em branco separando um primeiro trecho
+  //    curto (até 80 caracteres, sem quebra de linha) do resto, esse
+  //    primeiro trecho vira Título — maior e mais forte que o corpo. Sem
+  //    linha em branco, o texto inteiro é tratado como corpo (comportamento
+  //    de antes, sem quebrar nada que já existia). Pensado principalmente
+  //    pra capa e CTA, que pedem um título com peso tipográfico maior.
+  // ---------------------------------------------------------------------
+  function parseSlideMarkup(rawText) {
+    const text = (rawText || '').replace(/\r\n/g, '\n');
+    const paragraphs = text.split(/\n\s*\n/);
+    if (paragraphs.length > 1) {
+      const first = paragraphs[0].trim();
+      if (first && first.length <= 80 && first.indexOf('\n') === -1) {
+        return { title: first, body: paragraphs.slice(1).join('\n\n').trim() };
+      }
+    }
+    return { title: null, body: text };
+  }
+
+  // Aplica **negrito** num texto que JÁ passou por escapeHtml (por isso é
+  // seguro usar regex direto — não sobra HTML cru vindo do usuário pra
+  // injetar nada; só os `**` literais, que escapeHtml não mexe).
+  function applyInlineBold(escapedText) {
+    return escapedText.replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+  }
+
+  // Regra de "texto se adapta ao espaço amarelo": sem medir o DOM (o card é
+  // renderizado escalado várias vezes na esteira), estimamos o tamanho da
+  // fonte pelo comprimento do texto. A imagem agora tem altura fixa (metade
+  // da proporção 4:5 do card — "zona vermelha"), então o texto sempre tem a
+  // mesma área grande sobrando acima dela ("zona amarela") pra crescer;
+  // sem imagem, o texto usa o cartão inteiro e aceita ainda mais caracteres
+  // antes de encolher.
+  function tweetBodyFontSize(text, hasImage) {
+    const len = (text || '').length;
+    const steps = hasImage
+      ? [[100, 46], [180, 40], [280, 34], [420, 28], [Infinity, 24]]
+      : [[300, 46], [500, 40], [750, 34], [1100, 28], [Infinity, 24]];
+    for (let i = 0; i < steps.length; i++) {
+      if (len <= steps[i][0]) return steps[i][1];
+    }
+    return 24;
+  }
+
+  function renderTweetSlideCardHtml(slide, index, total) {
+    const imgSrc = tweetSlideImageSrc(slide);
+    const zoom = slide.imageZoom || 1;
+    const pos = slide.imagePos || { x: 0, y: 0 };
+    const imageHtml = imgSrc ? '<img data-tweet-slide-id="' + slide.id + '" src="' + imgSrc + '" alt="Imagem da página ' + (index + 1) + '" style="transform:scale(' + zoom + ') translate(' + pos.x + '%, ' + pos.y + '%);">' : '';
+    const dotsHtml = Array.from({ length: total }).map(function (_, i) {
+      return '<div class="tw-dot' + (i === index ? ' active' : '') + '"></div>';
+    }).join('');
+    const parsed = parseSlideMarkup(slide.text);
+    const hasTitle = !!parsed.title;
+    const bodyRaw = parsed.body || (hasTitle ? '' : 'Escreva o texto desta página ao lado...');
+    const bodyHtml = applyInlineBold(escapeHtml(bodyRaw)).replace(/\n/g, '<br>');
+    const fontSize = tweetBodyFontSize(parsed.body, !!imgSrc);
+    // Título fica proporcionalmente maior que o corpo (mesma escala do
+    // corpo, então também cresce quando há mais espaço disponível).
+    const titleFontSize = Math.round(fontSize * 1.4);
+    const titleHtml = hasTitle
+      ? '<div class="tw-title" style="font-size:' + titleFontSize + 'px;">' + applyInlineBold(escapeHtml(parsed.title)) + '</div>'
+      : '';
+    // O crédito da fonte (slide.credit) não é mais escrito em cima do
+    // cartão — atrapalhava a leitura nos cantos. O campo continua existindo
+    // no editor de cada página, só pra uso na legenda do post depois.
+    const hasMore = index < total - 1;
+    const continueHtml = hasMore ? '<div class="tw-continue">&bull;&bull;&bull;</div>' : '';
+    return (
+      '<div class="tw-card">' +
+        '<div class="tw-header">' +
+          '<img class="tw-avatar" src="' + TWEET_PROFILE.avatar + '" alt="CTZ Studio">' +
+          '<div class="tw-namecol">' +
+            '<div class="tw-name-row">' + escapeHtml(TWEET_PROFILE.name) + ' ' + TWEET_CHECK_SVG + '</div>' +
+            '<div class="tw-handle">' + escapeHtml(TWEET_PROFILE.handle) + '</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="tw-body-wrap' + (imgSrc ? '' : ' no-image') + '">' +
+          '<div class="tw-text-col">' +
+            titleHtml +
+            '<div class="tw-body" style="font-size:' + fontSize + 'px;">' + bodyHtml + '</div>' +
+            continueHtml +
+          '</div>' +
+        '</div>' +
+        (imgSrc ?
+          '<div class="tw-image-wrap">' +
+            imageHtml +
+            (total > 1 ? '<div class="tw-dots">' + dotsHtml + '</div>' : '') +
+          '</div>'
+          : '') +
+        (total > 1 && imgSrc ? '<div class="tw-arrow left">‹</div><div class="tw-arrow right">›</div>' : '') +
+      '</div>'
+    );
+  }
+
+  // ---------------------------------------------------------------------
+  // Padrão Tecnológico — skin visual com a identidade da CTZ Studio
+  // CTZ Studio (fundo vermelho/preto, acentos laranja/amarelo, logo, título +
+  // negrito). Usa o MESMO conteúdo de state.tweetCarousel.slides que o
+  // Estilo Tweet/X — é só uma forma diferente de desenhar a mesma página.
+  // ---------------------------------------------------------------------
+  function brandBodyFontSize(text, hasImage) {
+    const len = (text || '').length;
+    const steps = hasImage
+      ? [[100, 42], [180, 36], [280, 30], [420, 25], [Infinity, 21]]
+      : [[300, 42], [500, 36], [750, 30], [1100, 25], [Infinity, 21]];
+    for (let i = 0; i < steps.length; i++) {
+      if (len <= steps[i][0]) return steps[i][1];
+    }
+    return 21;
+  }
+
+  function renderBrandSlideCardHtml(slide, index, total) {
+    const imgSrc = tweetSlideImageSrc(slide);
+    const zoom = slide.imageZoom || 1;
+    const pos = slide.imagePos || { x: 0, y: 0 };
+    const imageHtml = imgSrc ? '<img data-brand-slide-id="' + slide.id + '" src="' + imgSrc + '" alt="Imagem da página ' + (index + 1) + '" style="transform:scale(' + zoom + ') translate(' + pos.x + '%, ' + pos.y + '%);">' : '';
+    const parsed = parseSlideMarkup(slide.text);
+    const hasTitle = !!parsed.title;
+    const bodyRaw = parsed.body || (hasTitle ? '' : 'Escreva o texto desta página ao lado...');
+    const bodyHtml = applyInlineBold(escapeHtml(bodyRaw)).replace(/\n/g, '<br>');
+    const fontSize = brandBodyFontSize(parsed.body, !!imgSrc);
+    const titleFontSize = Math.round(fontSize * 1.45);
+    const titleHtml = hasTitle
+      ? '<div class="b4-title" style="font-size:' + titleFontSize + 'px;">' + applyInlineBold(escapeHtml(parsed.title)) + '</div>'
+      : '';
+    // Segue a diretriz da marca: assinatura discreta (@perfil) no
+    // rodapé em vez de "Fonte: ..." escrito em cima da arte; a citação
+    // detalhada da fonte do dado continua guardada no campo de crédito de
+    // cada página (visível no editor), pra usar na legenda do post.
+    // Sem placeholder de "inserir fonte..." — se a página não tiver crédito
+    // preenchido, o rodapé mostra só a assinatura @caiocreatorize · @creatorizebrasil.
+    const creditText = escapeHtml((slide.credit || '').trim());
+    const hasMore = index < total - 1;
+    const continueHtml = hasMore ? '<div class="b4-continue">&bull;&bull;&bull;</div>' : '';
+    return (
+      '<div class="b4-card">' +
+        '<div class="b4-content">' +
+          '<div class="b4-topbar">' +
+            '<div class="b4-logo"><span class="b4-logo-mark">' + logoMarkHtml() + '</span><span>CTZ STUDIO</span></div>' +
+            '<div class="b4-page-index">' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</div>' +
+          '</div>' +
+          '<div class="b4-text-col' + (imgSrc ? '' : ' full') + '">' +
+            titleHtml +
+            '<div class="b4-body" style="font-size:' + fontSize + 'px;">' + bodyHtml + '</div>' +
+            continueHtml +
+          '</div>' +
+          (imgSrc ?
+            '<div class="b4-image-wrap">' + imageHtml + '</div>'
+            : '') +
+        '</div>' +
+        '<div class="b4-footer">' +
+          '<span class="b4-handle">@caiocreatorize · @creatorizebrasil</span>' +
+          (creditText ? '<span class="b4-credit">' + creditText + '</span>' : '') +
+        '</div>' +
+      '</div>'
+    );
+  }
+
+  const csTweetRail = document.getElementById('csTweetRail');
+  const csBrandRail = document.getElementById('csBrandRail');
+  const csTweetEditor = document.getElementById('csTweetEditor');
+
+  // Rótulo + botão de exportar PNG abaixo de cada página da esteira — mesmo
+  // markup nos dois modelos, só muda data-export-style.
+  function frameActionsHtml(i, style) {
+    return (
+      '<div class="tw-frame-actions">' +
+        '<span class="tw-frame-label">Página ' + (i + 1) + '</span>' +
+        '<button type="button" class="btn btn-sm" data-export-slide="' + i + '" data-export-style="' + style + '">' +
+          (typeof navigator !== 'undefined' && navigator.share ? 'Compartilhar' : 'PNG') +
+        '</button>' +
+      '</div>'
+    );
+  }
+
+  function renderTweetRail() {
+    const slides = state.tweetCarousel.slides;
+    csTweetRail.innerHTML = slides.map(function (slide, i) {
+      return '<div class="tw-frame-item"><div class="tw-frame">' + renderTweetSlideCardHtml(slide, i, slides.length) + '</div>' + frameActionsHtml(i, 'model2') + '</div>';
+    }).join('');
+    if (csBrandRail) {
+      csBrandRail.innerHTML = slides.map(function (slide, i) {
+        return '<div class="tw-frame-item"><div class="tw-frame">' + renderBrandSlideCardHtml(slide, i, slides.length) + '</div>' + frameActionsHtml(i, 'model1') + '</div>';
+      }).join('');
+    }
+    attachTweetImageDrag();
+  }
+
+  // ---- Arrastar imagem de fundo de cada página do carrossel Estilo Tweet/X ----
+  // Reaproveitável pros dois skins (Tweet/X e Padrão Tecnológico) — ambos
+  // arrastam a mesma imagem/posição salva em slide.imagePos, só o
+  // atributo/seletor de cada card muda.
+  function wireImageDrag(railEl, dataAttr) {
+    if (!railEl) return;
+    const CLAMP = 45;
+    railEl.querySelectorAll('img[' + dataAttr + ']').forEach(function (imgEl) {
+      let dragging = false, startX = 0, startY = 0, baseX = 0, baseY = 0, frameRect = null;
+      imgEl.addEventListener('pointerdown', function (e) {
+        const id = imgEl.getAttribute(dataAttr);
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === id; });
+        if (!slide) return;
+        dragging = true;
+        startX = e.clientX; startY = e.clientY;
+        const pos = slide.imagePos || { x: 0, y: 0 };
+        baseX = pos.x; baseY = pos.y;
+        frameRect = imgEl.parentElement.getBoundingClientRect();
+        try { imgEl.setPointerCapture(e.pointerId); } catch (err) {}
+        imgEl.style.cursor = 'grabbing';
+        e.preventDefault();
+      });
+      imgEl.addEventListener('pointermove', function (e) {
+        if (!dragging) return;
+        const id = imgEl.getAttribute(dataAttr);
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === id; });
+        if (!slide) return;
+        const zoom = slide.imageZoom || 1;
+        const dxPct = ((e.clientX - startX) / (frameRect.width * zoom)) * 100;
+        const dyPct = ((e.clientY - startY) / (frameRect.height * zoom)) * 100;
+        const nx = Math.max(-CLAMP, Math.min(CLAMP, baseX + dxPct));
+        const ny = Math.max(-CLAMP, Math.min(CLAMP, baseY + dyPct));
+        slide.imagePos = { x: nx, y: ny };
+        imgEl.style.transform = 'scale(' + zoom + ') translate(' + nx + '%, ' + ny + '%)';
+      });
+      function endDrag() {
+        if (!dragging) return;
+        dragging = false;
+        imgEl.style.cursor = 'grab';
+      }
+      imgEl.addEventListener('pointerup', endDrag);
+      imgEl.addEventListener('pointercancel', endDrag);
+    });
+  }
+
+  function attachTweetImageDrag() {
+    wireImageDrag(csTweetRail, 'data-tweet-slide-id');
+    wireImageDrag(csBrandRail, 'data-brand-slide-id');
+  }
+
+  // ---------------------------------------------------------------------
+  // Baixar / compartilhar página como PNG — renderiza o card em tamanho
+  // real (1080x1350, sem a escala usada só pra caber na esteira) fora da
+  // tela, espera as imagens carregarem e usa o html2canvas pra virar PNG.
+  // Em celular com suporte a Web Share (arquivo), abre direto o menu de
+  // compartilhar do sistema; nos outros casos baixa o arquivo.
+  // ---------------------------------------------------------------------
+  function buildFullSizeCardEl(style, index) {
+    const slide = state.tweetCarousel.slides[index];
+    const total = state.tweetCarousel.slides.length;
+    if (!slide) return null;
+    const html = style === 'model1'
+      ? renderBrandSlideCardHtml(slide, index, total)
+      : renderTweetSlideCardHtml(slide, index, total);
+    const holder = document.createElement('div');
+    holder.style.cssText = 'position:fixed;left:-99999px;top:0;pointer-events:none;';
+    holder.innerHTML = html;
+    document.body.appendChild(holder);
+    const cardEl = holder.firstElementChild;
+    if (cardEl) cardEl.style.transform = 'none'; // sem a escala de preview — captura em 1080x1350 real
+    return { holder: holder, cardEl: cardEl };
+  }
+
+  function waitImagesLoaded(el) {
+    const imgs = Array.from(el.querySelectorAll('img'));
+    return Promise.all(imgs.map(function (img) {
+      if (img.complete && img.naturalWidth > 0) return Promise.resolve();
+      return new Promise(function (resolve) {
+        img.addEventListener('load', resolve, { once: true });
+        img.addEventListener('error', resolve, { once: true });
+        setTimeout(resolve, 4000); // trava de segurança se a imagem nunca carregar
+      });
+    }));
+  }
+
+  async function renderSlideToPngBlob(style, index) {
+    if (typeof html2canvas === 'undefined') {
+      throw new Error('Biblioteca de exportação (html2canvas) não carregou — verifique a conexão e tente de novo.');
+    }
+    const built = buildFullSizeCardEl(style, index);
+    if (!built || !built.cardEl) throw new Error('Página não encontrada.');
+    try {
+      await waitImagesLoaded(built.cardEl);
+      const canvas = await html2canvas(built.cardEl, { backgroundColor: null, useCORS: true, scale: 1, width: 1080, height: 1350 });
+      return await new Promise(function (resolve) { canvas.toBlob(resolve, 'image/png'); });
+    } finally {
+      built.holder.remove();
+    }
+  }
+
+  async function exportSlidePng(style, index) {
+    const btn = document.querySelector('[data-export-slide="' + index + '"][data-export-style="' + style + '"]');
+    const originalLabel = btn ? btn.textContent : '';
+    if (btn) { btn.disabled = true; btn.textContent = '...'; }
+    try {
+      const blob = await renderSlideToPngBlob(style, index);
+      const filename = 'ctz-studio-carrossel-pagina-' + (index + 1) + '.png';
+      const file = new File([blob], filename, { type: 'image/png' });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        try {
+          await navigator.share({ files: [file], title: 'Carrossel CTZ Studio' });
+          return;
+        } catch (err) {
+          if (err && err.name === 'AbortError') return; // usuário cancelou o compartilhamento
+          // qualquer outro erro de share cai pro download normal abaixo
+        }
+      }
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+      showMbToast('Página ' + (index + 1) + ' baixada em PNG.');
+    } catch (err) {
+      alert('Não deu pra gerar o PNG desta página: ' + (err && err.message ? err.message : err));
+    } finally {
+      if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+    }
+  }
+
+  async function exportAllPng(style) {
+    const total = state.tweetCarousel.slides.length;
+    if (!total) return;
+    const btn = document.querySelector('[data-export-all="' + style + '"]');
+    const originalLabel = btn ? btn.textContent : '';
+    for (let i = 0; i < total; i++) {
+      if (btn) { btn.disabled = true; btn.textContent = 'Baixando ' + (i + 1) + '/' + total + '...'; }
+      try {
+        const blob = await renderSlideToPngBlob(style, i);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url; a.download = 'ctz-studio-carrossel-pagina-' + (i + 1) + '.png';
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function (u) { URL.revokeObjectURL(u); }, 4000, url);
+      } catch (err) {
+        alert('Parou na página ' + (i + 1) + ': ' + (err && err.message ? err.message : err));
+        break;
+      }
+      await new Promise(function (r) { setTimeout(r, 350); }); // espaça os downloads pro navegador não bloquear
+    }
+    if (btn) { btn.disabled = false; btn.textContent = originalLabel; }
+    showMbToast('Download das páginas concluído.');
+  }
+
+  document.addEventListener('click', function (e) {
+    const slideBtn = e.target.closest('[data-export-slide]');
+    if (slideBtn) {
+      exportSlidePng(slideBtn.getAttribute('data-export-style'), parseInt(slideBtn.getAttribute('data-export-slide'), 10));
+      return;
+    }
+    const allBtn = e.target.closest('[data-export-all]');
+    if (allBtn) {
+      exportAllPng(allBtn.getAttribute('data-export-all'));
+    }
+  });
+
+  function renderTweetEditor() {
+    const slides = state.tweetCarousel.slides;
+    csTweetEditor.innerHTML = '';
+    slides.forEach(function (slide, i) {
+      const hasImg = !!tweetSlideImageSrc(slide);
+      const zoomPct = Math.round((slide.imageZoom || 1) * 100);
+      const row = document.createElement('div');
+      row.className = 'cs-tweet-slide-edit';
+      row.innerHTML =
+        '<div class="cs-tweet-row"><b>Página ' + (i + 1) + '</b>' +
+        (slides.length > 1 ? '<button type="button" class="btn btn-sm btn-tweet-remove" data-id="' + slide.id + '">Remover</button>' : '') +
+        '</div>' +
+        '<textarea data-id="' + slide.id + '" placeholder="Texto desta página... (opcional: título curto, linha em branco, resto do texto — e **palavra** pra negrito)">' + escapeHtml(slide.text || '') + '</textarea>' +
+        '<div class="cs-tweet-row">' +
+          '<img class="cs-tweet-thumb" src="' + tweetSlideImageSrc(slide) + '" alt="">' +
+          '<input type="file" accept="image/*" class="tweet-image-input" data-id="' + slide.id + '">' +
+          (hasImg ? '<button type="button" class="btn btn-sm btn-tweet-remove-img" data-id="' + slide.id + '" title="Remover imagem desta página">Remover imagem</button>' : '') +
+        '</div>' +
+        '<div class="cs-tweet-row" style="' + (hasImg ? '' : 'display:none;') + '" data-zoom-row="' + slide.id + '">' +
+          '<label style="font-size:11.5px;color:var(--text-dim);flex:0 0 auto;">Zoom da imagem</label>' +
+          '<input type="range" class="tweet-zoom-input" data-id="' + slide.id + '" min="100" max="250" step="5" value="' + zoomPct + '" style="flex:1;">' +
+          '<span class="tweet-zoom-label" style="font-size:11.5px;color:var(--text-dim);flex:0 0 auto;">' + zoomPct + '%</span>' +
+          '<button type="button" class="btn btn-sm tweet-reset-pos" data-id="' + slide.id + '" title="Centralizar a posição da imagem arrastada">Centralizar</button>' +
+        '</div>' +
+        '<label style="font-size:10.5px;color:var(--text-dim);display:block;margin:6px 0 3px;">Crédito (de onde veio essa informação)</label>' +
+        '<input type="text" class="tweet-credit-input" data-id="' + slide.id + '" placeholder="Ex: Fonte: IBGE, 2024 / Foto: Nome do fotógrafo" value="' + escapeHtml(slide.credit || '') + '" style="width:100%;background:var(--panel-2);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:inherit;font-size:11.5px;padding:7px 8px;">';
+      csTweetEditor.appendChild(row);
+    });
+
+    csTweetEditor.querySelectorAll('textarea').forEach(function (ta) {
+      ta.addEventListener('input', function () {
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === ta.getAttribute('data-id'); });
+        if (slide) { slide.text = ta.value; renderTweetRail(); }
+      });
+    });
+    csTweetEditor.querySelectorAll('.tweet-credit-input').forEach(function (inp) {
+      inp.addEventListener('input', function () {
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === inp.getAttribute('data-id'); });
+        if (slide) { slide.credit = inp.value; renderTweetRail(); }
+      });
+    });
+    csTweetEditor.querySelectorAll('.tweet-zoom-input').forEach(function (range) {
+      range.addEventListener('input', function () {
+        const id = range.getAttribute('data-id');
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === id; });
+        if (!slide) return;
+        slide.imageZoom = Number(range.value) / 100;
+        const row = range.closest('.cs-tweet-row');
+        const lbl = row ? row.querySelector('.tweet-zoom-label') : null;
+        if (lbl) lbl.textContent = range.value + '%';
+        renderTweetRail();
+      });
+    });
+    csTweetEditor.querySelectorAll('.tweet-reset-pos').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id = btn.getAttribute('data-id');
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === id; });
+        if (!slide) return;
+        slide.imagePos = { x: 0, y: 0 };
+        renderTweetRail();
+      });
+    });
+    csTweetEditor.querySelectorAll('.tweet-image-input').forEach(function (input) {
+      input.addEventListener('change', function () {
+        const file = input.files[0];
+        if (!file) return;
+        const id = input.getAttribute('data-id');
+        const reader = new FileReader();
+        reader.onload = function () {
+          const slide = state.tweetCarousel.slides.find(function (s) { return s.id === id; });
+          if (slide) {
+            slide.imageDataUrl = reader.result;
+            if (!slide.imageZoom) slide.imageZoom = 1;
+            renderTweetEditor(); renderTweetRail();
+          }
+        };
+        reader.readAsDataURL(file);
+      });
+    });
+    csTweetEditor.querySelectorAll('.btn-tweet-remove').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id = btn.getAttribute('data-id');
+        state.tweetCarousel.slides = state.tweetCarousel.slides.filter(function (s) { return s.id !== id; });
+        renderTweetEditor(); renderTweetRail();
+      });
+    });
+    csTweetEditor.querySelectorAll('.btn-tweet-remove-img').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id = btn.getAttribute('data-id');
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === id; });
+        if (slide) {
+          slide.imageUrl = null;
+          slide.imageDataUrl = null;
+          renderTweetEditor(); renderTweetRail();
+        }
+      });
+    });
+  }
+
+  document.getElementById('btnAddTweetSlide').addEventListener('click', function () {
+    const nextImg = TWEET_DEFAULT_IMAGES[state.tweetCarousel.slides.length % TWEET_DEFAULT_IMAGES.length];
+    state.tweetCarousel.slides.push({ id: nextTweetId(), text: '', imageUrl: nextImg, imageDataUrl: null, imageZoom: 1, imagePos: { x: 0, y: 0 }, credit: '' });
+    renderTweetEditor(); renderTweetRail();
+  });
+
+  // ---------------------------------------------------------------------
+  // Carousel Studio — geração automática de páginas (Estilo Tweet/X):
+  // o usuário cola um texto único, escolhe quantas páginas quer, e a gente
+  // quebra o texto em frases/parágrafos e distribui em N páginas com
+  // tamanho parecido, sem cortar frase no meio.
+  // ---------------------------------------------------------------------
+  function autogenSplitSentences(text) {
+    const normalized = (text || '').replace(/\r\n/g, '\n').trim();
+    if (!normalized) return [];
+    // Quebra em parágrafos (linha em branco) primeiro, pra não misturar
+    // ideias de parágrafos diferentes numa mesma frase.
+    const paragraphs = normalized.split(/\n\s*\n/).map(function (p) { return p.trim(); }).filter(Boolean);
+    const sentences = [];
+    paragraphs.forEach(function (p) {
+      const parts = p.split(/(?<=[.!?…])(?=\s|\n|$)/g).map(function (s) { return s.trim(); }).filter(Boolean);
+      if (parts.length) {
+        sentences.push.apply(sentences, parts);
+      } else {
+        sentences.push(p);
+      }
+    });
+    return sentences.length ? sentences : [normalized];
+  }
+
+  function autogenDistributeIntoPages(sentences, pageCount) {
+    const total = sentences.length;
+    const n = Math.max(1, Math.min(pageCount, total));
+    if (n <= 1) return [sentences.join(' ')];
+    const lens = sentences.map(function (s) { return s.length; });
+    const totalLen = lens.reduce(function (a, b) { return a + b; }, 0);
+    const target = totalLen / n;
+    const pages = [];
+    let start = 0;
+    for (let groupIdx = 0; groupIdx < n; groupIdx++) {
+      const isLastGroup = groupIdx === n - 1;
+      if (isLastGroup) {
+        pages.push(sentences.slice(start).join(' '));
+        break;
+      }
+      // Nunca pode consumir tanto que sobrem menos frases do que grupos
+      // restantes (cada grupo precisa de pelo menos 1 frase).
+      const remainingGroupsAfter = n - groupIdx - 1;
+      const maxEnd = total - remainingGroupsAfter;
+      let cum = 0, i = start;
+      while (i < maxEnd) { cum += lens[i]; i++; if (cum >= target) break; }
+      const end = Math.max(start + 1, Math.min(i, maxEnd));
+      pages.push(sentences.slice(start, end).join(' '));
+      start = end;
+    }
+    return pages;
+  }
+
+  // ---------------------------------------------------------------------
+  // Briefing estruturado colado (ex: tabela com colunas "#", "Papel" e
+  // "Texto do slide", geralmente vindo de Notion/Sheets/Docs, com título
+  // do carrossel e paleta de cores nas linhas antes da tabela) — a gente
+  // reconhece esse formato, ignora tudo que não é o texto de cada slide
+  // (título, paleta, números de linha, coluna "Papel") e usa só a coluna
+  // de texto, já uma página por linha. Se não achar uma tabela assim, cai
+  // no modo genérico (quebra por frase/parágrafo + quantidade de páginas).
+  // ---------------------------------------------------------------------
+  function splitRowCells(line) {
+    if (line.indexOf('\t') !== -1) {
+      return line.split('\t').map(function (c) { return c.trim(); });
+    }
+    const trimmed = line.trim();
+    if (/^\|.*\|$/.test(trimmed)) {
+      const parts = trimmed.split('|').map(function (c) { return c.trim(); });
+      return parts.slice(1, parts.length - 1);
+    }
+    // Sem tabulação nem "|": tenta separar por 2+ espaços seguidos (colunas
+    // alinhadas manualmente). Linhas de texto corrido normal não têm isso.
+    return line.split(/\s{2,}/).map(function (c) { return c.trim(); });
+  }
+
+  // Extrai um "(Fonte: ...)" no final do texto do slide e move pro campo de
+  // crédito da página (que já existe no editor), em vez de deixar essa
+  // informação repetida dentro do texto visível do slide.
+  function extractTrailingFonte(text) {
+    const m = text.match(/\s*\(\s*Fonte:\s*([^)]+)\)\s*$/i);
+    if (!m) return { text: text, credit: null };
+    return { text: text.slice(0, m.index).trim(), credit: 'Fonte: ' + m[1].trim() };
+  }
+
+  // Reconhece um briefing "detalhado" por slide — o formato de produção
+  // usado em roteiros mais completos, com um cabeçalho por página
+  // ("Slide 1 — Capa · Texto", "Slide 6 — Educação 1 · Foto (imóvel /
+  // carta de crédito)") seguido de campos rotulados (Título, Subtítulo/
+  // Subtexto, Texto, Negrito). Nada disso é pra aparecer pro público final
+  // no carrossel — só o conteúdo de fato (título/subtexto/texto), já com
+  // os termos listados em "Negrito:" convertidos pra **negrito**. O
+  // número do slide, a categoria/pilar (Capa, Contexto, Conflito...), o
+  // tipo de mídia (Foto/Texto) e qualquer anotação de referência de imagem
+  // entre parênteses são descartados automaticamente.
+  const SLIDE_BRIEF_HEADER_RE = /^slide\s+\d+\b/i;
+  const SLIDE_BRIEF_LABEL_RE = /^(t[íi]tulo(?:\s*\/\s*n[úu]mero)?|subt[íi]tulo|subtexto|texto)\b[^:]*:\s*(.*)$/i;
+  const SLIDE_BRIEF_NEGRITO_RE = /^negrito\s*:\s*(.*)$/i;
+
+  function escapeRegExp(str) {
+    return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  }
+
+  // Envolve, dentro de `str`, a primeira ocorrência literal de cada termo
+  // de `terms` com `**...**` — sem duplicar se o termo já estiver marcado.
+  function applyBoldTerms(str, terms) {
+    let out = str;
+    (terms || []).forEach(function (term) {
+      const t = (term || '').trim();
+      if (!t || out.indexOf('**' + t + '**') !== -1) return;
+      const re = new RegExp('(' + escapeRegExp(t) + ')', 'i');
+      if (re.test(out)) out = out.replace(re, '**$1**');
+    });
+    return out;
+  }
+
+  function parseSlideLabeledBrief(rawText) {
+    const lines = rawText.replace(/\r\n/g, '\n').split('\n');
+    const headerIdxs = [];
+    for (let i = 0; i < lines.length; i++) {
+      if (SLIDE_BRIEF_HEADER_RE.test(lines[i].trim())) headerIdxs.push(i);
+    }
+    if (headerIdxs.length === 0) return null; // não é esse formato — segue fluxo normal
+
+    const entries = [];
+    for (let b = 0; b < headerIdxs.length; b++) {
+      const start = headerIdxs[b] + 1;
+      const end = b + 1 < headerIdxs.length ? headerIdxs[b + 1] : lines.length;
+      const block = lines.slice(start, end);
+
+      let title = null, subtext = null, texto = null;
+      const boldTerms = [];
+      let i = 0;
+      while (i < block.length) {
+        const raw = block[i];
+        const trimmed = raw.trim();
+        if (!trimmed) { i++; continue; }
+
+        const negritoMatch = trimmed.match(SLIDE_BRIEF_NEGRITO_RE);
+        if (negritoMatch) {
+          const re = /"([^"]+)"/g;
+          let m;
+          while ((m = re.exec(negritoMatch[1]))) boldTerms.push(m[1]);
+          i++; continue;
+        }
+
+        const labelMatch = trimmed.match(SLIDE_BRIEF_LABEL_RE);
+        if (labelMatch) {
+          const label = labelMatch[1].toLowerCase().replace(/\s+/g, '');
+          let value = labelMatch[2].trim();
+          i++;
+          if (!value) {
+            const valueLines = [];
+            while (i < block.length) {
+              const t = block[i].trim();
+              if (!t || SLIDE_BRIEF_NEGRITO_RE.test(t) || SLIDE_BRIEF_LABEL_RE.test(t)) break;
+              valueLines.push(t);
+              i++;
+            }
+            value = valueLines.join(' ').trim();
+          }
+          if (label.indexOf('título') === 0 || label.indexOf('titulo') === 0) title = value;
+          else if (label.indexOf('subt') === 0) subtext = value;
+          else if (label === 'texto') texto = value;
+          continue;
+        }
+
+        i++; // linha não reconhecida dentro do bloco — ignora (anotação solta)
+      }
+
+      let bodyText = (subtext || texto || '').trim();
+      let titleText = title ? title.trim() : null;
+      if (!titleText && !bodyText) continue;
+
+      if (titleText) titleText = applyBoldTerms(titleText, boldTerms);
+      if (bodyText) bodyText = applyBoldTerms(bodyText, boldTerms);
+
+      const text = titleText && bodyText ? (titleText + '\n\n' + bodyText) : (titleText || bodyText);
+      entries.push({ text: text, credit: null });
+    }
+    return entries.length ? entries : null;
+  }
+
+  function parseSlideTableBrief(rawText) {
+    const lines = rawText.replace(/\r\n/g, '\n').split('\n');
+    let headerIdx = -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (!lines[i].trim()) continue;
+      const cells = splitRowCells(lines[i]).filter(function (c) { return c !== ''; });
+      if (cells.length >= 2 && cells.some(function (c) { return /^texto(\s+do\s+slide)?$/i.test(c); })) {
+        headerIdx = i;
+        break;
+      }
+    }
+    if (headerIdx === -1) return null; // não é um briefing em formato de tabela — segue fluxo normal
+
+    const entries = [];
+    for (let i = headerIdx + 1; i < lines.length; i++) {
+      const line = lines[i];
+      if (!line.trim()) continue;
+      if (/^[\s|:\-]+$/.test(line)) continue; // linha separadora de tabela markdown (---|---|---)
+      const cells = splitRowCells(line);
+      if (cells.length < 2) continue;
+      const rawCellText = (cells[cells.length - 1] || '').trim();
+      if (!rawCellText) continue;
+      entries.push(extractTrailingFonte(rawCellText));
+    }
+    return entries.length ? entries : null;
+  }
+
+  // Regras editoriais aplicadas a todo texto produzido pelo gerador. A
+  // limpeza é deliberadamente conservadora: remove apenas rótulos e notas
+  // claramente operacionais, sem reescrever fatos, nomes, números ou datas.
+  const AUTOGEN_NOISE_LINE_RE = /^(?:observa(?:ção|cao)|instru(?:ção|cao)|dire(?:ção|cao)\s+visual|refer[eê]ncia(?:\s+de\s+imagem)?|imagem|foto|formato|paleta(?:\s+de\s+cores)?|objetivo|categoria|papel)\s*:/i;
+  const AUTOGEN_HIGHLIGHT_TERMS = [
+    'resultado', 'resultados', 'estratégia', 'estrategia', 'oportunidade',
+    'crescimento', 'transformação', 'transformacao', 'economia', 'dinheiro',
+    'investimento', 'investimentos', 'planejamento', 'tecnologia', 'inovação',
+    'inovacao', 'importante', 'essencial', 'atenção', 'atencao', 'agora',
+    'nunca', 'sempre', 'passo a passo', 'segredo', 'erro', 'erros'
+  ];
+  const AUTOGEN_EMOJI_RULES = [
+    { re: /dinheiro|economia|invest|finance|renda|lucro/i, emoji: '💰' },
+    { re: /crescimento|resultado|meta|conquista|avan[cç]/i, emoji: '📈' },
+    { re: /ideia|dica|aprenda|descubra|sabia|insight/i, emoji: '💡' },
+    { re: /aten[cç][aã]o|cuidado|erro|risco|nunca/i, emoji: '⚠️' },
+    { re: /tempo|prazo|agora|hoje|r[aá]pid/i, emoji: '⏱️' },
+    { re: /tecnologia|digital|inova[cç]|intelig[eê]ncia/i, emoji: '🚀' },
+    { re: /casa|im[oó]vel|patrim[oô]nio/i, emoji: '🏠' },
+    { re: /equipe|pessoas|comunidade|juntos/i, emoji: '🤝' }
+  ];
+
+  function cleanGeneratedText(text) {
+    let cleaned = (text || '').replace(/\r\n/g, '\n');
+    cleaned = cleaned.split('\n').filter(function (line) {
+      const value = line.trim();
+      if (!value) return true;
+      if (AUTOGEN_NOISE_LINE_RE.test(value)) return false;
+      if (/^(?:slide|p[aá]gina)\s+\d+\s*(?:[-—:|].*)?$/i.test(value)) return false;
+      return true;
+    }).join('\n');
+    return cleaned
+      .replace(/[ \t]+/g, ' ')
+      .replace(/\s+([,.;!?])/g, '$1')
+      .replace(/([,.;!?])(?=[^\s\n])/g, '$1 ')
+      .replace(/\n[ \t]+/g, '\n')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim();
+  }
+
+  function addAutomaticHighlights(text) {
+    let out = text;
+    let added = 0;
+    AUTOGEN_HIGHLIGHT_TERMS.some(function (term) {
+      if (added >= 2) return true;
+      const re = new RegExp('(^|[^*\\p{L}])(' + escapeRegExp(term) + ')(?=$|[^*\\p{L}])', 'iu');
+      if (re.test(out)) {
+        out = out.replace(re, '$1**$2**');
+        added++;
+      }
+      return false;
+    });
+    // Números expressivos também merecem destaque, mas nunca excedemos dois
+    // destaques automáticos por página para não poluir a leitura.
+    if (added < 2 && !/\*\*\d/.test(out)) {
+      out = out.replace(/(^|\s)(\d+(?:[.,]\d+)?\s*(?:%|milh(?:ão|ões)|mil|anos?|dias?|x)\b)/i, function (_, prefix, value) {
+        added++;
+        return prefix + '**' + value + '**';
+      });
+    }
+    return out;
+  }
+
+  function addAutomaticEmoji(text, index, total) {
+    if (!text || /[\p{Extended_Pictographic}]/u.test(text)) return text;
+    let emoji = '';
+    for (let i = 0; i < AUTOGEN_EMOJI_RULES.length; i++) {
+      if (AUTOGEN_EMOJI_RULES[i].re.test(text)) { emoji = AUTOGEN_EMOJI_RULES[i].emoji; break; }
+    }
+    if (!emoji) emoji = index === 0 ? '✨' : (index === total - 1 ? '👉' : '•');
+    // O ponto neutro não é inserido: emojis aparecem só quando agregam
+    // significado ou nas páginas de abertura/encerramento.
+    if (emoji === '•') return text;
+    return emoji + ' ' + text;
+  }
+
+  function applyGeneratorTextRules(text, index, total) {
+    const cleaned = cleanGeneratedText(text);
+    const highlighted = addAutomaticHighlights(cleaned);
+    return addAutomaticEmoji(highlighted, index, total);
+  }
+
+  // Gera as páginas do modelo Estilo Tweet/X a partir de um texto único +
+  // quantidade de páginas desejada. Usado tanto pelo card "Gerar carrossel
+  // automaticamente" (aba Carousel Studio) quanto pelo botão "Gerar
+  // carrossel" da aba Texto / Script — mesma lógica, duas entradas.
+  function runAutogenCarousel(rawText, requestedCountRaw) {
+    rawText = (rawText || '').trim();
+    if (!rawText) { alert('Cole ou escreva o texto do carrossel antes de gerar as páginas.'); return false; }
+
+    const tableEntries = parseSlideTableBrief(rawText);
+    const labeledEntries = !tableEntries ? parseSlideLabeledBrief(rawText) : null;
+
+    let pageEntries;
+    if (tableEntries) {
+      pageEntries = tableEntries;
+    } else if (labeledEntries) {
+      pageEntries = labeledEntries;
+    } else {
+      let requestedCount = parseInt(requestedCountRaw, 10);
+      if (!requestedCount || requestedCount < 1) requestedCount = 1;
+      if (requestedCount > 15) requestedCount = 15;
+      const sentences = autogenSplitSentences(rawText);
+      const pageTexts = autogenDistributeIntoPages(sentences, requestedCount);
+      pageEntries = pageTexts.map(function (text) { return { text: text, credit: null }; });
+    }
+
+    pageEntries = pageEntries.map(function (entry, index) {
+      return {
+        text: applyGeneratorTextRules(entry.text, index, pageEntries.length),
+        credit: entry.credit || null,
+      };
+    }).filter(function (entry) { return !!entry.text; });
+
+    const hasExistingContent = state.tweetCarousel.slides.some(function (s) { return (s.text || '').trim(); });
+    if (hasExistingContent) {
+      const ok = confirm('Isso vai substituir as ' + state.tweetCarousel.slides.length + ' página(s) atuais deste modelo pelas novas páginas geradas. Continuar?');
+      if (!ok) return false;
+    }
+
+    state.tweetCarousel.slides = pageEntries.map(function (entry, i) {
+      return {
+        id: nextTweetId(),
+        text: entry.text,
+        imageUrl: TWEET_DEFAULT_IMAGES[i % TWEET_DEFAULT_IMAGES.length],
+        imageDataUrl: null, imageZoom: 1, imagePos: { x: 0, y: 0 },
+        credit: entry.credit || '',
+      };
+    });
+
+    renderTweetEditor(); renderTweetRail();
+    if (tableEntries) {
+      showMbToast('Carrossel gerado com ' + pageEntries.length + ' página(s) a partir da tabela colada — título, paleta e textos extras foram ignorados automaticamente.');
+    } else if (labeledEntries) {
+      showMbToast('Carrossel gerado com ' + pageEntries.length + ' página(s) a partir do briefing detalhado — número do slide, categoria e anotações de produção foram removidos automaticamente, mantendo só o texto final pro público.');
+    } else {
+      const requestedCount = Math.max(1, Math.min(parseInt(requestedCountRaw, 10) || 1, 15));
+      if (pageEntries.length < requestedCount) {
+        showMbToast('Gerado com ' + pageEntries.length + ' página(s) — não havia texto suficiente pra ' + requestedCount + '.');
+      } else {
+        showMbToast('Carrossel gerado com ' + pageEntries.length + ' página(s). Ajuste o texto e o crédito de cada uma se precisar.');
+      }
+    }
+    return true;
+  }
+
+  document.getElementById('btnAutogenCarousel').addEventListener('click', function () {
+    const textEl = document.getElementById('csAutogenText');
+    const countEl = document.getElementById('csAutogenCount');
+    runAutogenCarousel(textEl.value, countEl.value);
+  });
+
+  renderTweetEditor();
+  renderTweetRail();
+
+  // ---------------------------------------------------------------------
+  // Banco de Mídia — biblioteca curada de fotos gratuitas (ver MEDIA_BANK
+  // no topo do arquivo). Busca/filtra localmente (sem servidor) e manda
+  // pro Videos Studio (nova parte animada com B-roll) ou pro Carousel
+  // Studio Estilo Tweet/X (nova página) com um clique, ou baixa o arquivo
+  // original direto pro computador.
+  // ---------------------------------------------------------------------
+  let mbToastTimer = null;
+  function showMbToast(msg) {
+    let toastEl = document.getElementById('mbToast');
+    if (!toastEl) {
+      toastEl = document.createElement('div');
+      toastEl.id = 'mbToast';
+      toastEl.className = 'mb-toast';
+      document.body.appendChild(toastEl);
+    }
+    toastEl.textContent = msg;
+    toastEl.classList.add('show');
+    if (mbToastTimer) clearTimeout(mbToastTimer);
+    mbToastTimer = setTimeout(function () { toastEl.classList.remove('show'); }, 2600);
+  }
+
+  function downloadRemoteFile(url, filename) {
+    fetch(url, { mode: 'cors' })
+      .then(function (res) {
+        if (!res.ok) throw new Error('status ' + res.status);
+        return res.blob();
+      })
+      .then(function (blob) {
+        const blobUrl = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = blobUrl; a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(function () { URL.revokeObjectURL(blobUrl); }, 10000);
+      })
+      .catch(function () {
+        // Se o navegador bloquear o fetch cross-origin, abre a imagem numa
+        // aba nova — dá pra salvar com clique direito > Salvar imagem como.
+        window.open(url, '_blank');
+        showMbToast('Abrindo em nova aba — clique com o botão direito e "Salvar imagem como".');
+      });
+  }
+
+  const mediaBankGrid = document.getElementById('mediaBankGrid');
+  const mediaBankChips = document.getElementById('mediaBankChips');
+  const mediaBankSearch = document.getElementById('mediaBankSearch');
+
+  function renderMediaBankChips() {
+    const cats = ['todas'].concat(Object.keys(MEDIA_BANK_CATEGORIES));
+    mediaBankChips.innerHTML = cats.map(function (cat) {
+      const label = cat === 'todas' ? 'Todas' : MEDIA_BANK_CATEGORIES[cat];
+      const active = state.mediaBankFilter.category === cat ? ' active' : '';
+      return '<button type="button" class="mb-chip' + active + '" data-cat="' + cat + '">' + label + '</button>';
+    }).join('');
+    mediaBankChips.querySelectorAll('.mb-chip').forEach(function (chip) {
+      chip.addEventListener('click', function () {
+        state.mediaBankFilter.category = chip.getAttribute('data-cat');
+        renderMediaBankChips();
+        renderMediaBankGrid();
+      });
+    });
+  }
+
+  function renderMediaBankGrid() {
+    const cat = state.mediaBankFilter.category;
+    const query = (state.mediaBankFilter.query || '').trim().toLowerCase();
+    const items = MEDIA_BANK.filter(function (item) {
+      if (cat !== 'todas' && item.category !== cat) return false;
+      if (!query) return true;
+      const haystack = (item.label + ' ' + MEDIA_BANK_CATEGORIES[item.category]).toLowerCase();
+      return haystack.indexOf(query) !== -1;
+    });
+    if (!items.length) {
+      mediaBankGrid.innerHTML = '<div class="mb-empty">Nada encontrado pra essa busca. Tente outra palavra-chave ou categoria.</div>';
+      return;
+    }
+    mediaBankGrid.innerHTML = items.map(function (item) {
+      return (
+        '<div class="mb-card">' +
+          '<div class="mb-thumb-wrap"><img src="' + item.url + '" alt="' + escapeHtmlAttr(item.label) + '" loading="lazy"></div>' +
+          '<div class="mb-body">' +
+            '<div class="mb-credit">' + escapeHtmlAttr(item.label) + '<br>' + escapeHtmlAttr(item.credit) + '</div>' +
+            '<div class="mb-actions">' +
+              '<button type="button" class="btn btn-sm" data-mb-action="download" data-mb-id="' + item.id + '">Baixar</button>' +
+              '<button type="button" class="btn btn-sm" data-mb-action="carousel" data-mb-id="' + item.id + '">Usar no Carousel (Tweet/X)</button>' +
+            '</div>' +
+          '</div>' +
+        '</div>'
+      );
+    }).join('');
+    mediaBankGrid.querySelectorAll('[data-mb-action]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id = btn.getAttribute('data-mb-id');
+        const item = MEDIA_BANK.find(function (m) { return m.id === id; });
+        if (!item) return;
+        const action = btn.getAttribute('data-mb-action');
+        if (action === 'download') {
+          downloadRemoteFile(item.url, item.id + '.jpg');
+        } else if (action === 'carousel') {
+          state.tweetCarousel.slides.push({
+            id: nextTweetId(), text: '', imageUrl: item.url, imageDataUrl: item.url,
+            imageZoom: 1, imagePos: { x: 0, y: 0 }, credit: 'Foto: ' + item.credit,
+          });
+          renderTweetEditor(); renderTweetRail();
+          document.getElementById('tabBtnCarousel').click();
+          setCarouselStyle(state.carouselStyle);
+          showMbToast('Adicionado como nova página no carrossel.');
+        }
+      });
+    });
+  }
+
+  function escapeHtmlAttr(str) {
+    return String(str == null ? '' : str)
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
+  mediaBankSearch.addEventListener('input', function () {
+    state.mediaBankFilter.query = mediaBankSearch.value;
+    renderMediaBankGrid();
+  });
+
+  renderMediaBankChips();
+  renderMediaBankGrid();
+
+  // ---------------------------------------------------------------------
+  // Materiais — upload de imagens próprias, guardadas no projeto
+  // ---------------------------------------------------------------------
+  let materialIdCounter = 1;
+  function nextMaterialId() { return 'mat-' + (materialIdCounter++); }
+
+  const fileMaterials = document.getElementById('fileMaterials');
+  const materialsGrid = document.getElementById('materialsGrid');
+
+  function renderMaterialsGrid() {
+    if (!materialsGrid) return;
+    if (!state.materials.length) {
+      materialsGrid.innerHTML = '<div class="note">Nenhuma imagem enviada ainda.</div>';
+      return;
+    }
+    materialsGrid.innerHTML = state.materials.map(function (m) {
+      return '' +
+        '<div class="mb-card" data-material-id="' + escapeHtmlAttr(m.id) + '">' +
+        '  <div class="mb-thumb-wrap"><img src="' + escapeHtmlAttr(m.dataUrl) + '" alt="' + escapeHtmlAttr(m.name) + '"></div>' +
+        '  <div class="mb-actions" style="display:flex;flex-direction:column;gap:6px;padding:8px;">' +
+        '    <div class="filename" style="font-size:11px;" title="' + escapeHtmlAttr(m.name) + '">' + escapeHtmlAttr(m.name) + '</div>' +
+        '    <button type="button" class="btn btn-sm btn-use-material" data-material-id="' + escapeHtmlAttr(m.id) + '">Usar como página (Tweet/X)</button>' +
+        '    <button type="button" class="btn btn-sm btn-danger btn-remove-material" data-material-id="' + escapeHtmlAttr(m.id) + '">Remover</button>' +
+        '  </div>' +
+        '</div>';
+    }).join('');
+
+    materialsGrid.querySelectorAll('.btn-use-material').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id = btn.getAttribute('data-material-id');
+        const material = state.materials.find(function (m) { return m.id === id; });
+        if (!material) return;
+        state.tweetCarousel.slides.push({
+          id: nextTweetId(), text: '', imageUrl: material.dataUrl, imageDataUrl: material.dataUrl,
+          imageZoom: 1, imagePos: { x: 0, y: 0 }, credit: 'Material próprio: ' + material.name,
+        });
+        renderTweetEditor(); renderTweetRail();
+        document.getElementById('tabBtnCarousel').click();
+        setCarouselStyle(state.carouselStyle);
+      });
+    });
+
+    materialsGrid.querySelectorAll('.btn-remove-material').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id = btn.getAttribute('data-material-id');
+        state.materials = state.materials.filter(function (m) { return m.id !== id; });
+        renderMaterialsGrid();
+      });
+    });
+  }
+
+  if (fileMaterials) {
+    fileMaterials.addEventListener('change', function () {
+      const files = Array.from(fileMaterials.files || []);
+      if (!files.length) return;
+      let pending = files.length;
+      files.forEach(function (file) {
+        const reader = new FileReader();
+        reader.onload = function () {
+          state.materials.push({ id: nextMaterialId(), name: file.name, dataUrl: reader.result });
+          pending -= 1;
+          if (pending === 0) renderMaterialsGrid();
+        };
+        reader.readAsDataURL(file);
+      });
+      fileMaterials.value = '';
+    });
+  }
+
+  renderMaterialsGrid();
+
+  // ---------------------------------------------------------------------
+  // Texto / Script — roteiro em texto livre, guardado no projeto
+  // ---------------------------------------------------------------------
+  const scriptTextArea = document.getElementById('scriptTextArea');
+  const scriptTextCount = document.getElementById('scriptTextCount');
+  const scriptAutogenCount = document.getElementById('scriptAutogenCount');
+  const btnGenerateFromScript = document.getElementById('btnGenerateFromScript');
+  const scriptComplianceResult = document.getElementById('scriptComplianceResult');
+
+  // Pergunta "Gerar no modelo" — mesma escolha do switcher da aba Carousel
+  // Studio (setCarouselStyle mantém as duas UIs sincronizadas).
+  const scriptStyleButtons = [document.getElementById('scriptBtnModel2'), document.getElementById('scriptBtnModel1')];
+  scriptStyleButtons.forEach(function (btn) {
+    if (!btn) return;
+    btn.addEventListener('click', function () {
+      setCarouselStyle(btn.getAttribute('data-cs-target'));
+    });
+  });
+
+  function updateScriptTextCount() {
+    if (!scriptTextCount) return;
+    const len = state.scriptText.length;
+    scriptTextCount.textContent = len + ' caractere' + (len === 1 ? '' : 's');
+  }
+
+  // ---------------------------------------------------------------------
+  // Correção de texto — vocabulário de marca. Termos que só podem aparecer
+  // falando do consórcio/imóvel pro cliente final, nunca falando da
+  // mecânica de comissionamento interna / participação no ecossistema /
+  // remuneração de quem indica ou vende (regra editorial da CTZ Studio).
+  // Não bloqueia gerar — só avisa, porque a validade depende do contexto.
+  // ---------------------------------------------------------------------
+  const BRAND_SENSITIVE_TERMS = [
+    'investimento', 'investimentos', 'investir',
+    'rendimento garantido', 'rendimento',
+    'renda passiva',
+    'juros',
+    'lucro fixo',
+    'aplicação financeira',
+    'retorno garantido',
+  ];
+  function checkBrandVocabulary(text) {
+    const normalized = (text || '');
+    const found = [];
+    BRAND_SENSITIVE_TERMS.forEach(function (term) {
+      const re = new RegExp('(^|[^\\p{L}\\p{N}])' + term.replace(/ /g, '\\s+') + '([^\\p{L}\\p{N}]|$)', 'iu');
+      if (re.test(normalized) && found.indexOf(term) === -1) found.push(term);
+    });
+    return found;
+  }
+  function renderScriptCompliance() {
+    if (!scriptComplianceResult) return;
+    const found = checkBrandVocabulary(state.scriptText);
+    if (!found.length) {
+      scriptComplianceResult.innerHTML = '<span style="color:#FFD34A;">✓ Nenhum termo sensível encontrado no texto colado.</span>';
+      return;
+    }
+    scriptComplianceResult.innerHTML =
+      '<span style="color:#e6b800;">⚠ Termo(s) sensível(is) encontrado(s): <b>' + found.map(escapeHtmlAttr).join(', ') + '</b>.</span><br>' +
+      'Revise o contexto: se o texto fala da mecânica de comissionamento interna, da participação no ecossistema ou da remuneração de quem indica/vende, troque por termos como "adesão ao ecossistema", "participação econômica" ou "resultado líquido distribuível" — nunca ' + found.map(escapeHtmlAttr).join(', ') + '.';
+  }
+
+  if (scriptTextArea) {
+    scriptTextArea.addEventListener('input', function () {
+      state.scriptText = scriptTextArea.value;
+      updateScriptTextCount();
+      renderScriptCompliance();
+    });
+  }
+  updateScriptTextCount();
+  renderScriptCompliance();
+
+  // Gera o carrossel direto a partir do script desta aba — mesma lógica do
+  // card "Gerar carrossel automaticamente" da aba Carousel Studio, só que
+  // sem precisar trocar de aba antes. Depois de gerar, leva o usuário até
+  // o resultado (aba Carousel Studio, modelo Estilo Tweet/X).
+  if (btnGenerateFromScript) {
+    btnGenerateFromScript.addEventListener('click', function () {
+      const ok = runAutogenCarousel(scriptTextArea ? scriptTextArea.value : '', scriptAutogenCount ? scriptAutogenCount.value : 5);
+      if (!ok) return;
+      // Mantém o card de geração da aba Carousel Studio em sincronia, caso
+      // o usuário volte lá pra gerar de novo com outro texto/quantidade.
+      const csAutogenText = document.getElementById('csAutogenText');
+      const csAutogenCount = document.getElementById('csAutogenCount');
+      if (csAutogenText) csAutogenText.value = scriptTextArea ? scriptTextArea.value : '';
+      if (csAutogenCount && scriptAutogenCount) csAutogenCount.value = scriptAutogenCount.value;
+      document.getElementById('tabBtnCarousel').click();
+      // Leva pro modelo que foi escolhido na pergunta acima (Estilo Tweet/X
+      // ou Padrão Tecnológico) — os dois já foram gerados juntos, já que
+      // compartilham o mesmo conteúdo.
+      setCarouselStyle(state.carouselStyle);
+    });
+  }
+
+  // ---------------------------------------------------------------------
+  // Salvar / abrir projeto
+  // ---------------------------------------------------------------------
+  document.getElementById('btnSaveProject').addEventListener('click', function () {
+    const data = {
+      version: 2,
+      logoDataUrl: state.logoDataUrl || null,
+      carouselStyle: state.carouselStyle || 'model2',
+      tweetCarousel: {
+        slides: state.tweetCarousel.slides.map(function (s) {
+          return {
+            id: s.id, text: s.text, imageUrl: s.imageUrl || null,
+            imageDataUrl: s.imageDataUrl || null, imageZoom: s.imageZoom || 1,
+            imagePos: { x: (s.imagePos && s.imagePos.x) || 0, y: (s.imagePos && s.imagePos.y) || 0 },
+            credit: s.credit || '',
+          };
+        }),
+      },
+      materials: state.materials.map(function (m) {
+        return { id: m.id, name: m.name, dataUrl: m.dataUrl };
+      }),
+      scriptText: state.scriptText || '',
+    };
+    const blob = new Blob([JSON.stringify(data)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'projeto-ctz-studio.json';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function () { URL.revokeObjectURL(url); }, 10000);
+  });
+
+  const fileOpenProject = document.getElementById('fileOpenProject');
+  document.getElementById('btnOpenProject').addEventListener('click', function () { fileOpenProject.click(); });
+  fileOpenProject.addEventListener('change', function () {
+    const file = fileOpenProject.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = function () {
+      try {
+        const data = JSON.parse(reader.result);
+        state.logoDataUrl = data.logoDataUrl || null;
+        state.logoImg = null;
+        setCarouselStyle(data.carouselStyle === 'model1' ? 'model1' : 'model2');
+        if (state.logoDataUrl) {
+          const limg = new Image();
+          limg.onload = function () { state.logoImg = limg; };
+          limg.src = state.logoDataUrl;
+          logoThumb.src = state.logoDataUrl;
+          logoFilename.textContent = 'Logo carregado do projeto.';
+        } else {
+          logoThumb.removeAttribute('src');
+          logoFilename.textContent = 'Nenhum logo enviado (PNG com fundo transparente).';
+        }
+        const savedTweetSlides = (data.tweetCarousel && data.tweetCarousel.slides) || [];
+        state.tweetCarousel.slides = savedTweetSlides.length
+          ? savedTweetSlides.map(function (s) {
+              return {
+                id: s.id || nextTweetId(), text: s.text || '',
+                imageUrl: s.imageUrl || TWEET_DEFAULT_IMAGES[0],
+                imageDataUrl: s.imageDataUrl || null, imageZoom: s.imageZoom || 1,
+                imagePos: { x: (s.imagePos && s.imagePos.x) || 0, y: (s.imagePos && s.imagePos.y) || 0 },
+                credit: s.credit || '',
+              };
+            })
+          : state.tweetCarousel.slides;
+        renderTweetEditor();
+        renderTweetRail();
+
+        state.materials = Array.isArray(data.materials)
+          ? data.materials.map(function (m) {
+              return { id: m.id || nextMaterialId(), name: m.name || 'Material', dataUrl: m.dataUrl };
+            }).filter(function (m) { return !!m.dataUrl; })
+          : [];
+        renderMaterialsGrid();
+
+        state.scriptText = data.scriptText || '';
+        if (scriptTextArea) scriptTextArea.value = state.scriptText;
+        updateScriptTextCount();
+        renderScriptCompliance();
+      } catch (e) {
+        alert('Arquivo de projeto inválido: ' + e.message);
+      }
+      fileOpenProject.value = '';
+    };
+    reader.readAsText(file);
+  });
+
+  // ---------------------------------------------------------------------
+  // Abas
+  // ---------------------------------------------------------------------
+  const tabButtons = [
+    document.getElementById('tabBtnCarousel'),
+    document.getElementById('tabBtnMedia'),
+    document.getElementById('tabBtnMaterials'),
+    document.getElementById('tabBtnScript'),
+  ];
+  const tabPanels = {
+    carousel: document.getElementById('tabPanelCarousel'),
+    media: document.getElementById('tabPanelMedia'),
+    materials: document.getElementById('tabPanelMaterials'),
+    script: document.getElementById('tabPanelScript'),
+  };
+  tabButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      tabButtons.forEach(function (b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      const tab = btn.getAttribute('data-tab');
+      Object.keys(tabPanels).forEach(function (key) {
+        tabPanels[key].style.display = key === tab ? 'block' : 'none';
+      });
+    });
+  });
+})();
+</script>
+</body>
+</html>

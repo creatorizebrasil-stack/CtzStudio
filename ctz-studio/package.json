@@ -1,0 +1,13 @@
+{
+  "name": "ctz-studio",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Editor de carrosseis da CTZ Studio",
+  "scripts": {
+    "start": "node scripts/server.mjs",
+    "build": "node scripts/validate.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
