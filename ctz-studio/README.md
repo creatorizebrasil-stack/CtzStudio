@@ -1,3 +1,4 @@
+Deploy atualizado 
 # CTZ Studio
 
 Aplicacao web estatica para criar, personalizar, salvar e exportar carrosseis para redes sociais.
