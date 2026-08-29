@@ -33,7 +33,7 @@ async function analyze(image) {
     model: 'gpt-5.4-mini',
     store: false,
     input: [{ role: 'user', content: [
-      { type: 'input_text', text: 'Analise esta referência visual sem reproduzir marcas, logotipos, marcas-d\'água, pessoas identificáveis ou textos exclusivos. Extraia apenas padrões abstratos de composição, hierarquia, paleta e clima. Crie título e subtítulo novos em português do Brasil para CTZ Studio, com escrita curta e forte. Responda SOMENTE JSON com: composition, hierarchy, palette, mood, title, subtitle, visualPrompt. visualPrompt deve descrever uma nova imagem original sem texto, sem logotipo e sem marca-d\'água.' },
+      { type: 'input_text', text: 'Analise esta referência visual sem reproduzir marcas, logotipos, marcas-d\'água, pessoas identificáveis ou textos exclusivos. Extraia apenas padrões abstratos de composição, hierarquia, paleta e clima. Crie título e subtítulo novos em português do Brasil para CTZ Studio, com escrita curta e forte. Responda SOMENTE JSON com: composition, hierarchy, palette, mood, title, subtitle, visualPrompt, recommendedStyle. recommendedStyle deve ser exatamente authority, tech, concept ou editorial. visualPrompt deve descrever uma nova imagem original sem texto, sem logotipo e sem marca-d\'água.' },
       { type: 'input_image', image_url: image, detail: 'high' }
     ] }],
     max_output_tokens: 900
@@ -50,11 +50,19 @@ async function chat(body) {
 }
 
 async function generate(body) {
+  const styles = {
+    authority: 'Cinematic editorial portrait advertising: one confident adult professional, centered or slightly off-center, dark neutral wardrobe, subtle film grain, controlled studio lighting, orange rim light, deep black background, premium personal-brand campaign. The person must be fictional and not resemble any real public or reference person.',
+    tech: 'Premium technology advertising: one hero device, interface, futuristic machine or digital object, black environment, electric orange glow, clean geometric composition, subtle data grid, realistic materials, high-end product visualization.',
+    concept: 'Cinematic conceptual advertising: one memorable visual metaphor related to strategy, growth, branding or innovation, dramatic scale, volumetric orange light, deep shadows, realistic detail, bold negative space.',
+    editorial: 'Bright premium editorial advertising: warm white background, black and orange accents, elegant object arrangement, refined soft shadows, modern magazine layout, minimal but visually distinctive.'
+  };
+  const styleDirection = styles[body.style] || styles.authority;
   const prompt = [
     'Create an original premium social media background for CTZ Studio, vertical 4:5 composition.',
-    'Black and electric orange identity, cinematic light, high contrast, sophisticated advertising art.',
+    styleDirection,
+    'Use a polished agency-campaign look with a clear focal point and excellent visual hierarchy.',
     String(body.visualPrompt || ''), String(body.instruction || ''),
-    'Leave intentional negative space for a bold headline and a short paragraph.',
+    'Leave intentional negative space in the upper or middle third for a bold headline and a short paragraph. Keep the important subject clear of that text-safe area.',
     'No words, no letters, no typography, no logos, no watermarks, no social handles, no copied brand elements.'
   ].join(' ');
   const response = await openai('/images/generations', {

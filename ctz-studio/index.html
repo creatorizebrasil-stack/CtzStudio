@@ -615,6 +615,14 @@
             <div style="font-weight:800;margin-bottom:9px;">2. Conteúdo autoral</div>
             <div class="field"><label>Título</label><textarea id="aiTitleInput" rows="3">SUA MARCA PRECISA SER LEMBRADA.</textarea></div>
             <div class="field"><label>Texto de apoio</label><textarea id="aiSubtitleInput" rows="4">Clareza, consistência e uma ideia forte transformam atenção em posicionamento.</textarea></div>
+            <div class="field"><label>Estilo visual</label>
+              <select id="aiStylePreset">
+                <option value="authority">Retrato de autoridade</option>
+                <option value="tech">Tecnologia e produto</option>
+                <option value="concept">Conceito cinematográfico</option>
+                <option value="editorial">Editorial claro e premium</option>
+              </select>
+            </div>
             <div class="field"><label>Direção da nova imagem</label><textarea id="aiVisualPrompt" rows="4" placeholder="Ex.: cenário tecnológico escuro, luz laranja, objeto central, alto contraste..."></textarea></div>
             <button type="button" class="btn btn-primary" id="btnGeneratePost">Gerar fundo autoral</button>
           </div>
@@ -2165,6 +2173,7 @@
   const aiTitleInput = document.getElementById('aiTitleInput');
   const aiSubtitleInput = document.getElementById('aiSubtitleInput');
   const aiVisualPrompt = document.getElementById('aiVisualPrompt');
+  const aiStylePreset = document.getElementById('aiStylePreset');
   const aiTitleLayer = document.getElementById('aiTitleLayer');
   const aiSubtitleLayer = document.getElementById('aiSubtitleLayer');
   const aiGeneratedBackground = document.getElementById('aiGeneratedBackground');
@@ -2226,6 +2235,7 @@
       aiTitleInput.value = data.title || aiTitleInput.value;
       aiSubtitleInput.value = data.subtitle || aiSubtitleInput.value;
       aiVisualPrompt.value = data.visualPrompt || '';
+      if (['authority','tech','concept','editorial'].includes(data.recommendedStyle)) aiStylePreset.value = data.recommendedStyle;
       aiTitleLayer.textContent = aiTitleInput.value;
       aiSubtitleLayer.textContent = aiSubtitleInput.value;
       setAiStatus('Análise concluída. Revise os textos e gere o fundo autoral.');
@@ -2241,7 +2251,7 @@
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         action: 'generate', title: aiTitleInput.value, subtitle: aiSubtitleInput.value,
-        visualPrompt: aiVisualPrompt.value, analysis: aiLastAnalysis,
+        visualPrompt: aiVisualPrompt.value, style: aiStylePreset.value, analysis: aiLastAnalysis,
         instruction: extraInstruction || ''
       })
     });
@@ -2276,7 +2286,7 @@
     try {
       const response = await fetch('/api/post-ai', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'chat', message: message, title: aiTitleInput.value, subtitle: aiSubtitleInput.value, visualPrompt: aiVisualPrompt.value, analysis: aiLastAnalysis })
+        body: JSON.stringify({ action: 'chat', message: message, title: aiTitleInput.value, subtitle: aiSubtitleInput.value, visualPrompt: aiVisualPrompt.value, style: aiStylePreset.value, analysis: aiLastAnalysis })
       });
       const data = await response.json();
       if (!response.ok) throw new Error(data.error || 'Não foi possível aplicar a alteração.');
