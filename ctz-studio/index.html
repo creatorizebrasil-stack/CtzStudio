@@ -436,6 +436,20 @@
   .b4-footer { display: flex; align-items: center; justify-content: space-between; flex: 0 0 auto; padding-top: 24px; font-size: 17px; }
   .b4-handle { color: #FF6A18; font-weight: 700; }
   .b4-credit { color: #CDBEB6; max-width: 60%; text-align: right; line-height: 1.4; }
+  /* ---- Editorial Creatorize — foto de fundo + tipografia de campanha ---- */
+  .ed-card { width:1080px; height:1350px; transform:scale(.2796); transform-origin:top left; position:relative; overflow:hidden; box-sizing:border-box; background:#090909; font-family:'Inter',Arial,sans-serif; color:#fff; }
+  .ed-bg { position:absolute; inset:-5%; width:110%; height:110%; object-fit:cover; transform-origin:center; cursor:grab; touch-action:none; filter:saturate(.82) contrast(1.08); }
+  .ed-shade { position:absolute; inset:0; background:linear-gradient(180deg,rgba(3,4,6,.32) 0%,rgba(3,4,6,.04) 29%,rgba(3,4,6,.38) 52%,rgba(3,4,6,.96) 100%),radial-gradient(circle at 50% 12%,rgba(255,255,255,.2),transparent 27%); }
+  .ed-grain { position:absolute; inset:0; opacity:.14; pointer-events:none; background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.12) 0,rgba(255,255,255,.12) 1px,transparent 1px,transparent 4px); mix-blend-mode:soft-light; }
+  .ed-border { position:absolute; inset:38px; border:1px solid rgba(255,255,255,.14); pointer-events:none; }
+  .ed-top { position:absolute; left:64px; right:64px; top:58px; display:flex; justify-content:space-between; gap:22px; font-family:'Sora','Inter',sans-serif; font-size:20px; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.84); }
+  .ed-content { position:absolute; left:64px; right:64px; bottom:112px; z-index:2; text-align:center; display:flex; flex-direction:column; align-items:center; }
+  .ed-kicker { font-size:38px; line-height:1.08; font-weight:400; margin-bottom:18px; color:rgba(255,255,255,.92); }
+  .ed-title { max-width:930px; font-family:'Sora','Inter',sans-serif; font-size:72px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; text-shadow:0 5px 24px rgba(0,0,0,.65); }
+  .ed-title b,.ed-kicker b { color:#FF5A0A; font-weight:900; font-size:1.06em; }
+  .ed-icon { width:56px; height:56px; margin-bottom:20px; color:#FF5A0A; filter:drop-shadow(0 6px 18px rgba(255,90,10,.45)); }
+  .ed-footer { position:absolute; z-index:3; left:64px; right:64px; bottom:42px; display:flex; justify-content:space-between; font-size:18px; font-weight:700; color:rgba(255,255,255,.9); }
+  .ed-page { color:#FF6A18; letter-spacing:.12em; }
   .chat-messages { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; max-height: 50vh; overflow-y: auto; padding-right: 2px; }
   .bubble { padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
   .bubble.user { background: var(--accent); color: #170604; align-self: flex-end; max-width: 85%; font-weight: 600; }
@@ -513,6 +527,7 @@
       <div class="cs-switcher">
         <button class="cs-switch-btn active" id="csBtnModel2" data-cs-target="model2">Estilo Tweet/X</button>
         <button class="cs-switch-btn" id="csBtnModel1" data-cs-target="model1">Padrão Tecnológico</button>
+        <button class="cs-switch-btn" id="csBtnModel3" data-cs-target="model3">Editorial com Foto</button>
       </div>
 
       <div class="card cs-autogen-card" style="margin-bottom:16px;">
@@ -552,6 +567,14 @@
             editor abaixo, logo enviado no card <b>Logo CTZ Studio</b>.
           </div>
           <button type="button" class="btn" data-export-all="model1" style="flex:0 0 auto;">Baixar todas (PNG)</button>
+        </div>
+      </div>
+
+      <div id="csModel3Wrap" style="display:none;margin-bottom:20px;">
+        <div class="cs-tweet-rail-wrap"><div class="cs-tweet-rail" id="csEditorialRail"></div></div>
+        <div class="cs-tweet-row" style="margin-top:10px;">
+          <div class="note" style="flex:1;">Foto em tela cheia, efeito cinematográfico, ícone editorial e tipografia Creatorize. Use <code>**palavra**</code> para destacar em laranja.</div>
+          <button type="button" class="btn" data-export-all="model3" style="flex:0 0 auto;">Baixar todas (PNG)</button>
         </div>
       </div>
 
@@ -670,6 +693,7 @@
         <div class="cs-switcher" style="margin-bottom:0;">
           <button type="button" class="cs-switch-btn active" id="scriptBtnModel2" data-cs-target="model2">Estilo Tweet/X</button>
           <button type="button" class="cs-switch-btn" id="scriptBtnModel1" data-cs-target="model1">Padrão Tecnológico</button>
+          <button type="button" class="cs-switch-btn" id="scriptBtnModel3" data-cs-target="model3">Editorial com Foto</button>
         </div>
       </div>
 
@@ -918,8 +942,8 @@
     return '<div style="width:100%;height:100%;border-radius:4px;background:linear-gradient(135deg,#FF3B12,#FF851B);display:flex;align-items:center;justify-content:center;font-family:\'Sora\',sans-serif;font-weight:800;color:#170604;font-size:13px;">CTZ</div>';
   }
 
-  const csSwitchButtons = [document.getElementById('csBtnModel1'), document.getElementById('csBtnModel2')];
-  const csWraps = { model1: document.getElementById('csModel1Wrap'), model2: document.getElementById('csModel2Wrap') };
+  const csSwitchButtons = [document.getElementById('csBtnModel1'), document.getElementById('csBtnModel2'), document.getElementById('csBtnModel3')];
+  const csWraps = { model1: document.getElementById('csModel1Wrap'), model2: document.getElementById('csModel2Wrap'), model3: document.getElementById('csModel3Wrap') };
   const csLogoSection = document.getElementById('csLogoSection');
 
   // Estilo do carrossel é um estado único (state.carouselStyle) com duas UIs
@@ -927,7 +951,7 @@
   // pergunta "Gerar no modelo" na aba Texto / Script (onde o carrossel é
   // gerado) — as duas sempre refletem a mesma escolha.
   function setCarouselStyle(style) {
-    state.carouselStyle = style === 'model1' ? 'model1' : 'model2';
+    state.carouselStyle = ['model1', 'model2', 'model3'].includes(style) ? style : 'model2';
     csSwitchButtons.forEach(function (b) {
       b.classList.toggle('active', b.getAttribute('data-cs-target') === state.carouselStyle);
     });
@@ -1122,8 +1146,38 @@
     );
   }
 
+  function editorialFontSize(text) {
+    const len = (text || '').length;
+    if (len <= 55) return 82;
+    if (len <= 90) return 70;
+    if (len <= 145) return 58;
+    return 48;
+  }
+
+  function renderEditorialSlideCardHtml(slide, index, total) {
+    const imgSrc = tweetSlideImageSrc(slide);
+    const zoom = slide.imageZoom || 1;
+    const pos = slide.imagePos || { x: 0, y: 0 };
+    const parsed = parseSlideMarkup(slide.text);
+    const kicker = parsed.title ? applyInlineBold(escapeHtml(parsed.title)) : '';
+    const mainRaw = parsed.body || parsed.title || 'Escreva uma mensagem forte para esta página.';
+    const mainHtml = applyInlineBold(escapeHtml(mainRaw)).replace(/\n/g, '<br>');
+    const icon = '<svg class="ed-icon" viewBox="0 0 64 64" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="4" d="M32 5v10M32 49v10M5 32h10M49 32h10M13 13l7 7M44 44l7 7M51 13l-7 7M20 44l-7 7"/><circle cx="32" cy="32" r="10" fill="currentColor"/></svg>';
+    const imageHtml = imgSrc
+      ? '<img class="ed-bg" data-editorial-slide-id="' + slide.id + '" src="' + imgSrc + '" alt="Foto de fundo da página ' + (index + 1) + '" style="transform:scale(' + zoom + ') translate(' + pos.x + '%, ' + pos.y + '%);">'
+      : '<div class="ed-bg" style="background:radial-gradient(circle at 50% 26%,#5b210d,#090909 58%);"></div>';
+    return '<div class="ed-card">' + imageHtml +
+      '<div class="ed-shade"></div><div class="ed-grain"></div><div class="ed-border"></div>' +
+      '<div class="ed-top"><span>CREATORIZE</span><span>CONTEÚDO · ESTRATÉGIA · MARCA</span><span>' + String(index + 1).padStart(2, '0') + '</span></div>' +
+      '<div class="ed-content">' + icon + (kicker ? '<div class="ed-kicker">' + kicker + '</div>' : '') +
+      '<div class="ed-title" style="font-size:' + editorialFontSize(mainRaw) + 'px">' + mainHtml + '</div></div>' +
+      '<div class="ed-footer"><span>@caiocreatorize</span><span class="ed-page">' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>@creatorizebrasil</span></div>' +
+      '</div>';
+  }
+
   const csTweetRail = document.getElementById('csTweetRail');
   const csBrandRail = document.getElementById('csBrandRail');
+  const csEditorialRail = document.getElementById('csEditorialRail');
   const csTweetEditor = document.getElementById('csTweetEditor');
 
   // Rótulo + botão de exportar PNG abaixo de cada página da esteira — mesmo
@@ -1147,6 +1201,11 @@
     if (csBrandRail) {
       csBrandRail.innerHTML = slides.map(function (slide, i) {
         return '<div class="tw-frame-item"><div class="tw-frame">' + renderBrandSlideCardHtml(slide, i, slides.length) + '</div>' + frameActionsHtml(i, 'model1') + '</div>';
+      }).join('');
+    }
+    if (csEditorialRail) {
+      csEditorialRail.innerHTML = slides.map(function (slide, i) {
+        return '<div class="tw-frame-item"><div class="tw-frame">' + renderEditorialSlideCardHtml(slide, i, slides.length) + '</div>' + frameActionsHtml(i, 'model3') + '</div>';
       }).join('');
     }
     attachTweetImageDrag();
@@ -1200,6 +1259,7 @@
   function attachTweetImageDrag() {
     wireImageDrag(csTweetRail, 'data-tweet-slide-id');
     wireImageDrag(csBrandRail, 'data-brand-slide-id');
+    wireImageDrag(csEditorialRail, 'data-editorial-slide-id');
   }
 
   // ---------------------------------------------------------------------
@@ -1215,7 +1275,9 @@
     if (!slide) return null;
     const html = style === 'model1'
       ? renderBrandSlideCardHtml(slide, index, total)
-      : renderTweetSlideCardHtml(slide, index, total);
+      : style === 'model3'
+        ? renderEditorialSlideCardHtml(slide, index, total)
+        : renderTweetSlideCardHtml(slide, index, total);
     const holder = document.createElement('div');
     holder.style.cssText = 'position:fixed;left:-99999px;top:0;pointer-events:none;';
     holder.innerHTML = html;
@@ -1994,7 +2056,7 @@
 
   // Pergunta "Gerar no modelo" — mesma escolha do switcher da aba Carousel
   // Studio (setCarouselStyle mantém as duas UIs sincronizadas).
-  const scriptStyleButtons = [document.getElementById('scriptBtnModel2'), document.getElementById('scriptBtnModel1')];
+  const scriptStyleButtons = [document.getElementById('scriptBtnModel2'), document.getElementById('scriptBtnModel1'), document.getElementById('scriptBtnModel3')];
   scriptStyleButtons.forEach(function (btn) {
     if (!btn) return;
     btn.addEventListener('click', function () {
@@ -2119,7 +2181,7 @@
         const data = JSON.parse(reader.result);
         state.logoDataUrl = data.logoDataUrl || null;
         state.logoImg = null;
-        setCarouselStyle(data.carouselStyle === 'model1' ? 'model1' : 'model2');
+        setCarouselStyle(['model1', 'model2', 'model3'].includes(data.carouselStyle) ? data.carouselStyle : 'model2');
         if (state.logoDataUrl) {
           const limg = new Image();
           limg.onload = function () { state.logoImg = limg; };
