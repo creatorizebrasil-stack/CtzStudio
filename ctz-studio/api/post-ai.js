@@ -17,6 +17,19 @@ function cleanJson(text) {
   }
 }
 
+function responseText(response) {
+  if (typeof response.output_text === 'string' && response.output_text.trim()) return response.output_text;
+  const parts = [];
+  for (const item of response.output || []) {
+    if (item.type !== 'message') continue;
+    for (const content of item.content || []) {
+      if ((content.type === 'output_text' || content.type === 'text') && typeof content.text === 'string') parts.push(content.text);
+    }
+  }
+  if (!parts.length) throw new Error('A IA não retornou texto. Tente novamente.');
+  return parts.join('\n');
+}
+
 async function openai(path, body) {
   const response = await fetch(OPENAI_URL + path, {
     method: 'POST',
@@ -32,21 +45,35 @@ async function analyze(image) {
   const response = await openai('/responses', {
     model: 'gpt-5.4-mini',
     store: false,
+    text: { format: { type: 'json_schema', name: 'post_analysis', strict: true, schema: {
+      type: 'object', additionalProperties: false,
+      properties: {
+        composition: { type: 'string' }, hierarchy: { type: 'string' }, palette: { type: 'string' }, mood: { type: 'string' },
+        title: { type: 'string' }, subtitle: { type: 'string' }, visualPrompt: { type: 'string' },
+        recommendedStyle: { type: 'string', enum: ['authority', 'tech', 'concept', 'editorial'] }
+      },
+      required: ['composition', 'hierarchy', 'palette', 'mood', 'title', 'subtitle', 'visualPrompt', 'recommendedStyle']
+    } } },
     input: [{ role: 'user', content: [
       { type: 'input_text', text: 'Analise esta referência visual sem reproduzir marcas, logotipos, marcas-d\'água, pessoas identificáveis ou textos exclusivos. Extraia apenas padrões abstratos de composição, hierarquia, paleta e clima. Crie título e subtítulo novos em português do Brasil para CTZ Studio, com escrita curta e forte. Responda SOMENTE JSON com: composition, hierarchy, palette, mood, title, subtitle, visualPrompt, recommendedStyle. recommendedStyle deve ser exatamente authority, tech, concept ou editorial. visualPrompt deve descrever uma nova imagem original sem texto, sem logotipo e sem marca-d\'água.' },
       { type: 'input_image', image_url: image, detail: 'high' }
     ] }],
     max_output_tokens: 900
   });
-  return cleanJson(response.output_text);
+  return cleanJson(responseText(response));
 }
 
 async function chat(body) {
   const response = await openai('/responses', {
     model: 'gpt-5.4-mini', store: false, max_output_tokens: 650,
+    text: { format: { type: 'json_schema', name: 'post_revision', strict: true, schema: {
+      type: 'object', additionalProperties: false,
+      properties: { title: { type: 'string' }, subtitle: { type: 'string' }, visualPrompt: { type: 'string' }, reply: { type: 'string' }, regenerate: { type: 'boolean' } },
+      required: ['title', 'subtitle', 'visualPrompt', 'reply', 'regenerate']
+    } } },
     input: 'Você é o diretor criativo do CTZ Studio. Atualize o conteúdo com base no pedido, mantendo linguagem original, direta, em português do Brasil e sem copiar marcas ou frases de terceiros. Responda SOMENTE JSON com title, subtitle, visualPrompt, reply e regenerate (boolean). Estado atual: ' + JSON.stringify({ title: body.title, subtitle: body.subtitle, visualPrompt: body.visualPrompt, analysis: body.analysis }) + '. Pedido: ' + String(body.message || '').slice(0, 1000)
   });
-  return cleanJson(response.output_text);
+  return cleanJson(responseText(response));
 }
 
 async function generate(body) {
