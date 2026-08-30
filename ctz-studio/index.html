@@ -444,6 +444,9 @@
   .ed-border { position:absolute; inset:38px; border:1px solid rgba(255,255,255,.14); pointer-events:none; }
   .ed-top { position:absolute; left:64px; right:64px; top:58px; display:flex; justify-content:space-between; gap:22px; font-family:'Sora','Inter',sans-serif; font-size:20px; letter-spacing:.08em; text-transform:uppercase; color:rgba(255,255,255,.84); }
   .ed-content { position:absolute; left:64px; right:64px; bottom:112px; z-index:2; text-align:center; display:flex; flex-direction:column; align-items:center; }
+  .ed-content.position-center { top:50%; bottom:auto; transform:translateY(-50%); }
+  .ed-content.position-top { top:165px; bottom:auto; }
+  .ed-content.position-bottom { top:auto; bottom:112px; }
   .ed-kicker { font-size:38px; line-height:1.08; font-weight:400; margin-bottom:18px; color:rgba(255,255,255,.92); }
   .ed-title { max-width:930px; font-family:'Sora','Inter',sans-serif; font-size:72px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; text-shadow:0 5px 24px rgba(0,0,0,.65); }
   .ed-title b,.ed-kicker b { color:#FF5A0A; font-weight:900; font-size:1.06em; }
@@ -1086,13 +1089,13 @@
     const parsed = parseSlideMarkup(slide.text);
     const hasTitle = !!parsed.title;
     const bodyRaw = parsed.body || (hasTitle ? '' : 'Escreva o texto desta página ao lado...');
-    const bodyHtml = applyInlineBold(escapeHtml(bodyRaw)).replace(/\n/g, '<br>');
+    const bodyParagraphs = bodyRaw.split(/\n\s*\n/).map(function (paragraph) { return paragraph.trim(); }).filter(Boolean);
     const fontSize = tweetBodyFontSize(parsed.body, !!imgSrc);
     // Título fica proporcionalmente maior que o corpo (mesma escala do
     // corpo, então também cresce quando há mais espaço disponível).
     const titleFontSize = Math.round(fontSize * 1.4);
     const titleHtml = hasTitle
-      ? '<div class="tw-title" style="font-size:' + titleFontSize + 'px;">' + applyInlineBold(escapeHtml(parsed.title)) + '</div>'
+      ? '<div class="tw-title carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model2" data-carousel-text-key="title" style="font-size:' + titleFontSize + 'px;' + carouselTextTransform(slide, 'model2', 'title') + '">' + applyInlineBold(escapeHtml(parsed.title)) + '</div>'
       : '';
     // O crédito da fonte (slide.credit) não é mais escrito em cima do
     // cartão — atrapalhava a leitura nos cantos. O campo continua existindo
@@ -1111,7 +1114,7 @@
         '<div class="tw-body-wrap' + (imgSrc ? '' : ' no-image') + '">' +
           '<div class="tw-text-col">' +
             titleHtml +
-            '<div class="tw-body" style="font-size:' + fontSize + 'px;">' + bodyHtml + '</div>' +
+            bodyParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="tw-body carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model2" data-carousel-text-key="' + key + '" style="font-size:' + fontSize + 'px;' + carouselTextTransform(slide, 'model2', key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') +
             continueHtml +
           '</div>' +
         '</div>' +
@@ -1151,11 +1154,11 @@
     const parsed = parseSlideMarkup(slide.text);
     const hasTitle = !!parsed.title;
     const bodyRaw = parsed.body || (hasTitle ? '' : 'Escreva o texto desta página ao lado...');
-    const bodyHtml = applyInlineBold(escapeHtml(bodyRaw)).replace(/\n/g, '<br>');
+    const bodyParagraphs = bodyRaw.split(/\n\s*\n/).map(function (paragraph) { return paragraph.trim(); }).filter(Boolean);
     const fontSize = brandBodyFontSize(parsed.body, !!imgSrc);
     const titleFontSize = Math.round(fontSize * 1.45);
     const titleHtml = hasTitle
-      ? '<div class="b4-title" style="font-size:' + titleFontSize + 'px;">' + applyInlineBold(escapeHtml(parsed.title)) + '</div>'
+      ? '<div class="b4-title carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model1" data-carousel-text-key="title" style="font-size:' + titleFontSize + 'px;' + carouselTextTransform(slide, 'model1', 'title') + '">' + applyInlineBold(escapeHtml(parsed.title)) + '</div>'
       : '';
     // Segue a diretriz da marca: assinatura discreta (@perfil) no
     // rodapé em vez de "Fonte: ..." escrito em cima da arte; a citação
@@ -1175,7 +1178,7 @@
           '</div>' +
           '<div class="b4-text-col' + (imgSrc ? '' : ' full') + '">' +
             titleHtml +
-            '<div class="b4-body" style="font-size:' + fontSize + 'px;">' + bodyHtml + '</div>' +
+            bodyParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="b4-body carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model1" data-carousel-text-key="' + key + '" style="font-size:' + fontSize + 'px;' + carouselTextTransform(slide, 'model1', key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') +
             continueHtml +
           '</div>' +
           (imgSrc ?
@@ -1198,6 +1201,10 @@
     return 48;
   }
 
+  function editorialTextPlacement(slide) {
+    return ['top', 'center', 'bottom'].includes(slide.editorialTextPlacement) ? slide.editorialTextPlacement : 'bottom';
+  }
+
   function renderEditorialSlideCardHtml(slide, index, total) {
     const imgSrc = tweetSlideImageSrc(slide);
     const zoom = slide.imageZoom || 1;
@@ -1205,7 +1212,7 @@
     const parsed = parseSlideMarkup(slide.text);
     const kicker = parsed.title ? applyInlineBold(escapeHtml(parsed.title)) : '';
     const mainRaw = parsed.body || parsed.title || 'Escreva uma mensagem forte para esta página.';
-    const mainHtml = applyInlineBold(escapeHtml(mainRaw)).replace(/\n/g, '<br>');
+    const mainParagraphs = mainRaw.split(/\n\s*\n/).map(function (paragraph) { return paragraph.trim(); }).filter(Boolean);
     const icon = '<svg class="ed-icon" viewBox="0 0 64 64" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="4" d="M32 5v10M32 49v10M5 32h10M49 32h10M13 13l7 7M44 44l7 7M51 13l-7 7M20 44l-7 7"/><circle cx="32" cy="32" r="10" fill="currentColor"/></svg>';
     const imageHtml = imgSrc
       ? '<img class="ed-bg" data-editorial-slide-id="' + slide.id + '" src="' + imgSrc + '" alt="Foto de fundo da página ' + (index + 1) + '" style="transform:scale(' + zoom + ') translate(' + pos.x + '%, ' + pos.y + '%);">'
@@ -1213,8 +1220,8 @@
     return '<div class="ed-card">' + imageHtml +
       '<div class="ed-shade"></div><div class="ed-grain"></div><div class="ed-border"></div>' +
       '<div class="ed-top"><span>CREATORIZE</span><span>CONTEÚDO · ESTRATÉGIA · MARCA</span><span>' + String(index + 1).padStart(2, '0') + '</span></div>' +
-      '<div class="ed-content">' + icon + (kicker ? '<div class="ed-kicker">' + kicker + '</div>' : '') +
-      '<div class="ed-title" style="font-size:' + editorialFontSize(mainRaw) + 'px">' + mainHtml + '</div></div>' +
+      '<div class="ed-content position-' + editorialTextPlacement(slide) + '">' + icon + (kicker ? '<div class="ed-kicker carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model3" data-carousel-text-key="title" style="' + carouselTextTransform(slide, 'model3', 'title') + '">' + kicker + '</div>' : '') +
+      mainParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="ed-title carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model3" data-carousel-text-key="' + key + '" style="font-size:' + editorialFontSize(mainRaw) + 'px;' + carouselTextTransform(slide, 'model3', key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') + '</div>' +
       '<div class="ed-footer"><span>@caiocreatorize</span><span class="ed-page">' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>@creatorizebrasil</span></div>' +
       '</div>';
   }
@@ -1288,8 +1295,8 @@
     return '<div class="sh-card ' + variant + '">' + imageHtml + (isPhoto ? '<div class="sh-photo-shade"></div>' : '') +
       '<div class="sh-texture"></div><div class="sh-square a"></div><div class="sh-square b"></div><div class="sh-square c"></div>' +
       '<div class="sh-top"><span>CONTEÚDO</span><span>ESTRATÉGIA</span><span>MARCA</span></div>' +
-      '<div class="sh-content ' + density + ' align-' + textAlign + '"><div class="sh-title sh-movable-text" data-sheet-text-slide="' + slide.id + '" data-sheet-text-key="title" style="font-size:' + sheetsTitleSize(titleRaw, bodyRaw, isPhoto) + 'px;' + sheetsTextTransform(slide, 'title') + '">' + titleHtml + '</div>' +
-      bodyParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="sh-body sh-movable-text" data-sheet-text-slide="' + slide.id + '" data-sheet-text-key="' + key + '" style="' + sheetsTextTransform(slide, key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') + cta + '</div>' +
+      '<div class="sh-content ' + density + ' align-' + textAlign + '"><div class="sh-title carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model4" data-carousel-text-key="title" style="font-size:' + sheetsTitleSize(titleRaw, bodyRaw, isPhoto) + 'px;' + sheetsTextTransform(slide, 'title') + '">' + titleHtml + '</div>' +
+      bodyParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="sh-body carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model4" data-carousel-text-key="' + key + '" style="' + sheetsTextTransform(slide, key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') + cta + '</div>' +
       '<div class="sh-footer"><span>@caiocreatorize</span><span>' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>@creatorizebrasil</span></div></div>';
   }
 
@@ -1380,16 +1387,17 @@
     });
   }
 
-  function wireSheetsTextDrag() {
-    if (!csSheetsRail) return;
-    csSheetsRail.querySelectorAll('.sh-movable-text[data-sheet-text-slide]').forEach(function (textEl) {
+  function wireCarouselTextDrag(railEl) {
+    if (!railEl) return;
+    railEl.querySelectorAll('.carousel-movable-text[data-carousel-text-slide]').forEach(function (textEl) {
       let dragging = false, startX = 0, startY = 0, baseX = 0, baseY = 0, scale = 1;
       textEl.addEventListener('pointerdown', function (event) {
-        const id = textEl.getAttribute('data-sheet-text-slide');
-        const key = textEl.getAttribute('data-sheet-text-key');
+        const id = textEl.getAttribute('data-carousel-text-slide');
+        const style = textEl.getAttribute('data-carousel-text-style');
+        const key = textEl.getAttribute('data-carousel-text-key');
         const slide = state.tweetCarousel.slides.find(function (item) { return item.id === id; });
         if (!slide) return;
-        const pos = sheetsTextPosition(slide, key);
+        const pos = carouselTextPosition(slide, style, key);
         const rect = textEl.closest('.sh-card').getBoundingClientRect();
         scale = rect.width / 1080 || 1;
         startX = event.clientX; startY = event.clientY; baseX = pos.x; baseY = pos.y; dragging = true;
@@ -1398,14 +1406,16 @@
       });
       textEl.addEventListener('pointermove', function (event) {
         if (!dragging) return;
-        const id = textEl.getAttribute('data-sheet-text-slide');
-        const key = textEl.getAttribute('data-sheet-text-key');
+        const id = textEl.getAttribute('data-carousel-text-slide');
+        const style = textEl.getAttribute('data-carousel-text-style');
+        const key = textEl.getAttribute('data-carousel-text-key');
         const slide = state.tweetCarousel.slides.find(function (item) { return item.id === id; });
         if (!slide) return;
         const x = Math.max(-360, Math.min(360, baseX + (event.clientX - startX) / scale));
         const y = Math.max(-420, Math.min(420, baseY + (event.clientY - startY) / scale));
-        slide.sheetTextPos = slide.sheetTextPos || {};
-        slide.sheetTextPos[key] = { x: Math.round(x), y: Math.round(y) };
+        slide.carouselTextPos = slide.carouselTextPos || {};
+        slide.carouselTextPos[style] = slide.carouselTextPos[style] || {};
+        slide.carouselTextPos[style][key] = { x: Math.round(x), y: Math.round(y) };
         textEl.style.transform = 'translate(' + x + 'px,' + y + 'px)';
       });
       function finish() { dragging = false; textEl.classList.remove('dragging'); }
@@ -1419,7 +1429,10 @@
     wireImageDrag(csBrandRail, 'data-brand-slide-id');
     wireImageDrag(csEditorialRail, 'data-editorial-slide-id');
     wireImageDrag(csSheetsRail, 'data-sheets-slide-id');
-    wireSheetsTextDrag();
+    wireCarouselTextDrag(csTweetRail);
+    wireCarouselTextDrag(csBrandRail);
+    wireCarouselTextDrag(csEditorialRail);
+    wireCarouselTextDrag(csSheetsRail);
   }
 
   // ---------------------------------------------------------------------
@@ -1559,7 +1572,9 @@
           '<select class="sheet-bg-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="auto"' + ((!slide.sheetBg || slide.sheetBg === 'auto') ? ' selected' : '') + '>Automático</option><option value="photo"' + (slide.sheetBg === 'photo' ? ' selected' : '') + '>Foto / retrato</option><option value="orange"' + (slide.sheetBg === 'orange' ? ' selected' : '') + '>Laranja</option><option value="light"' + (slide.sheetBg === 'light' ? ' selected' : '') + '>Claro</option><option value="black"' + (slide.sheetBg === 'black' ? ' selected' : '') + '>Preto</option></select></div>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Alinhamento do texto</label>' +
           '<select class="sheet-align-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="center"' + ((!slide.sheetAlign || slide.sheetAlign === 'center') ? ' selected' : '') + '>Centralizado</option><option value="left"' + (slide.sheetAlign === 'left' ? ' selected' : '') + '>À esquerda</option><option value="right"' + (slide.sheetAlign === 'right' ? ' selected' : '') + '>À direita</option><option value="distributed"' + (slide.sheetAlign === 'distributed' ? ' selected' : '') + '>Espaçado / distribuído</option></select></div>' +
-        '<div class="cs-tweet-row"><span style="font-size:11.5px;color:var(--text-dim);">Arraste a headline e cada parágrafo diretamente na prévia.</span><button type="button" class="btn btn-sm sheet-reset-text" data-id="' + slide.id + '">Restaurar posições</button></div>' +
+        '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Posição no Editorial</label>' +
+          '<select class="editorial-placement-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="center"' + (slide.editorialTextPlacement === 'center' ? ' selected' : '') + '>Centro do quadro</option><option value="top"' + (slide.editorialTextPlacement === 'top' ? ' selected' : '') + '>Parte superior</option><option value="bottom"' + ((!slide.editorialTextPlacement || slide.editorialTextPlacement === 'bottom') ? ' selected' : '') + '>Parte inferior</option></select></div>' +
+        '<div class="cs-tweet-row"><span style="font-size:11.5px;color:var(--text-dim);">Arraste a headline e cada parágrafo na prévia de qualquer modelo.</span><button type="button" class="btn btn-sm sheet-reset-text" data-id="' + slide.id + '">Restaurar no modelo ativo</button></div>' +
         '<div class="cs-tweet-row">' +
           '<img class="cs-tweet-thumb" src="' + tweetSlideImageSrc(slide) + '" alt="">' +
           '<input type="file" accept="image/*" class="tweet-image-input" data-id="' + slide.id + '">' +
@@ -1600,10 +1615,21 @@
         if (slide) { slide.sheetAlign = select.value; renderTweetRail(); }
       });
     });
+    csTweetEditor.querySelectorAll('.editorial-placement-select').forEach(function (select) {
+      select.addEventListener('change', function () {
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === select.getAttribute('data-id'); });
+        if (slide) { slide.editorialTextPlacement = select.value; renderTweetRail(); }
+      });
+    });
     csTweetEditor.querySelectorAll('.sheet-reset-text').forEach(function (button) {
       button.addEventListener('click', function () {
         const slide = state.tweetCarousel.slides.find(function (s) { return s.id === button.getAttribute('data-id'); });
-        if (slide) { slide.sheetTextPos = {}; renderTweetRail(); }
+        if (slide) {
+          slide.carouselTextPos = slide.carouselTextPos || {};
+          delete slide.carouselTextPos[state.carouselStyle];
+          if (state.carouselStyle === 'model4') slide.sheetTextPos = {};
+          renderTweetRail();
+        }
       });
     });
     csTweetEditor.querySelectorAll('.tweet-zoom-input').forEach(function (range) {
@@ -2343,7 +2369,7 @@
             id: s.id, text: s.text, imageUrl: s.imageUrl || null,
             imageDataUrl: s.imageDataUrl || null, imageZoom: s.imageZoom || 1,
             imagePos: { x: (s.imagePos && s.imagePos.x) || 0, y: (s.imagePos && s.imagePos.y) || 0 },
-            credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s), sheetTextPos: s.sheetTextPos || {},
+            credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s), editorialTextPlacement: editorialTextPlacement(s), sheetTextPos: s.sheetTextPos || {}, carouselTextPos: s.carouselTextPos || {},
           };
         }),
       },
@@ -2390,7 +2416,7 @@
                 imageUrl: s.imageUrl || TWEET_DEFAULT_IMAGES[0],
                 imageDataUrl: s.imageDataUrl || null, imageZoom: s.imageZoom || 1,
                 imagePos: { x: (s.imagePos && s.imagePos.x) || 0, y: (s.imagePos && s.imagePos.y) || 0 },
-                credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s), sheetTextPos: s.sheetTextPos || {},
+                credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s), editorialTextPlacement: editorialTextPlacement(s), sheetTextPos: s.sheetTextPos || {}, carouselTextPos: s.carouselTextPos || {},
               };
             })
           : state.tweetCarousel.slides;
