@@ -347,7 +347,7 @@
      bloco só e centralizado dentro do quadrado 4:5 — em vez de ficar
      sempre colado no topo/base, sobra o mesmo respiro acima e abaixo
      quando o conteúdo não preenche o cartão inteiro. */
-  .tw-card { width: 1080px; height: 1350px; transform: scale(.2796); transform-origin: top left; box-sizing: border-box; padding: 64px; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(circle at 88% 8%,rgba(255,90,10,.14),transparent 28%),#FFFDF9; font-family: 'Inter', Arial, sans-serif; color: #12100F; border-top: 18px solid #FF5A0A; }
+  .tw-card { --slide-accent:#FF5A0A; width: 1080px; height: 1350px; transform: scale(.2796); transform-origin: top left; box-sizing: border-box; padding: 64px; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(circle at 88% 8%,rgba(255,90,10,.14),transparent 28%),#FFFDF9; font-family: 'Inter', Arial, sans-serif; color: #12100F; border-top: 18px solid var(--slide-accent); }
   .tw-header { display: flex; align-items: flex-start; gap: 20px; padding-bottom: 32px; flex: 0 0 auto; }
   .tw-avatar { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; background: #eee; }
   .tw-namecol { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
@@ -378,7 +378,7 @@
   /* Negrito com leve destaque de escala (em vez de só peso/cor) — cresce
      proporcionalmente ao tamanho do corpo de cada slide, mas pouco, pra não
      quebrar a linha nem chamar atenção demais. */
-  .tw-body b { font-weight: 800; color: #F04A00; font-size: 1.08em; }
+  .tw-body b { font-weight: 800; color: var(--slide-accent); font-size: 1.08em; }
   /* Imagem sempre limitada a metade da altura do formato 4:5 do card
      (proporção própria ~8:5), nunca "flex: 1" — é isso que garante que ela
      nunca vira o slide inteiro e que sobra espaço grande pro texto acima. */
@@ -429,7 +429,7 @@
   .b4-title { font-family: 'Sora', 'Inter', sans-serif; font-weight: 800; line-height: 1.04; letter-spacing: -.045em; color: #FFFFFF; margin-bottom: 20px; white-space: pre-wrap; text-transform: uppercase; text-shadow: 0 0 34px rgba(255,90,10,.22); }
   .b4-body { line-height: 1.5; color: #FFFFFF; white-space: pre-wrap; }
   /* Destaque amarelo quente, inspirado na referência visual. */
-  .b4-body b { font-weight: 800; color: #FF7A28; font-size: 1.08em; }
+  .b4-body b,.b4-title b { font-weight: 800; color: var(--slide-accent,#FF5A0A); font-size: 1.08em; }
   .b4-image-wrap { position: relative; flex: 0 0 auto; width: 100%; aspect-ratio: 8 / 5; border-radius: 4px; overflow: hidden; background: #140B07; border: 1px solid rgba(255,106,26,.5); box-shadow: 0 20px 70px rgba(255,70,0,.22); }
   .b4-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transform-origin: center; cursor: grab; touch-action: none; }
   .b4-image-wrap img:active { cursor: grabbing; }
@@ -449,11 +449,11 @@
   .ed-content.position-bottom { top:auto; bottom:112px; }
   .ed-kicker { font-size:38px; line-height:1.08; font-weight:400; margin-bottom:18px; color:rgba(255,255,255,.92); }
   .ed-title { max-width:930px; font-family:'Sora','Inter',sans-serif; font-size:72px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; text-shadow:0 5px 24px rgba(0,0,0,.65); }
-  .ed-title b,.ed-kicker b { color:#FF5A0A; font-weight:900; font-size:1.06em; }
+  .ed-title b,.ed-kicker b { color:var(--slide-accent,#FF5A0A); font-weight:900; font-size:1.06em; }
   .ed-logo { position:absolute; z-index:4; top:92px; left:64px; width:170px; height:108px; overflow:hidden; pointer-events:none; }
   .ed-logo img { display:block; width:170px; height:170px; object-fit:cover; object-position:center top; mix-blend-mode:screen; }
   .ed-footer { position:absolute; z-index:3; left:64px; right:64px; bottom:42px; display:flex; justify-content:space-between; font-size:18px; font-weight:700; color:rgba(255,255,255,.9); }
-  .ed-page { color:#FF6A18; letter-spacing:.12em; }
+  .ed-page { color:var(--slide-accent,#FF5A0A); letter-spacing:.12em; }
   /* ---- Folhas Creatorize — sistema editorial alternado ---- */
   .sh-card { width:1080px; height:1350px; transform:scale(.2796); transform-origin:top left; position:relative; overflow:hidden; box-sizing:border-box; font-family:'Inter',Arial,sans-serif; color:#fff; background:#050505; }
   .sh-card.light { color:#080808; background:#f1f0ec; }
@@ -477,15 +477,13 @@
   .sh-title { font-family:'Sora','Inter',sans-serif; font-size:78px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; width:100%; max-width:880px; text-wrap:balance; overflow-wrap:break-word; }
   .carousel-movable-text { position:relative; cursor:move; touch-action:none; user-select:none; }
   .carousel-movable-text.dragging { cursor:grabbing; }
-  .sh-title b { color:#FF5A0A; font-size:1.04em; }
-  .sh-card.orange .sh-title b { color:#111; }
+  .sh-title b { color:var(--slide-accent,#FF5A0A); font-size:1.04em; }
   .sh-body { width:100%; max-width:760px; font-size:40px; line-height:1.16; font-weight:350; letter-spacing:-.025em; text-wrap:balance; overflow-wrap:break-word; }
   .sh-body b { font-weight:800; }
   .sh-content.compact .sh-body { font-size:34px; line-height:1.13; }
   .sh-content.dense .sh-body { font-size:30px; line-height:1.1; }
   .sh-cta { flex:0 0 auto; background:#f3f0ea; color:#090909; padding:16px 38px; font-family:'Sora','Inter',sans-serif; font-size:28px; line-height:1.05; font-weight:800; text-wrap:balance; }
-  .sh-square { position:absolute; z-index:2; width:22px; height:22px; background:#FF5A0A; }
-  .sh-card.orange .sh-square { background:#080808; }
+  .sh-square { position:absolute; z-index:2; width:22px; height:22px; background:var(--slide-accent,#FF5A0A); }
   .sh-square.a { left:90px; top:590px; }.sh-square.b { right:88px; bottom:250px; }.sh-square.c { right:330px; top:360px; }
   .sh-footer { position:absolute; z-index:3; left:72px; right:72px; bottom:42px; display:flex; justify-content:space-between; font-size:18px; font-weight:650; }
   .chat-messages { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; max-height: 50vh; overflow-y: auto; padding-right: 2px; }
@@ -1079,6 +1077,17 @@
     return 24;
   }
 
+  function carouselAccentValue(slide, fallback) {
+    const colors = { starter: '#22C55E', launch: '#FF6B00', growth: '#2563EB', extensize: '#7C3AED', live: '#EF4444', academy: '#FACC15' };
+    return colors[carouselAccentName(slide)] || fallback || '#FF6B00';
+  }
+
+  function carouselAccentName(slide) {
+    const legacy = { orange: 'launch', yellow: 'academy', red: 'live' };
+    const value = legacy[slide.designAccent] || slide.designAccent;
+    return ['starter', 'launch', 'growth', 'extensize', 'live', 'academy'].includes(value) ? value : 'auto';
+  }
+
   function renderTweetSlideCardHtml(slide, index, total) {
     const imgSrc = tweetSlideImageSrc(slide);
     const zoom = slide.imageZoom || 1;
@@ -1104,7 +1113,7 @@
     const hasMore = index < total - 1;
     const continueHtml = hasMore ? '<div class="tw-continue">&bull;&bull;&bull;</div>' : '';
     return (
-      '<div class="tw-card">' +
+      '<div class="tw-card" data-accent="' + carouselAccentName(slide) + '" style="--slide-accent:' + carouselAccentValue(slide, '#FF5A0A') + ';">' +
         '<div class="tw-header">' +
           '<img class="tw-avatar" src="' + TWEET_PROFILE.avatar + '" alt="CTZ Studio">' +
           '<div class="tw-namecol">' +
@@ -1171,7 +1180,7 @@
     const hasMore = index < total - 1;
     const continueHtml = hasMore ? '<div class="b4-continue">&bull;&bull;&bull;</div>' : '';
     return (
-      '<div class="b4-card">' +
+      '<div class="b4-card" data-accent="' + carouselAccentName(slide) + '" style="--slide-accent:' + carouselAccentValue(slide, '#FF5A0A') + ';">' +
         '<div class="b4-content">' +
           '<div class="b4-topbar">' +
             '<div class="b4-logo"><span class="b4-logo-mark">' + logoMarkHtml() + '</span><span>CTZ STUDIO</span></div>' +
@@ -1218,7 +1227,7 @@
     const imageHtml = imgSrc
       ? '<img class="ed-bg" data-editorial-slide-id="' + slide.id + '" src="' + imgSrc + '" alt="Foto de fundo da página ' + (index + 1) + '" style="transform:scale(' + zoom + ') translate(' + pos.x + '%, ' + pos.y + '%);">'
       : '<div class="ed-bg" style="background:radial-gradient(circle at 50% 26%,#5b210d,#090909 58%);"></div>';
-    return '<div class="ed-card">' + imageHtml +
+    return '<div class="ed-card" data-accent="' + carouselAccentName(slide) + '" style="--slide-accent:' + carouselAccentValue(slide, '#FF5A0A') + ';">' + imageHtml +
       '<div class="ed-shade"></div><div class="ed-grain"></div><div class="ed-border"></div>' +
       '<div class="ed-top"><span>CREATORIZE</span><span>CONTEÚDO · ESTRATÉGIA · MARCA</span><span>' + String(index + 1).padStart(2, '0') + '</span></div>' +
       icon + '<div class="ed-content position-' + editorialTextPlacement(slide) + '">' + (kicker ? '<div class="ed-kicker carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model3" data-carousel-text-key="title" style="' + carouselTextTransform(slide, 'model3', 'title') + '">' + kicker + '</div>' : '') +
@@ -1293,7 +1302,8 @@
     const density = sheetsContentDensity(titleRaw, bodyRaw, hasCta, isPhoto);
     const textAlign = sheetsTextAlign(slide);
     const cta = hasCta ? '<div class="sh-cta">SALVE ESTE CONTEÚDO<br>E COMPARTILHE.</div>' : '';
-    return '<div class="sh-card ' + variant + '">' + imageHtml + (isPhoto ? '<div class="sh-photo-shade"></div>' : '') +
+    const sheetsAccent = carouselAccentValue(slide, variant === 'orange' ? '#111111' : '#FF5A0A');
+    return '<div class="sh-card ' + variant + '" data-accent="' + carouselAccentName(slide) + '" style="--slide-accent:' + sheetsAccent + ';">' + imageHtml + (isPhoto ? '<div class="sh-photo-shade"></div>' : '') +
       '<div class="sh-texture"></div><div class="sh-square a"></div><div class="sh-square b"></div><div class="sh-square c"></div>' +
       '<div class="sh-top"><span>CONTEÚDO</span><span>ESTRATÉGIA</span><span>MARCA</span></div>' +
       '<div class="sh-content ' + density + ' align-' + textAlign + '"><div class="sh-title carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model4" data-carousel-text-key="title" style="font-size:' + sheetsTitleSize(titleRaw, bodyRaw, isPhoto) + 'px;' + sheetsTextTransform(slide, 'title') + '">' + titleHtml + '</div>' +
@@ -1562,6 +1572,7 @@
     slides.forEach(function (slide, i) {
       const hasImg = !!tweetSlideImageSrc(slide);
       const zoomPct = Math.round((slide.imageZoom || 1) * 100);
+      const accentKey = carouselAccentName(slide);
       const row = document.createElement('div');
       row.className = 'cs-tweet-slide-edit';
       row.innerHTML =
@@ -1569,6 +1580,8 @@
         (slides.length > 1 ? '<button type="button" class="btn btn-sm btn-tweet-remove" data-id="' + slide.id + '">Remover</button>' : '') +
         '</div>' +
         '<textarea data-id="' + slide.id + '" placeholder="Texto curto desta página... use **palavra** para criar destaques em negrito.">' + escapeHtml(slide.text || '') + '</textarea>' +
+        '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Cor da identidade</label>' +
+          '<select class="design-accent-select" data-id="' + slide.id + '" style="min-width:220px;"><option value="auto"' + (accentKey === 'auto' ? ' selected' : '') + '>Automática do modelo</option><option value="starter"' + (accentKey === 'starter' ? ' selected' : '') + '>Starter · Verde #22C55E</option><option value="launch"' + (accentKey === 'launch' ? ' selected' : '') + '>Launch · Laranja #FF6B00</option><option value="growth"' + (accentKey === 'growth' ? ' selected' : '') + '>Growth Partner · Azul #2563EB</option><option value="extensize"' + (accentKey === 'extensize' ? ' selected' : '') + '>Extensize · Roxo #7C3AED</option><option value="live"' + (accentKey === 'live' ? ' selected' : '') + '>Live · Vermelho #EF4444</option><option value="academy"' + (accentKey === 'academy' ? ' selected' : '') + '>Academy · Amarelo #FACC15</option></select></div>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Fundo em Folhas Creatorize</label>' +
           '<select class="sheet-bg-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="auto"' + ((!slide.sheetBg || slide.sheetBg === 'auto') ? ' selected' : '') + '>Automático</option><option value="photo"' + (slide.sheetBg === 'photo' ? ' selected' : '') + '>Foto / retrato</option><option value="orange"' + (slide.sheetBg === 'orange' ? ' selected' : '') + '>Laranja</option><option value="light"' + (slide.sheetBg === 'light' ? ' selected' : '') + '>Claro</option><option value="black"' + (slide.sheetBg === 'black' ? ' selected' : '') + '>Preto</option></select></div>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Alinhamento do texto</label>' +
@@ -1602,6 +1615,12 @@
       inp.addEventListener('input', function () {
         const slide = state.tweetCarousel.slides.find(function (s) { return s.id === inp.getAttribute('data-id'); });
         if (slide) { slide.credit = inp.value; renderTweetRail(); }
+      });
+    });
+    csTweetEditor.querySelectorAll('.design-accent-select').forEach(function (select) {
+      select.addEventListener('change', function () {
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === select.getAttribute('data-id'); });
+        if (slide) { slide.designAccent = select.value; renderTweetRail(); }
       });
     });
     csTweetEditor.querySelectorAll('.sheet-bg-select').forEach(function (select) {
@@ -2370,7 +2389,7 @@
             id: s.id, text: s.text, imageUrl: s.imageUrl || null,
             imageDataUrl: s.imageDataUrl || null, imageZoom: s.imageZoom || 1,
             imagePos: { x: (s.imagePos && s.imagePos.x) || 0, y: (s.imagePos && s.imagePos.y) || 0 },
-            credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s), editorialTextPlacement: editorialTextPlacement(s), sheetTextPos: s.sheetTextPos || {}, carouselTextPos: s.carouselTextPos || {},
+            credit: s.credit || '', designAccent: carouselAccentName(s), sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s), editorialTextPlacement: editorialTextPlacement(s), sheetTextPos: s.sheetTextPos || {}, carouselTextPos: s.carouselTextPos || {},
           };
         }),
       },
@@ -2417,7 +2436,7 @@
                 imageUrl: s.imageUrl || TWEET_DEFAULT_IMAGES[0],
                 imageDataUrl: s.imageDataUrl || null, imageZoom: s.imageZoom || 1,
                 imagePos: { x: (s.imagePos && s.imagePos.x) || 0, y: (s.imagePos && s.imagePos.y) || 0 },
-                credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s), editorialTextPlacement: editorialTextPlacement(s), sheetTextPos: s.sheetTextPos || {}, carouselTextPos: s.carouselTextPos || {},
+                credit: s.credit || '', designAccent: carouselAccentName(s), sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s), editorialTextPlacement: editorialTextPlacement(s), sheetTextPos: s.sheetTextPos || {}, carouselTextPos: s.carouselTextPos || {},
               };
             })
           : state.tweetCarousel.slides;
