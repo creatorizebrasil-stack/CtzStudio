@@ -471,8 +471,8 @@
   .sh-content.align-distributed .sh-body { max-width:none; text-align:justify; text-align-last:center; }
   .sh-content.align-distributed .sh-cta { align-self:center; }
   .sh-title { font-family:'Sora','Inter',sans-serif; font-size:78px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; width:100%; max-width:880px; text-wrap:balance; overflow-wrap:break-word; }
-  .sh-movable-text { position:relative; cursor:move; touch-action:none; user-select:none; }
-  .sh-movable-text.dragging { cursor:grabbing; }
+  .carousel-movable-text { position:relative; cursor:move; touch-action:none; user-select:none; }
+  .carousel-movable-text.dragging { cursor:grabbing; }
   .sh-title b { color:#FF5A0A; font-size:1.04em; }
   .sh-card.orange .sh-title b { color:#111; }
   .sh-body { width:100%; max-width:760px; font-size:40px; line-height:1.16; font-weight:350; letter-spacing:-.025em; text-wrap:balance; overflow-wrap:break-word; }
@@ -1247,13 +1247,24 @@
   }
 
   function sheetsTextPosition(slide, key) {
-    const pos = (slide.sheetTextPos || {})[key] || { x: 0, y: 0 };
+    return carouselTextPosition(slide, 'model4', key);
+  }
+
+  function carouselTextPosition(slide, style, key) {
+    const stylePositions = (slide.carouselTextPos || {})[style] || (style === 'model4' ? (slide.sheetTextPos || {}) : {});
+    const pos = stylePositions[key] || { x: 0, y: 0 };
     return { x: Number(pos.x) || 0, y: Number(pos.y) || 0 };
   }
 
-  function sheetsTextTransform(slide, key) {
-    const pos = sheetsTextPosition(slide, key);
+  function carouselTextTransform(slide, style, key) {
+    const pos = carouselTextPosition(slide, style, key);
     return 'transform:translate(' + pos.x + 'px,' + pos.y + 'px);';
+  }
+
+  function sheetsTextTransform(slide, key) { return carouselTextTransform(slide, 'model4', key); }
+
+  function movableTextAttrs(slide, style, key) {
+    return ' data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="' + style + '" data-carousel-text-key="' + key + '" style="' + carouselTextTransform(slide, style, key) + '"';
   }
 
   function renderSheetsSlideCardHtml(slide, index, total) {
