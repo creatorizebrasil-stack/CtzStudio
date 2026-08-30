@@ -76,6 +76,28 @@ async function chat(body) {
   return cleanJson(responseText(response));
 }
 
+async function reviseCarouselCopy(body) {
+  const pages = Array.isArray(body.pages) ? body.pages.slice(0, 15).map((page) => String(page || '').slice(0, 1600)) : [];
+  if (!pages.length) throw new Error('Nenhum texto foi enviado para revisão.');
+  const response = await openai('/responses', {
+    model: 'gpt-5.4-mini', store: false, max_output_tokens: 2200,
+    text: { format: { type: 'json_schema', name: 'carousel_copy_revision', strict: true, schema: {
+      type: 'object', additionalProperties: false,
+      properties: {
+        pages: { type: 'array', minItems: 1, maxItems: 15, items: { type: 'string' } }
+      },
+      required: ['pages']
+    } } },
+    input: [
+      { role: 'system', content: 'Você é editor de copy para carrosséis da Creatorize. Revise em português do Brasil. Preserve rigorosamente fatos, nomes, números, datas e a intenção original; não invente informações. Remova repetições, rodeios, introduções genéricas, metacomentários, instruções de produção e detalhes que não ajudam a ideia central. Corrija gramática, pontuação e clareza. Cada página deve comunicar uma única ideia, ser direta e fácil de ler no celular. Prefira título de até 9 palavras e apoio de até 24 palavras, separados por uma linha em branco quando ambos existirem. Não acrescente hashtags, fontes, chamadas comerciais ou emojis. Mantenha exatamente a mesma quantidade e ordem de páginas recebidas. Retorne somente o JSON solicitado.' },
+      { role: 'user', content: JSON.stringify({ pages }) }
+    ]
+  });
+  const result = cleanJson(responseText(response));
+  if (!Array.isArray(result.pages) || result.pages.length !== pages.length) throw new Error('A revisão retornou uma quantidade diferente de páginas.');
+  return result;
+}
+
 async function generate(body) {
   const styles = {
     authority: 'Cinematic editorial portrait advertising: one confident adult professional, centered or slightly off-center, dark neutral wardrobe, subtle film grain, controlled studio lighting, orange rim light, deep black background, premium personal-brand campaign. The person must be fictional and not resemble any real public or reference person.',
@@ -110,6 +132,7 @@ module.exports = async function handler(req, res) {
       return send(res, 200, await analyze(body.image));
     }
     if (body.action === 'chat') return send(res, 200, await chat(body));
+    if (body.action === 'revise-copy') return send(res, 200, await reviseCarouselCopy(body));
     if (body.action === 'generate') return send(res, 200, await generate(body));
     return send(res, 400, { error: 'Ação inválida.' });
   } catch (error) {

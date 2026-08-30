@@ -450,6 +450,38 @@
   .ed-icon { width:56px; height:56px; margin-bottom:20px; color:#FF5A0A; filter:drop-shadow(0 6px 18px rgba(255,90,10,.45)); }
   .ed-footer { position:absolute; z-index:3; left:64px; right:64px; bottom:42px; display:flex; justify-content:space-between; font-size:18px; font-weight:700; color:rgba(255,255,255,.9); }
   .ed-page { color:#FF6A18; letter-spacing:.12em; }
+  /* ---- Folhas Creatorize — sistema editorial alternado ---- */
+  .sh-card { width:1080px; height:1350px; transform:scale(.2796); transform-origin:top left; position:relative; overflow:hidden; box-sizing:border-box; font-family:'Inter',Arial,sans-serif; color:#fff; background:#050505; }
+  .sh-card.light { color:#080808; background:#f1f0ec; }
+  .sh-card.orange { color:#f7f4ef; background:#f0520b; }
+  .sh-card.black { color:#f5f2ed; background:#050505; }
+  .sh-photo { position:absolute; inset:-5%; width:110%; height:110%; object-fit:cover; transform-origin:center; cursor:grab; touch-action:none; filter:contrast(1.06) saturate(.86); }
+  .sh-photo-shade { position:absolute; inset:0; background:linear-gradient(180deg,rgba(0,0,0,.1) 0%,rgba(0,0,0,.08) 40%,rgba(0,0,0,.94) 82%,#020202 100%); }
+  .sh-texture { position:absolute; inset:0; pointer-events:none; opacity:.11; background-image:repeating-linear-gradient(0deg,rgba(80,55,35,.24) 0,rgba(80,55,35,.24) 1px,transparent 1px,transparent 4px); mix-blend-mode:multiply; }
+  .sh-top { position:absolute; z-index:3; top:55px; left:72px; right:72px; display:flex; justify-content:space-between; font-size:20px; letter-spacing:.06em; text-transform:uppercase; }
+  .sh-content { position:absolute; z-index:3; left:92px; right:92px; top:220px; bottom:125px; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:28px; overflow:hidden; text-align:center; }
+  .sh-card.photo .sh-content { top:515px; bottom:108px; justify-content:center; }
+  .sh-content.compact { gap:20px; }
+  .sh-content.dense { gap:14px; }
+  .sh-content.align-left { align-items:flex-start; text-align:left; }
+  .sh-content.align-right { align-items:flex-end; text-align:right; }
+  .sh-content.align-center { align-items:center; text-align:center; }
+  .sh-content.align-distributed { align-items:stretch; text-align:justify; }
+  .sh-content.align-distributed .sh-title,
+  .sh-content.align-distributed .sh-body { max-width:none; text-align:justify; text-align-last:center; }
+  .sh-content.align-distributed .sh-cta { align-self:center; }
+  .sh-title { font-family:'Sora','Inter',sans-serif; font-size:78px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; width:100%; max-width:880px; text-wrap:balance; overflow-wrap:break-word; }
+  .sh-title b { color:#FF5A0A; font-size:1.04em; }
+  .sh-card.orange .sh-title b { color:#111; }
+  .sh-body { width:100%; max-width:760px; font-size:40px; line-height:1.16; font-weight:350; letter-spacing:-.025em; text-wrap:balance; overflow-wrap:break-word; }
+  .sh-body b { font-weight:800; }
+  .sh-content.compact .sh-body { font-size:34px; line-height:1.13; }
+  .sh-content.dense .sh-body { font-size:30px; line-height:1.1; }
+  .sh-cta { flex:0 0 auto; background:#f3f0ea; color:#090909; padding:16px 38px; font-family:'Sora','Inter',sans-serif; font-size:28px; line-height:1.05; font-weight:800; text-wrap:balance; }
+  .sh-square { position:absolute; z-index:2; width:22px; height:22px; background:#FF5A0A; }
+  .sh-card.orange .sh-square { background:#080808; }
+  .sh-square.a { left:90px; top:590px; }.sh-square.b { right:88px; bottom:250px; }.sh-square.c { right:330px; top:360px; }
+  .sh-footer { position:absolute; z-index:3; left:72px; right:72px; bottom:42px; display:flex; justify-content:space-between; font-size:18px; font-weight:650; }
   .chat-messages { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; max-height: 50vh; overflow-y: auto; padding-right: 2px; }
   .bubble { padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
   .bubble.user { background: var(--accent); color: #170604; align-self: flex-end; max-width: 85%; font-weight: 600; }
@@ -528,6 +560,7 @@
         <button class="cs-switch-btn active" id="csBtnModel2" data-cs-target="model2">Estilo Tweet/X</button>
         <button class="cs-switch-btn" id="csBtnModel1" data-cs-target="model1">Padrão Tecnológico</button>
         <button class="cs-switch-btn" id="csBtnModel3" data-cs-target="model3">Editorial com Foto</button>
+        <button class="cs-switch-btn" id="csBtnModel4" data-cs-target="model4">Folhas Creatorize</button>
       </div>
 
       <div class="card cs-autogen-card" style="margin-bottom:16px;">
@@ -539,8 +572,8 @@
           <button type="button" class="btn btn-primary" id="btnAutogenCarousel" style="margin-left:auto;">Gerar páginas</button>
         </div>
         <div class="note" style="margin-top:10px;">
-          O gerador corrige espaçamento e pontuação, remove instruções de produção,
-          adiciona emojis com moderação e destaca automaticamente palavras importantes.
+          A IA corrige a copy, remove repetições e informações desnecessárias,
+          preserva os dados importantes e destaca palavras-chave com moderação.
         </div>
       </div>
 
@@ -575,6 +608,14 @@
         <div class="cs-tweet-row" style="margin-top:10px;">
           <div class="note" style="flex:1;">Foto em tela cheia, efeito cinematográfico, ícone editorial e tipografia Creatorize. Use <code>**palavra**</code> para destacar em laranja.</div>
           <button type="button" class="btn" data-export-all="model3" style="flex:0 0 auto;">Baixar todas (PNG)</button>
+        </div>
+      </div>
+
+      <div id="csModel4Wrap" style="display:none;margin-bottom:20px;">
+        <div class="cs-tweet-rail-wrap"><div class="cs-tweet-rail" id="csSheetsRail"></div></div>
+        <div class="cs-tweet-row" style="margin-top:10px;">
+          <div class="note" style="flex:1;">Sequência editorial com folhas fotográficas, laranja, claras e pretas. Escolha o fundo de cada página no editor abaixo.</div>
+          <button type="button" class="btn" data-export-all="model4" style="flex:0 0 auto;">Baixar todas (PNG)</button>
         </div>
       </div>
 
@@ -694,6 +735,7 @@
           <button type="button" class="cs-switch-btn active" id="scriptBtnModel2" data-cs-target="model2">Estilo Tweet/X</button>
           <button type="button" class="cs-switch-btn" id="scriptBtnModel1" data-cs-target="model1">Padrão Tecnológico</button>
           <button type="button" class="cs-switch-btn" id="scriptBtnModel3" data-cs-target="model3">Editorial com Foto</button>
+          <button type="button" class="cs-switch-btn" id="scriptBtnModel4" data-cs-target="model4">Folhas Creatorize</button>
         </div>
       </div>
 
@@ -942,8 +984,8 @@
     return '<div style="width:100%;height:100%;border-radius:4px;background:linear-gradient(135deg,#FF3B12,#FF851B);display:flex;align-items:center;justify-content:center;font-family:\'Sora\',sans-serif;font-weight:800;color:#170604;font-size:13px;">CTZ</div>';
   }
 
-  const csSwitchButtons = [document.getElementById('csBtnModel1'), document.getElementById('csBtnModel2'), document.getElementById('csBtnModel3')];
-  const csWraps = { model1: document.getElementById('csModel1Wrap'), model2: document.getElementById('csModel2Wrap'), model3: document.getElementById('csModel3Wrap') };
+  const csSwitchButtons = [document.getElementById('csBtnModel1'), document.getElementById('csBtnModel2'), document.getElementById('csBtnModel3'), document.getElementById('csBtnModel4')];
+  const csWraps = { model1: document.getElementById('csModel1Wrap'), model2: document.getElementById('csModel2Wrap'), model3: document.getElementById('csModel3Wrap'), model4: document.getElementById('csModel4Wrap') };
   const csLogoSection = document.getElementById('csLogoSection');
 
   // Estilo do carrossel é um estado único (state.carouselStyle) com duas UIs
@@ -951,7 +993,7 @@
   // pergunta "Gerar no modelo" na aba Texto / Script (onde o carrossel é
   // gerado) — as duas sempre refletem a mesma escolha.
   function setCarouselStyle(style) {
-    state.carouselStyle = ['model1', 'model2', 'model3'].includes(style) ? style : 'model2';
+    state.carouselStyle = ['model1', 'model2', 'model3', 'model4'].includes(style) ? style : 'model2';
     csSwitchButtons.forEach(function (b) {
       b.classList.toggle('active', b.getAttribute('data-cs-target') === state.carouselStyle);
     });
@@ -1175,9 +1217,63 @@
       '</div>';
   }
 
+  function sheetsVariant(slide, index) {
+    if (slide.sheetBg && slide.sheetBg !== 'auto') return slide.sheetBg;
+    const sequence = ['photo', 'orange', 'light', 'black', 'photo'];
+    return sequence[index % sequence.length];
+  }
+
+  function sheetsContentDensity(title, body, hasCta, isPhoto) {
+    const score = (title || '').length + ((body || '').length * .72) + (hasCta ? 42 : 0) + (isPhoto ? 28 : 0);
+    if (score > 180) return 'dense';
+    if (score > 118) return 'compact';
+    return 'comfortable';
+  }
+
+  function sheetsTitleSize(text, body, isPhoto) {
+    const len = (text || '').length;
+    const total = len + ((body || '').length * .55);
+    let size = len <= 42 ? 88 : len <= 72 ? 76 : len <= 110 ? 64 : 54;
+    if (total > 165) size = Math.min(size, 56);
+    if (total > 220) size = Math.min(size, 49);
+    if (isPhoto) size = Math.min(size, 72);
+    return size;
+  }
+
+  function sheetsTextAlign(slide) {
+    return ['left', 'right', 'center', 'distributed'].includes(slide.sheetAlign) ? slide.sheetAlign : 'center';
+  }
+
+  function renderSheetsSlideCardHtml(slide, index, total) {
+    const variant = sheetsVariant(slide, index);
+    const imgSrc = tweetSlideImageSrc(slide);
+    const zoom = slide.imageZoom || 1;
+    const pos = slide.imagePos || { x: 0, y: 0 };
+    const parsed = parseSlideMarkup(slide.text);
+    const titleRaw = parsed.title || parsed.body || 'UMA IDEIA FORTE MERECE UMA BOA FOLHA.';
+    const bodyRaw = parsed.title ? parsed.body : '';
+    const titleHtml = applyInlineBold(escapeHtml(titleRaw)).replace(/\n/g, '<br>');
+    const bodyHtml = applyInlineBold(escapeHtml(bodyRaw)).replace(/\n/g, '<br>');
+    const isPhoto = variant === 'photo';
+    const imageHtml = isPhoto && imgSrc
+      ? '<img class="sh-photo" data-sheets-slide-id="' + slide.id + '" src="' + imgSrc + '" alt="Retrato ou foto da página ' + (index + 1) + '" style="transform:scale(' + zoom + ') translate(' + pos.x + '%, ' + pos.y + '%);">'
+      : '';
+    const hasCta = index === total - 1;
+    const density = sheetsContentDensity(titleRaw, bodyRaw, hasCta, isPhoto);
+    const textAlign = sheetsTextAlign(slide);
+    const cta = hasCta ? '<div class="sh-cta">SALVE ESTE CONTEÚDO<br>E COMPARTILHE.</div>' : '';
+    return '<div class="sh-card ' + variant + '">' + imageHtml + (isPhoto ? '<div class="sh-photo-shade"></div>' : '') +
+      '<div class="sh-texture"></div><div class="sh-square a"></div><div class="sh-square b"></div><div class="sh-square c"></div>' +
+      '<div class="sh-top"><span>CONTEÚDO</span><span>ESTRATÉGIA</span><span>MARCA</span></div>' +
+      '<div class="sh-content ' + density + ' align-' + textAlign + '"><div class="sh-title" style="font-size:' + sheetsTitleSize(titleRaw, bodyRaw, isPhoto) + 'px">' + titleHtml + '</div>' +
+      (bodyHtml ? '<div class="sh-body">' + bodyHtml + '</div>' : '') + cta + '</div>' +
+      '<div class="sh-footer"><span>@caiocreatorize</span><span>' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>@creatorizebrasil</span></div></div>';
+  }
+
   const csTweetRail = document.getElementById('csTweetRail');
   const csBrandRail = document.getElementById('csBrandRail');
   const csEditorialRail = document.getElementById('csEditorialRail');
+  const csSheetsRail = document.getElementById('csSheetsRail');
   const csTweetEditor = document.getElementById('csTweetEditor');
 
   // Rótulo + botão de exportar PNG abaixo de cada página da esteira — mesmo
@@ -1206,6 +1302,11 @@
     if (csEditorialRail) {
       csEditorialRail.innerHTML = slides.map(function (slide, i) {
         return '<div class="tw-frame-item"><div class="tw-frame">' + renderEditorialSlideCardHtml(slide, i, slides.length) + '</div>' + frameActionsHtml(i, 'model3') + '</div>';
+      }).join('');
+    }
+    if (csSheetsRail) {
+      csSheetsRail.innerHTML = slides.map(function (slide, i) {
+        return '<div class="tw-frame-item"><div class="tw-frame">' + renderSheetsSlideCardHtml(slide, i, slides.length) + '</div>' + frameActionsHtml(i, 'model4') + '</div>';
       }).join('');
     }
     attachTweetImageDrag();
@@ -1260,6 +1361,7 @@
     wireImageDrag(csTweetRail, 'data-tweet-slide-id');
     wireImageDrag(csBrandRail, 'data-brand-slide-id');
     wireImageDrag(csEditorialRail, 'data-editorial-slide-id');
+    wireImageDrag(csSheetsRail, 'data-sheets-slide-id');
   }
 
   // ---------------------------------------------------------------------
@@ -1277,7 +1379,9 @@
       ? renderBrandSlideCardHtml(slide, index, total)
       : style === 'model3'
         ? renderEditorialSlideCardHtml(slide, index, total)
-        : renderTweetSlideCardHtml(slide, index, total);
+        : style === 'model4'
+          ? renderSheetsSlideCardHtml(slide, index, total)
+          : renderTweetSlideCardHtml(slide, index, total);
     const holder = document.createElement('div');
     holder.style.cssText = 'position:fixed;left:-99999px;top:0;pointer-events:none;';
     holder.innerHTML = html;
@@ -1393,6 +1497,10 @@
         (slides.length > 1 ? '<button type="button" class="btn btn-sm btn-tweet-remove" data-id="' + slide.id + '">Remover</button>' : '') +
         '</div>' +
         '<textarea data-id="' + slide.id + '" placeholder="Texto desta página... (opcional: título curto, linha em branco, resto do texto — e **palavra** pra negrito)">' + escapeHtml(slide.text || '') + '</textarea>' +
+        '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Fundo em Folhas Creatorize</label>' +
+          '<select class="sheet-bg-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="auto"' + ((!slide.sheetBg || slide.sheetBg === 'auto') ? ' selected' : '') + '>Automático</option><option value="photo"' + (slide.sheetBg === 'photo' ? ' selected' : '') + '>Foto / retrato</option><option value="orange"' + (slide.sheetBg === 'orange' ? ' selected' : '') + '>Laranja</option><option value="light"' + (slide.sheetBg === 'light' ? ' selected' : '') + '>Claro</option><option value="black"' + (slide.sheetBg === 'black' ? ' selected' : '') + '>Preto</option></select></div>' +
+        '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Alinhamento do texto</label>' +
+          '<select class="sheet-align-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="center"' + ((!slide.sheetAlign || slide.sheetAlign === 'center') ? ' selected' : '') + '>Centralizado</option><option value="left"' + (slide.sheetAlign === 'left' ? ' selected' : '') + '>À esquerda</option><option value="right"' + (slide.sheetAlign === 'right' ? ' selected' : '') + '>À direita</option><option value="distributed"' + (slide.sheetAlign === 'distributed' ? ' selected' : '') + '>Espaçado / distribuído</option></select></div>' +
         '<div class="cs-tweet-row">' +
           '<img class="cs-tweet-thumb" src="' + tweetSlideImageSrc(slide) + '" alt="">' +
           '<input type="file" accept="image/*" class="tweet-image-input" data-id="' + slide.id + '">' +
@@ -1419,6 +1527,18 @@
       inp.addEventListener('input', function () {
         const slide = state.tweetCarousel.slides.find(function (s) { return s.id === inp.getAttribute('data-id'); });
         if (slide) { slide.credit = inp.value; renderTweetRail(); }
+      });
+    });
+    csTweetEditor.querySelectorAll('.sheet-bg-select').forEach(function (select) {
+      select.addEventListener('change', function () {
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === select.getAttribute('data-id'); });
+        if (slide) { slide.sheetBg = select.value; renderTweetRail(); }
+      });
+    });
+    csTweetEditor.querySelectorAll('.sheet-align-select').forEach(function (select) {
+      select.addEventListener('change', function () {
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === select.getAttribute('data-id'); });
+        if (slide) { slide.sheetAlign = select.value; renderTweetRail(); }
       });
     });
     csTweetEditor.querySelectorAll('.tweet-zoom-input').forEach(function (range) {
@@ -1705,16 +1825,6 @@
     'inovacao', 'importante', 'essencial', 'atenção', 'atencao', 'agora',
     'nunca', 'sempre', 'passo a passo', 'segredo', 'erro', 'erros'
   ];
-  const AUTOGEN_EMOJI_RULES = [
-    { re: /dinheiro|economia|invest|finance|renda|lucro/i, emoji: '💰' },
-    { re: /crescimento|resultado|meta|conquista|avan[cç]/i, emoji: '📈' },
-    { re: /ideia|dica|aprenda|descubra|sabia|insight/i, emoji: '💡' },
-    { re: /aten[cç][aã]o|cuidado|erro|risco|nunca/i, emoji: '⚠️' },
-    { re: /tempo|prazo|agora|hoje|r[aá]pid/i, emoji: '⏱️' },
-    { re: /tecnologia|digital|inova[cç]|intelig[eê]ncia/i, emoji: '🚀' },
-    { re: /casa|im[oó]vel|patrim[oô]nio/i, emoji: '🏠' },
-    { re: /equipe|pessoas|comunidade|juntos/i, emoji: '🤝' }
-  ];
 
   function cleanGeneratedText(text) {
     let cleaned = (text || '').replace(/\r\n/g, '\n');
@@ -1757,30 +1867,29 @@
     return out;
   }
 
-  function addAutomaticEmoji(text, index, total) {
-    if (!text || /[\p{Extended_Pictographic}]/u.test(text)) return text;
-    let emoji = '';
-    for (let i = 0; i < AUTOGEN_EMOJI_RULES.length; i++) {
-      if (AUTOGEN_EMOJI_RULES[i].re.test(text)) { emoji = AUTOGEN_EMOJI_RULES[i].emoji; break; }
-    }
-    if (!emoji) emoji = index === 0 ? '✨' : (index === total - 1 ? '👉' : '•');
-    // O ponto neutro não é inserido: emojis aparecem só quando agregam
-    // significado ou nas páginas de abertura/encerramento.
-    if (emoji === '•') return text;
-    return emoji + ' ' + text;
-  }
-
   function applyGeneratorTextRules(text, index, total) {
     const cleaned = cleanGeneratedText(text);
-    const highlighted = addAutomaticHighlights(cleaned);
-    return addAutomaticEmoji(highlighted, index, total);
+    return addAutomaticHighlights(cleaned);
+  }
+
+  async function reviseCarouselCopyWithAi(pageEntries) {
+    const response = await fetch('/api/post-ai', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ action: 'revise-copy', pages: pageEntries.map(function (entry) { return entry.text; }) })
+    });
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.error || 'Não foi possível revisar a copy.');
+    if (!Array.isArray(data.pages) || data.pages.length !== pageEntries.length) throw new Error('A revisão retornou páginas incompletas.');
+    return pageEntries.map(function (entry, index) {
+      return { text: data.pages[index], credit: entry.credit || null };
+    });
   }
 
   // Gera as páginas do modelo Estilo Tweet/X a partir de um texto único +
   // quantidade de páginas desejada. Usado tanto pelo card "Gerar carrossel
   // automaticamente" (aba Carousel Studio) quanto pelo botão "Gerar
   // carrossel" da aba Texto / Script — mesma lógica, duas entradas.
-  function runAutogenCarousel(rawText, requestedCountRaw) {
+  async function runAutogenCarousel(rawText, requestedCountRaw) {
     rawText = (rawText || '').trim();
     if (!rawText) { alert('Cole ou escreva o texto do carrossel antes de gerar as páginas.'); return false; }
 
@@ -1801,18 +1910,25 @@
       pageEntries = pageTexts.map(function (text) { return { text: text, credit: null }; });
     }
 
+    const hasExistingContent = state.tweetCarousel.slides.some(function (s) { return (s.text || '').trim(); });
+    if (hasExistingContent) {
+      const ok = confirm('Isso vai substituir as ' + state.tweetCarousel.slides.length + ' página(s) atuais deste modelo pelas novas páginas geradas. Continuar?');
+      if (!ok) return false;
+    }
+
+    try {
+      showMbToast('Revisando a copy e removendo informações desnecessárias...');
+      pageEntries = await reviseCarouselCopyWithAi(pageEntries);
+    } catch (error) {
+      showMbToast('A revisão por IA não respondeu. Aplicando a limpeza automática local.');
+    }
+
     pageEntries = pageEntries.map(function (entry, index) {
       return {
         text: applyGeneratorTextRules(entry.text, index, pageEntries.length),
         credit: entry.credit || null,
       };
     }).filter(function (entry) { return !!entry.text; });
-
-    const hasExistingContent = state.tweetCarousel.slides.some(function (s) { return (s.text || '').trim(); });
-    if (hasExistingContent) {
-      const ok = confirm('Isso vai substituir as ' + state.tweetCarousel.slides.length + ' página(s) atuais deste modelo pelas novas páginas geradas. Continuar?');
-      if (!ok) return false;
-    }
 
     state.tweetCarousel.slides = pageEntries.map(function (entry, i) {
       return {
@@ -1840,10 +1956,14 @@
     return true;
   }
 
-  document.getElementById('btnAutogenCarousel').addEventListener('click', function () {
+  document.getElementById('btnAutogenCarousel').addEventListener('click', async function () {
     const textEl = document.getElementById('csAutogenText');
     const countEl = document.getElementById('csAutogenCount');
-    runAutogenCarousel(textEl.value, countEl.value);
+    const btn = this;
+    const label = btn.textContent;
+    btn.disabled = true; btn.textContent = 'Revisando copy...';
+    try { await runAutogenCarousel(textEl.value, countEl.value); }
+    finally { btn.disabled = false; btn.textContent = label; }
   });
 
   renderTweetEditor();
@@ -2056,7 +2176,7 @@
 
   // Pergunta "Gerar no modelo" — mesma escolha do switcher da aba Carousel
   // Studio (setCarouselStyle mantém as duas UIs sincronizadas).
-  const scriptStyleButtons = [document.getElementById('scriptBtnModel2'), document.getElementById('scriptBtnModel1'), document.getElementById('scriptBtnModel3')];
+  const scriptStyleButtons = [document.getElementById('scriptBtnModel2'), document.getElementById('scriptBtnModel1'), document.getElementById('scriptBtnModel3'), document.getElementById('scriptBtnModel4')];
   scriptStyleButtons.forEach(function (btn) {
     if (!btn) return;
     btn.addEventListener('click', function () {
@@ -2122,8 +2242,11 @@
   // sem precisar trocar de aba antes. Depois de gerar, leva o usuário até
   // o resultado (aba Carousel Studio, modelo Estilo Tweet/X).
   if (btnGenerateFromScript) {
-    btnGenerateFromScript.addEventListener('click', function () {
-      const ok = runAutogenCarousel(scriptTextArea ? scriptTextArea.value : '', scriptAutogenCount ? scriptAutogenCount.value : 5);
+    btnGenerateFromScript.addEventListener('click', async function () {
+      const label = btnGenerateFromScript.textContent;
+      btnGenerateFromScript.disabled = true; btnGenerateFromScript.textContent = 'Revisando copy...';
+      const ok = await runAutogenCarousel(scriptTextArea ? scriptTextArea.value : '', scriptAutogenCount ? scriptAutogenCount.value : 5);
+      btnGenerateFromScript.disabled = false; btnGenerateFromScript.textContent = label;
       if (!ok) return;
       // Mantém o card de geração da aba Carousel Studio em sincronia, caso
       // o usuário volte lá pra gerar de novo com outro texto/quantidade.
@@ -2153,7 +2276,7 @@
             id: s.id, text: s.text, imageUrl: s.imageUrl || null,
             imageDataUrl: s.imageDataUrl || null, imageZoom: s.imageZoom || 1,
             imagePos: { x: (s.imagePos && s.imagePos.x) || 0, y: (s.imagePos && s.imagePos.y) || 0 },
-            credit: s.credit || '',
+            credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s),
           };
         }),
       },
@@ -2181,7 +2304,7 @@
         const data = JSON.parse(reader.result);
         state.logoDataUrl = data.logoDataUrl || null;
         state.logoImg = null;
-        setCarouselStyle(['model1', 'model2', 'model3'].includes(data.carouselStyle) ? data.carouselStyle : 'model2');
+        setCarouselStyle(['model1', 'model2', 'model3', 'model4'].includes(data.carouselStyle) ? data.carouselStyle : 'model2');
         if (state.logoDataUrl) {
           const limg = new Image();
           limg.onload = function () { state.logoImg = limg; };
@@ -2200,7 +2323,7 @@
                 imageUrl: s.imageUrl || TWEET_DEFAULT_IMAGES[0],
                 imageDataUrl: s.imageDataUrl || null, imageZoom: s.imageZoom || 1,
                 imagePos: { x: (s.imagePos && s.imagePos.x) || 0, y: (s.imagePos && s.imagePos.y) || 0 },
-                credit: s.credit || '',
+                credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s),
               };
             })
           : state.tweetCarousel.slides;
