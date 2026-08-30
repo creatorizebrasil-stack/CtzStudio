@@ -471,6 +471,8 @@
   .sh-content.align-distributed .sh-body { max-width:none; text-align:justify; text-align-last:center; }
   .sh-content.align-distributed .sh-cta { align-self:center; }
   .sh-title { font-family:'Sora','Inter',sans-serif; font-size:78px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; width:100%; max-width:880px; text-wrap:balance; overflow-wrap:break-word; }
+  .sh-movable-text { position:relative; cursor:move; touch-action:none; user-select:none; }
+  .sh-movable-text.dragging { cursor:grabbing; }
   .sh-title b { color:#FF5A0A; font-size:1.04em; }
   .sh-card.orange .sh-title b { color:#111; }
   .sh-body { width:100%; max-width:760px; font-size:40px; line-height:1.16; font-weight:350; letter-spacing:-.025em; text-wrap:balance; overflow-wrap:break-word; }
@@ -1244,6 +1246,16 @@
     return ['left', 'right', 'center', 'distributed'].includes(slide.sheetAlign) ? slide.sheetAlign : 'center';
   }
 
+  function sheetsTextPosition(slide, key) {
+    const pos = (slide.sheetTextPos || {})[key] || { x: 0, y: 0 };
+    return { x: Number(pos.x) || 0, y: Number(pos.y) || 0 };
+  }
+
+  function sheetsTextTransform(slide, key) {
+    const pos = sheetsTextPosition(slide, key);
+    return 'transform:translate(' + pos.x + 'px,' + pos.y + 'px);';
+  }
+
   function renderSheetsSlideCardHtml(slide, index, total) {
     const variant = sheetsVariant(slide, index);
     const imgSrc = tweetSlideImageSrc(slide);
@@ -1253,7 +1265,7 @@
     const titleRaw = parsed.title || parsed.body || 'UMA IDEIA FORTE MERECE UMA BOA FOLHA.';
     const bodyRaw = parsed.title ? parsed.body : '';
     const titleHtml = applyInlineBold(escapeHtml(titleRaw)).replace(/\n/g, '<br>');
-    const bodyHtml = applyInlineBold(escapeHtml(bodyRaw)).replace(/\n/g, '<br>');
+    const bodyParagraphs = bodyRaw ? bodyRaw.split(/\n\s*\n/).map(function (paragraph) { return paragraph.trim(); }).filter(Boolean) : [];
     const isPhoto = variant === 'photo';
     const imageHtml = isPhoto && imgSrc
       ? '<img class="sh-photo" data-sheets-slide-id="' + slide.id + '" src="' + imgSrc + '" alt="Retrato ou foto da página ' + (index + 1) + '" style="transform:scale(' + zoom + ') translate(' + pos.x + '%, ' + pos.y + '%);">'
@@ -1265,8 +1277,8 @@
     return '<div class="sh-card ' + variant + '">' + imageHtml + (isPhoto ? '<div class="sh-photo-shade"></div>' : '') +
       '<div class="sh-texture"></div><div class="sh-square a"></div><div class="sh-square b"></div><div class="sh-square c"></div>' +
       '<div class="sh-top"><span>CONTEÚDO</span><span>ESTRATÉGIA</span><span>MARCA</span></div>' +
-      '<div class="sh-content ' + density + ' align-' + textAlign + '"><div class="sh-title" style="font-size:' + sheetsTitleSize(titleRaw, bodyRaw, isPhoto) + 'px">' + titleHtml + '</div>' +
-      (bodyHtml ? '<div class="sh-body">' + bodyHtml + '</div>' : '') + cta + '</div>' +
+      '<div class="sh-content ' + density + ' align-' + textAlign + '"><div class="sh-title sh-movable-text" data-sheet-text-slide="' + slide.id + '" data-sheet-text-key="title" style="font-size:' + sheetsTitleSize(titleRaw, bodyRaw, isPhoto) + 'px;' + sheetsTextTransform(slide, 'title') + '">' + titleHtml + '</div>' +
+      bodyParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="sh-body sh-movable-text" data-sheet-text-slide="' + slide.id + '" data-sheet-text-key="' + key + '" style="' + sheetsTextTransform(slide, key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') + cta + '</div>' +
       '<div class="sh-footer"><span>@caiocreatorize</span><span>' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>@creatorizebrasil</span></div></div>';
   }
 
@@ -1357,11 +1369,46 @@
     });
   }
 
+  function wireSheetsTextDrag() {
+    if (!csSheetsRail) return;
+    csSheetsRail.querySelectorAll('.sh-movable-text[data-sheet-text-slide]').forEach(function (textEl) {
+      let dragging = false, startX = 0, startY = 0, baseX = 0, baseY = 0, scale = 1;
+      textEl.addEventListener('pointerdown', function (event) {
+        const id = textEl.getAttribute('data-sheet-text-slide');
+        const key = textEl.getAttribute('data-sheet-text-key');
+        const slide = state.tweetCarousel.slides.find(function (item) { return item.id === id; });
+        if (!slide) return;
+        const pos = sheetsTextPosition(slide, key);
+        const rect = textEl.closest('.sh-card').getBoundingClientRect();
+        scale = rect.width / 1080 || 1;
+        startX = event.clientX; startY = event.clientY; baseX = pos.x; baseY = pos.y; dragging = true;
+        try { textEl.setPointerCapture(event.pointerId); } catch (error) {}
+        textEl.classList.add('dragging'); event.preventDefault(); event.stopPropagation();
+      });
+      textEl.addEventListener('pointermove', function (event) {
+        if (!dragging) return;
+        const id = textEl.getAttribute('data-sheet-text-slide');
+        const key = textEl.getAttribute('data-sheet-text-key');
+        const slide = state.tweetCarousel.slides.find(function (item) { return item.id === id; });
+        if (!slide) return;
+        const x = Math.max(-360, Math.min(360, baseX + (event.clientX - startX) / scale));
+        const y = Math.max(-420, Math.min(420, baseY + (event.clientY - startY) / scale));
+        slide.sheetTextPos = slide.sheetTextPos || {};
+        slide.sheetTextPos[key] = { x: Math.round(x), y: Math.round(y) };
+        textEl.style.transform = 'translate(' + x + 'px,' + y + 'px)';
+      });
+      function finish() { dragging = false; textEl.classList.remove('dragging'); }
+      textEl.addEventListener('pointerup', finish);
+      textEl.addEventListener('pointercancel', finish);
+    });
+  }
+
   function attachTweetImageDrag() {
     wireImageDrag(csTweetRail, 'data-tweet-slide-id');
     wireImageDrag(csBrandRail, 'data-brand-slide-id');
     wireImageDrag(csEditorialRail, 'data-editorial-slide-id');
     wireImageDrag(csSheetsRail, 'data-sheets-slide-id');
+    wireSheetsTextDrag();
   }
 
   // ---------------------------------------------------------------------
@@ -1501,6 +1548,7 @@
           '<select class="sheet-bg-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="auto"' + ((!slide.sheetBg || slide.sheetBg === 'auto') ? ' selected' : '') + '>Automático</option><option value="photo"' + (slide.sheetBg === 'photo' ? ' selected' : '') + '>Foto / retrato</option><option value="orange"' + (slide.sheetBg === 'orange' ? ' selected' : '') + '>Laranja</option><option value="light"' + (slide.sheetBg === 'light' ? ' selected' : '') + '>Claro</option><option value="black"' + (slide.sheetBg === 'black' ? ' selected' : '') + '>Preto</option></select></div>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Alinhamento do texto</label>' +
           '<select class="sheet-align-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="center"' + ((!slide.sheetAlign || slide.sheetAlign === 'center') ? ' selected' : '') + '>Centralizado</option><option value="left"' + (slide.sheetAlign === 'left' ? ' selected' : '') + '>À esquerda</option><option value="right"' + (slide.sheetAlign === 'right' ? ' selected' : '') + '>À direita</option><option value="distributed"' + (slide.sheetAlign === 'distributed' ? ' selected' : '') + '>Espaçado / distribuído</option></select></div>' +
+        '<div class="cs-tweet-row"><span style="font-size:11.5px;color:var(--text-dim);">Arraste a headline e cada parágrafo diretamente na prévia.</span><button type="button" class="btn btn-sm sheet-reset-text" data-id="' + slide.id + '">Restaurar posições</button></div>' +
         '<div class="cs-tweet-row">' +
           '<img class="cs-tweet-thumb" src="' + tweetSlideImageSrc(slide) + '" alt="">' +
           '<input type="file" accept="image/*" class="tweet-image-input" data-id="' + slide.id + '">' +
@@ -1539,6 +1587,12 @@
       select.addEventListener('change', function () {
         const slide = state.tweetCarousel.slides.find(function (s) { return s.id === select.getAttribute('data-id'); });
         if (slide) { slide.sheetAlign = select.value; renderTweetRail(); }
+      });
+    });
+    csTweetEditor.querySelectorAll('.sheet-reset-text').forEach(function (button) {
+      button.addEventListener('click', function () {
+        const slide = state.tweetCarousel.slides.find(function (s) { return s.id === button.getAttribute('data-id'); });
+        if (slide) { slide.sheetTextPos = {}; renderTweetRail(); }
       });
     });
     csTweetEditor.querySelectorAll('.tweet-zoom-input').forEach(function (range) {
@@ -2278,7 +2332,7 @@
             id: s.id, text: s.text, imageUrl: s.imageUrl || null,
             imageDataUrl: s.imageDataUrl || null, imageZoom: s.imageZoom || 1,
             imagePos: { x: (s.imagePos && s.imagePos.x) || 0, y: (s.imagePos && s.imagePos.y) || 0 },
-            credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s),
+            credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s), sheetTextPos: s.sheetTextPos || {},
           };
         }),
       },
@@ -2325,7 +2379,7 @@
                 imageUrl: s.imageUrl || TWEET_DEFAULT_IMAGES[0],
                 imageDataUrl: s.imageDataUrl || null, imageZoom: s.imageZoom || 1,
                 imagePos: { x: (s.imagePos && s.imagePos.x) || 0, y: (s.imagePos && s.imagePos.y) || 0 },
-                credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s),
+                credit: s.credit || '', sheetBg: s.sheetBg || 'auto', sheetAlign: sheetsTextAlign(s), sheetTextPos: s.sheetTextPos || {},
               };
             })
           : state.tweetCarousel.slides;
