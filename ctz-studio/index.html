@@ -564,7 +564,7 @@
       </div>
 
       <div class="card cs-autogen-card" style="margin-bottom:16px;">
-        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Gerar carrossel automaticamente</div>
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">CTZ COPY VIRAL — Gerar carrossel</div>
         <textarea id="csAutogenText" placeholder="Cole aqui o texto completo do carrossel..." style="width:100%;min-height:110px;background:var(--panel-2);border:1px solid var(--border);border-radius:4px;color:var(--text);font-family:inherit;font-size:12.5px;padding:9px 11px;resize:vertical;"></textarea>
         <div class="cs-tweet-row" style="margin-top:10px;">
           <label style="font-size:11.5px;color:var(--text-dim);flex:0 0 auto;">Páginas</label>
@@ -1872,16 +1872,17 @@
     return addAutomaticHighlights(cleaned);
   }
 
-  async function reviseCarouselCopyWithAi(pageEntries) {
+  async function reviseCarouselCopyWithAi(pageEntries, requestedCount, sourceText) {
     const response = await fetch('/api/post-ai', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ action: 'revise-copy', pages: pageEntries.map(function (entry) { return entry.text; }) })
+      body: JSON.stringify({ action: 'revise-copy', count: requestedCount, source: sourceText, pages: pageEntries.map(function (entry) { return entry.text; }) })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data.error || 'Não foi possível revisar a copy.');
-    if (!Array.isArray(data.pages) || data.pages.length !== pageEntries.length) throw new Error('A revisão retornou páginas incompletas.');
-    return pageEntries.map(function (entry, index) {
-      return { text: data.pages[index], credit: entry.credit || null };
+    if (!Array.isArray(data.pages) || data.pages.length !== requestedCount) throw new Error('A revisão retornou páginas incompletas.');
+    return data.pages.map(function (text, index) {
+      const original = pageEntries[index] || {};
+      return { text: text, credit: original.credit || null };
     });
   }
 
@@ -1895,6 +1896,9 @@
 
     const tableEntries = parseSlideTableBrief(rawText);
     const labeledEntries = !tableEntries ? parseSlideLabeledBrief(rawText) : null;
+    let requestedCount = parseInt(requestedCountRaw, 10);
+    if (!requestedCount || requestedCount < 1) requestedCount = 1;
+    if (requestedCount > 15) requestedCount = 15;
 
     let pageEntries;
     if (tableEntries) {
@@ -1902,9 +1906,6 @@
     } else if (labeledEntries) {
       pageEntries = labeledEntries;
     } else {
-      let requestedCount = parseInt(requestedCountRaw, 10);
-      if (!requestedCount || requestedCount < 1) requestedCount = 1;
-      if (requestedCount > 15) requestedCount = 15;
       const sentences = autogenSplitSentences(rawText);
       const pageTexts = autogenDistributeIntoPages(sentences, requestedCount);
       pageEntries = pageTexts.map(function (text) { return { text: text, credit: null }; });
@@ -1918,7 +1919,8 @@
 
     try {
       showMbToast('Revisando a copy e removendo informações desnecessárias...');
-      pageEntries = await reviseCarouselCopyWithAi(pageEntries);
+      const targetCount = tableEntries || labeledEntries ? pageEntries.length : requestedCount;
+      pageEntries = await reviseCarouselCopyWithAi(pageEntries, targetCount, rawText);
     } catch (error) {
       showMbToast('A revisão por IA não respondeu. Aplicando a limpeza automática local.');
     }

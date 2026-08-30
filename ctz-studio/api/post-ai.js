@@ -79,6 +79,8 @@ async function chat(body) {
 async function reviseCarouselCopy(body) {
   const pages = Array.isArray(body.pages) ? body.pages.slice(0, 15).map((page) => String(page || '').slice(0, 1600)) : [];
   if (!pages.length) throw new Error('Nenhum texto foi enviado para revisão.');
+  const requestedCount = Math.max(1, Math.min(Number(body.count) || pages.length, 15));
+  const source = String(body.source || pages.join('\n\n')).slice(0, 12000);
   const response = await openai('/responses', {
     model: 'gpt-5.4-mini', store: false, max_output_tokens: 2200,
     text: { format: { type: 'json_schema', name: 'carousel_copy_revision', strict: true, schema: {
@@ -89,12 +91,12 @@ async function reviseCarouselCopy(body) {
       required: ['pages']
     } } },
     input: [
-      { role: 'system', content: 'Você é editor de copy para carrosséis da Creatorize. Revise em português do Brasil. Preserve rigorosamente fatos, nomes, números, datas e a intenção original; não invente informações. Remova repetições, rodeios, introduções genéricas, metacomentários, instruções de produção e detalhes que não ajudam a ideia central. Corrija gramática, pontuação e clareza. Cada página deve comunicar uma única ideia, ser direta e fácil de ler no celular. Prefira título de até 9 palavras e apoio de até 24 palavras, separados por uma linha em branco quando ambos existirem. Não acrescente hashtags, fontes, chamadas comerciais ou emojis. Mantenha exatamente a mesma quantidade e ordem de páginas recebidas. Retorne somente o JSON solicitado.' },
-      { role: 'user', content: JSON.stringify({ pages }) }
+      { role: 'system', content: 'Você é o CTZ COPY VIRAL, especialista em textos estratégicos para carrosséis da Creatorize. Transforme o conteúdo bruto em um carrossel claro, útil, humano e fácil de consumir. Use AIDA: a primeira folha prende a Atenção com um gancho forte e específico; as folhas seguintes geram Interesse com uma dor, dúvida ou oportunidade reconhecível; depois criam Desejo mostrando benefício, transformação ou solução; a última conclui e traz uma Ação coerente. Preserve rigorosamente fatos, nomes, números, datas e a intenção original. Nunca invente dados, pesquisas, resultados ou promessas. Elimine frases sem informação, repetições, redundâncias, introduções longas, explicações óbvias, clichês, exageros, adjetivos excessivos, metacomentários e instruções de produção. Não use expressões genéricas como “no mundo de hoje” ou “é importante destacar”. Troque palavras difíceis por linguagem simples, divida frases longas e mantenha uma única ideia por folha. A headline deve complementar o apoio, sem repeti-lo. Cada folha deve ter aproximadamente 15 a 30 palavras e despertar interesse pela próxima. Não use hashtags, emojis ou termos técnicos, salvo se já forem indispensáveis no conteúdo de origem. Evite aparência de texto produzido por IA e preserve naturalidade, personalidade e ritmo humano. Formate cada item exatamente como **HEADLINE CURTA E FORTE**, uma linha em branco e o texto de apoio. A headline inteira deve estar entre **. No apoio, destaque com ** somente uma a três palavras-chave ou trechos curtos; nunca um parágrafo inteiro. Faça internamente uma segunda revisão e corte novamente tudo que não contribui para a mensagem central. Entregue exatamente a quantidade solicitada, na ordem narrativa, sem rótulos como “Folha”, “Capa”, “Contexto” ou explicações externas. Retorne somente o JSON solicitado.' },
+      { role: 'user', content: JSON.stringify({ requestedCount, source, draftPages: pages }) }
     ]
   });
   const result = cleanJson(responseText(response));
-  if (!Array.isArray(result.pages) || result.pages.length !== pages.length) throw new Error('A revisão retornou uma quantidade diferente de páginas.');
+  if (!Array.isArray(result.pages) || result.pages.length !== requestedCount) throw new Error('A revisão retornou uma quantidade diferente de páginas.');
   return result;
 }
 
