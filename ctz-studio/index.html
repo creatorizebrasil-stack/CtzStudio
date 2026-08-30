@@ -450,7 +450,8 @@
   .ed-kicker { font-size:38px; line-height:1.08; font-weight:400; margin-bottom:18px; color:rgba(255,255,255,.92); }
   .ed-title { max-width:930px; font-family:'Sora','Inter',sans-serif; font-size:72px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; text-shadow:0 5px 24px rgba(0,0,0,.65); }
   .ed-title b,.ed-kicker b { color:#FF5A0A; font-weight:900; font-size:1.06em; }
-  .ed-icon { width:56px; height:56px; margin-bottom:20px; color:#FF5A0A; filter:drop-shadow(0 6px 18px rgba(255,90,10,.45)); }
+  .ed-logo { width:250px; height:160px; margin-bottom:18px; overflow:hidden; flex:0 0 auto; }
+  .ed-logo img { display:block; width:250px; height:250px; object-fit:cover; object-position:center top; }
   .ed-footer { position:absolute; z-index:3; left:64px; right:64px; bottom:42px; display:flex; justify-content:space-between; font-size:18px; font-weight:700; color:rgba(255,255,255,.9); }
   .ed-page { color:#FF6A18; letter-spacing:.12em; }
   /* ---- Folhas Creatorize — sistema editorial alternado ---- */
@@ -1213,7 +1214,7 @@
     const kicker = parsed.title ? applyInlineBold(escapeHtml(parsed.title)) : '';
     const mainRaw = parsed.body || parsed.title || 'Escreva uma mensagem forte para esta página.';
     const mainParagraphs = mainRaw.split(/\n\s*\n/).map(function (paragraph) { return paragraph.trim(); }).filter(Boolean);
-    const icon = '<svg class="ed-icon" viewBox="0 0 64 64" aria-hidden="true"><path fill="none" stroke="currentColor" stroke-width="4" d="M32 5v10M32 49v10M5 32h10M49 32h10M13 13l7 7M44 44l7 7M51 13l-7 7M20 44l-7 7"/><circle cx="32" cy="32" r="10" fill="currentColor"/></svg>';
+    const icon = '<div class="ed-logo"><img src="assets/creatorize-logo.png" alt="Creatorize"></div>';
     const imageHtml = imgSrc
       ? '<img class="ed-bg" data-editorial-slide-id="' + slide.id + '" src="' + imgSrc + '" alt="Foto de fundo da página ' + (index + 1) + '" style="transform:scale(' + zoom + ') translate(' + pos.x + '%, ' + pos.y + '%);">'
       : '<div class="ed-bg" style="background:radial-gradient(circle at 50% 26%,#5b210d,#090909 58%);"></div>';
