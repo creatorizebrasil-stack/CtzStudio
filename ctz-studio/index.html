@@ -450,8 +450,8 @@
   .ed-kicker { font-size:38px; line-height:1.08; font-weight:400; margin-bottom:18px; color:rgba(255,255,255,.92); }
   .ed-title { max-width:930px; font-family:'Sora','Inter',sans-serif; font-size:72px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; text-shadow:0 5px 24px rgba(0,0,0,.65); }
   .ed-title b,.ed-kicker b { color:#FF5A0A; font-weight:900; font-size:1.06em; }
-  .ed-logo { width:250px; height:160px; margin-bottom:18px; overflow:hidden; flex:0 0 auto; }
-  .ed-logo img { display:block; width:250px; height:250px; object-fit:cover; object-position:center top; }
+  .ed-logo { position:absolute; z-index:4; top:92px; left:64px; width:170px; height:108px; overflow:hidden; pointer-events:none; }
+  .ed-logo img { display:block; width:170px; height:170px; object-fit:cover; object-position:center top; mix-blend-mode:screen; }
   .ed-footer { position:absolute; z-index:3; left:64px; right:64px; bottom:42px; display:flex; justify-content:space-between; font-size:18px; font-weight:700; color:rgba(255,255,255,.9); }
   .ed-page { color:#FF6A18; letter-spacing:.12em; }
   /* ---- Folhas Creatorize — sistema editorial alternado ---- */
@@ -1221,7 +1221,7 @@
     return '<div class="ed-card">' + imageHtml +
       '<div class="ed-shade"></div><div class="ed-grain"></div><div class="ed-border"></div>' +
       '<div class="ed-top"><span>CREATORIZE</span><span>CONTEÚDO · ESTRATÉGIA · MARCA</span><span>' + String(index + 1).padStart(2, '0') + '</span></div>' +
-      '<div class="ed-content position-' + editorialTextPlacement(slide) + '">' + icon + (kicker ? '<div class="ed-kicker carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model3" data-carousel-text-key="title" style="' + carouselTextTransform(slide, 'model3', 'title') + '">' + kicker + '</div>' : '') +
+      icon + '<div class="ed-content position-' + editorialTextPlacement(slide) + '">' + (kicker ? '<div class="ed-kicker carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model3" data-carousel-text-key="title" style="' + carouselTextTransform(slide, 'model3', 'title') + '">' + kicker + '</div>' : '') +
       mainParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="ed-title carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model3" data-carousel-text-key="' + key + '" style="font-size:' + editorialFontSize(mainRaw) + 'px;' + carouselTextTransform(slide, 'model3', key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') + '</div>' +
       '<div class="ed-footer"><span>@caiocreatorize</span><span class="ed-page">' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>@creatorizebrasil</span></div>' +
       '</div>';
@@ -1568,14 +1568,14 @@
         '<div class="cs-tweet-row"><b>Página ' + (i + 1) + '</b>' +
         (slides.length > 1 ? '<button type="button" class="btn btn-sm btn-tweet-remove" data-id="' + slide.id + '">Remover</button>' : '') +
         '</div>' +
-        '<textarea data-id="' + slide.id + '" placeholder="Texto desta página... (opcional: título curto, linha em branco, resto do texto — e **palavra** pra negrito)">' + escapeHtml(slide.text || '') + '</textarea>' +
+        '<textarea data-id="' + slide.id + '" placeholder="Texto curto desta página... use **palavra** para criar destaques em negrito.">' + escapeHtml(slide.text || '') + '</textarea>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Fundo em Folhas Creatorize</label>' +
           '<select class="sheet-bg-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="auto"' + ((!slide.sheetBg || slide.sheetBg === 'auto') ? ' selected' : '') + '>Automático</option><option value="photo"' + (slide.sheetBg === 'photo' ? ' selected' : '') + '>Foto / retrato</option><option value="orange"' + (slide.sheetBg === 'orange' ? ' selected' : '') + '>Laranja</option><option value="light"' + (slide.sheetBg === 'light' ? ' selected' : '') + '>Claro</option><option value="black"' + (slide.sheetBg === 'black' ? ' selected' : '') + '>Preto</option></select></div>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Alinhamento do texto</label>' +
           '<select class="sheet-align-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="center"' + ((!slide.sheetAlign || slide.sheetAlign === 'center') ? ' selected' : '') + '>Centralizado</option><option value="left"' + (slide.sheetAlign === 'left' ? ' selected' : '') + '>À esquerda</option><option value="right"' + (slide.sheetAlign === 'right' ? ' selected' : '') + '>À direita</option><option value="distributed"' + (slide.sheetAlign === 'distributed' ? ' selected' : '') + '>Espaçado / distribuído</option></select></div>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Posição no Editorial</label>' +
           '<select class="editorial-placement-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="center"' + (slide.editorialTextPlacement === 'center' ? ' selected' : '') + '>Centro do quadro</option><option value="top"' + (slide.editorialTextPlacement === 'top' ? ' selected' : '') + '>Parte superior</option><option value="bottom"' + ((!slide.editorialTextPlacement || slide.editorialTextPlacement === 'bottom') ? ' selected' : '') + '>Parte inferior</option></select></div>' +
-        '<div class="cs-tweet-row"><span style="font-size:11.5px;color:var(--text-dim);">Arraste a headline e cada parágrafo na prévia de qualquer modelo.</span><button type="button" class="btn btn-sm sheet-reset-text" data-id="' + slide.id + '">Restaurar no modelo ativo</button></div>' +
+        '<div class="cs-tweet-row"><span style="font-size:11.5px;color:var(--text-dim);">Arraste cada bloco de texto na prévia de qualquer modelo.</span><button type="button" class="btn btn-sm sheet-reset-text" data-id="' + slide.id + '">Restaurar no modelo ativo</button></div>' +
         '<div class="cs-tweet-row">' +
           '<img class="cs-tweet-thumb" src="' + tweetSlideImageSrc(slide) + '" alt="">' +
           '<input type="file" accept="image/*" class="tweet-image-input" data-id="' + slide.id + '">' +
