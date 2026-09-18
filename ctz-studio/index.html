@@ -564,8 +564,8 @@
           <button type="button" class="btn btn-primary" id="btnAutogenCarousel" style="margin-left:auto;">Gerar páginas</button>
         </div>
         <div class="note" style="margin-top:10px;">
-          A IA corrige a copy, remove repetições e informações desnecessárias,
-          preserva os dados importantes e destaca palavras-chave com moderação.
+          Modo local gratuito: limpa rótulos, emojis, hashtags, repetições e informações operacionais,
+          distribui o conteúdo e destaca palavras-chave sem usar créditos de API.
         </div>
       </div>
 
@@ -1999,20 +1999,39 @@
 
   function cleanGeneratedText(text) {
     let cleaned = (text || '').replace(/\r\n/g, '\n');
-    cleaned = cleaned.split('\n').filter(function (line) {
-      const value = line.trim();
+    cleaned = cleaned.split('\n').map(function (line) {
+      return line.trim()
+        .replace(/^[-–—•▪◦]+\s*/, '')
+        .replace(/^\d{1,2}\s*[.)\-–—:]\s*/, '')
+        .trim();
+    }).filter(function (value) {
       if (!value) return true;
       if (AUTOGEN_NOISE_LINE_RE.test(value)) return false;
       if (/^(?:slide|p[aá]gina)\s+\d+\s*(?:[-—:|].*)?$/i.test(value)) return false;
+      if (/^(?:capa|contexto|interesse|desejo|a[cç][aã]o|conclus[aã]o|cta|headline|t[íi]tulo|subt[íi]tulo)\s*:?[\s-]*$/i.test(value)) return false;
       return true;
     }).join('\n');
     return cleaned
+      .replace(/[\u{1F1E6}-\u{1F1FF}\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]/gu, '')
+      .replace(/(^|\s)#[\p{L}\p{N}_]+/gu, '$1')
+      .replace(/^\s*(?:slide|folha|p[aá]gina)\s*\d+\s*(?:[-—:|]\s*)?/gim, '')
+      .replace(/^\s*(?:headline|t[íi]tulo|subt[íi]tulo|texto|copy|legenda)\s*:\s*/gim, '')
       .replace(/[ \t]+/g, ' ')
       .replace(/\s+([,.;!?])/g, '$1')
       .replace(/([,.;!?])(?=[^\s\n])/g, '$1 ')
       .replace(/\n[ \t]+/g, '\n')
       .replace(/\n{3,}/g, '\n\n')
       .trim();
+  }
+
+  function removeRepeatedSentences(text) {
+    const seen = new Set();
+    return autogenSplitSentences(text).filter(function (sentence) {
+      const key = sentence.toLocaleLowerCase('pt-BR').replace(/[^\p{L}\p{N}]+/gu, ' ').trim();
+      if (!key || seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   }
 
   function addAutomaticHighlights(text) {
@@ -2077,7 +2096,7 @@
     } else if (labeledEntries) {
       pageEntries = labeledEntries;
     } else {
-      const sentences = autogenSplitSentences(rawText);
+      const sentences = removeRepeatedSentences(cleanGeneratedText(rawText));
       const pageTexts = autogenDistributeIntoPages(sentences, requestedCount);
       pageEntries = pageTexts.map(function (text) { return { text: text, credit: null }; });
     }
@@ -2088,13 +2107,7 @@
       if (!ok) return false;
     }
 
-    try {
-      showMbToast('Revisando a copy e removendo informações desnecessárias...');
-      const targetCount = tableEntries || labeledEntries ? pageEntries.length : requestedCount;
-      pageEntries = await reviseCarouselCopyWithAi(pageEntries, targetCount, rawText);
-    } catch (error) {
-      showMbToast('A revisão por IA não respondeu. Aplicando a limpeza automática local.');
-    }
+    showMbToast('Aplicando limpeza automática local, sem usar créditos...');
 
     pageEntries = pageEntries.map(function (entry, index) {
       return {
@@ -2134,7 +2147,7 @@
     const countEl = document.getElementById('csAutogenCount');
     const btn = this;
     const label = btn.textContent;
-    btn.disabled = true; btn.textContent = 'Revisando copy...';
+    btn.disabled = true; btn.textContent = 'Limpando texto...';
     try { await runAutogenCarousel(textEl.value, countEl.value); }
     finally { btn.disabled = false; btn.textContent = label; }
   });
@@ -2417,7 +2430,7 @@
   if (btnGenerateFromScript) {
     btnGenerateFromScript.addEventListener('click', async function () {
       const label = btnGenerateFromScript.textContent;
-      btnGenerateFromScript.disabled = true; btnGenerateFromScript.textContent = 'Revisando copy...';
+      btnGenerateFromScript.disabled = true; btnGenerateFromScript.textContent = 'Limpando texto...';
       const ok = await runAutogenCarousel(scriptTextArea ? scriptTextArea.value : '', scriptAutogenCount ? scriptAutogenCount.value : 5);
       btnGenerateFromScript.disabled = false; btnGenerateFromScript.textContent = label;
       if (!ok) return;
