@@ -2004,14 +2004,18 @@
     let cleaned = (text || '').replace(/\r\n/g, '\n');
     cleaned = cleaned.split('\n').map(function (line) {
       return line.trim()
+        .replace(/^\*{1,2}\s*/, '')
+        .replace(/\s*\*{1,2}$/, '')
+        .replace(/^\((.*)\)$/, '$1')
+        .replace(/^[\s*([]*(?:slide|folha|p[aá]gina)\s*#?\d+\s*[\s*)\]]*(?:[-–—:|]\s*)?/i, '')
+        .replace(AUTOGEN_SECTION_LABEL_RE, '')
         .replace(/^[-–—•▪◦]+\s*/, '')
         .replace(/^\d{1,2}\s*[.)\-–—:]\s*/, '')
         .trim();
     }).filter(function (value) {
       if (!value) return true;
       if (AUTOGEN_NOISE_LINE_RE.test(value)) return false;
-      if (/^(?:slide|p[aá]gina)\s+\d+\s*(?:[-—:|].*)?$/i.test(value)) return false;
-      if (/^(?:capa|contexto|interesse|desejo|a[cç][aã]o|conclus[aã]o|cta|headline|t[íi]tulo|subt[íi]tulo)\s*:?[\s-]*$/i.test(value)) return false;
+      if (/^(?:n\/?a|n[aã]o\s+se\s+aplica|n[aã]o\s+aplic[aá]vel|sem\s+texto|texto\s+dispens[aá]vel)[.!]?$/i.test(value)) return false;
       return true;
     }).join('\n');
     return cleaned
