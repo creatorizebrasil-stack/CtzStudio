@@ -544,9 +544,23 @@
   .ai-brand { color:#fff; }
   .ai-badge { background:#fff; color:#050505; }
   .ed-logo img,.b4-logo-mark img,.tw-avatar,#logoThumb { filter:grayscale(1) contrast(1.15); }
+  /* O painel de edição usa verde neon; as artes acima permanecem
+     deliberadamente monocromáticas para exportação. */
+  :root { --border:rgba(133,255,0,.28); --accent:#85FF00; --accent-2:#42FF00; --danger:#B6FF6A; --ok:#85FF00; }
+  body { background:radial-gradient(circle at 82% -10%,rgba(112,255,0,.16),transparent 34rem),linear-gradient(rgba(133,255,0,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(133,255,0,.025) 1px,transparent 1px),#070907; }
+  header { border-bottom-color:rgba(133,255,0,.22); }
+  header h1 span,.tab-btn.active,.btn:hover,.ai-status.busy { color:#85FF00; }
+  select:focus,input[type=text]:focus,textarea:focus { border-color:#85FF00; box-shadow:0 0 0 2px rgba(133,255,0,.1); }
+  .btn-primary,.cs-switch-btn.active,.mb-chip.active,.bubble.user { background:linear-gradient(135deg,#A2FF29,#59FF00); color:#071000; border-color:#85FF00; box-shadow:0 0 24px rgba(112,255,0,.22); }
+  .tab-btn.active { border-bottom-color:#85FF00; text-shadow:0 0 18px rgba(133,255,0,.35); }
+  .card,.cs-tweet-editor-card,.ai-chat,.ai-artboard-wrap { border-color:rgba(133,255,0,.22); }
+  .cs-tweet-rail-wrap { border-color:rgba(133,255,0,.3); box-shadow:inset 0 0 30px rgba(75,255,0,.035); }
+  .ai-upload { border-color:rgba(133,255,0,.55); background:rgba(133,255,0,.04); }
+  .ai-layer:hover,.ai-layer.dragging { outline-color:#85FF00; }
+  ::selection { background:#85FF00; color:#050505; }
   @media (max-width:780px) { .ai-layout{grid-template-columns:1fr}.ai-analysis-grid{grid-template-columns:1fr} }
   ::-webkit-scrollbar { width: 10px; }
-  ::-webkit-scrollbar-thumb { background: #666; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb { background: #85FF00; border-radius: 6px; }
 </style>
 </head>
 <body>
