@@ -350,6 +350,7 @@
   .tw-card { --slide-accent:#FF5A0A; width: 1080px; height: 1350px; transform: scale(.2796); transform-origin: top left; box-sizing: border-box; padding: 64px; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(circle at 88% 8%,rgba(255,90,10,.14),transparent 28%),#FFFDF9; font-family: 'Inter', Arial, sans-serif; color: #12100F; border-top: 18px solid var(--slide-accent); }
   .tw-header { display: flex; align-items: flex-start; gap: 20px; padding-bottom: 32px; flex: 0 0 auto; }
   .tw-avatar { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; background: #eee; }
+  .tw-avatar-profile { background-image:url('assets/matheus-serpa-profile.png'); background-repeat:no-repeat; background-size:570px 195px; background-position:-92px -59px; border:2px solid #050505; box-sizing:border-box; }
   .tw-namecol { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
   .tw-name-row { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 32px; color: #170604; }
   .tw-check { width: 26px; height: 26px; flex: 0 0 auto; }
@@ -618,7 +619,7 @@
         </div>
         <div class="cs-tweet-row" style="margin-top:10px;">
           <div class="note" style="flex:1;">
-            Perfil fixo: CTZ Studio | Creatorize. Arraste a imagem pra
+            Perfil fixo: Matheus Serpa | Consórcio. Arraste a imagem pra
             reposicionar; zoom e crédito ficam no editor abaixo.
           </div>
           <button type="button" class="btn" data-export-all="model2" style="flex:0 0 auto;">Baixar todas (PNG)</button>
@@ -711,15 +712,15 @@
         <div class="note" style="margin-bottom:14px;">Marque os perfis que devem aparecer na assinatura dos carrosséis. Você também pode editar cada @.</div>
         <div id="brandHandleRows">
           <label class="cs-tweet-row" style="margin-bottom:10px;">
-            <input type="checkbox" data-brand-enabled="0" checked style="width:auto;">
+            <input type="checkbox" data-brand-enabled="0" style="width:auto;">
             <input type="text" data-brand-handle="0" value="@caiocreatorize" aria-label="Primeiro perfil">
           </label>
           <label class="cs-tweet-row" style="margin-bottom:10px;">
-            <input type="checkbox" data-brand-enabled="1" checked style="width:auto;">
+            <input type="checkbox" data-brand-enabled="1" style="width:auto;">
             <input type="text" data-brand-handle="1" value="@creatorizebrasil" aria-label="Segundo perfil">
           </label>
           <label class="cs-tweet-row">
-            <input type="checkbox" data-brand-enabled="2" style="width:auto;">
+            <input type="checkbox" data-brand-enabled="2" checked style="width:auto;">
             <input type="text" data-brand-handle="2" value="@matheushserpa" aria-label="Terceiro perfil">
           </label>
         </div>
@@ -962,7 +963,7 @@
   // por página — veja renderTweetEditor()/renderTweetRail() mais abaixo.
   // ---------------------------------------------------------------------
   const TWEET_PROFILE = {
-    name: 'CTZ Studio | Creatorize',
+    name: 'Matheus Serpa | Consórcio',
   };
   const TWEET_CHECK_SVG = '<svg viewBox="0 0 24 24" class="tw-check"><path fill="#FF3B12" d="M12 0l2.3 2.1 3.1-.9.9 3.1 3.1.9-.4 3.2L24 12l-2.9 2.6.4 3.2-3.1.9-.9 3.1-3.1-.9L12 24l-2.3-2.1-3.1.9-.9-3.1-3.1-.9.4-3.2L0 12l2.9-2.6-.4-3.2 3.1-.9.9-3.1 3.1.9z"/><path fill="#fff" d="M9.6 16.2 6 12.6l1.4-1.4 2.2 2.2 5-5L16 9.8z"/></svg>';
   // Imagens padrão (Unsplash) usadas até você anexar as suas em cada página.
@@ -980,9 +981,9 @@
     logoDataUrl: null,
     logoImg: null,
     brandHandles: [
-      { value: '@caiocreatorize', enabled: true },
-      { value: '@creatorizebrasil', enabled: true },
-      { value: '@matheushserpa', enabled: false },
+      { value: '@caiocreatorize', enabled: false },
+      { value: '@creatorizebrasil', enabled: false },
+      { value: '@matheushserpa', enabled: true },
     ],
     // Estilo de preview ativo do carrossel: 'model2' (Estilo Tweet/X) ou
     // 'model1' (Padrão Tecnológico) — os dois renderizam o MESMO conteúdo
@@ -1037,7 +1038,7 @@
   function activeBrandHandles() {
     const selected = (state.brandHandles || []).filter(function (item) { return item.enabled; })
       .map(function (item) { return normalizedHandle(item.value); }).filter(Boolean);
-    return selected.length ? selected : ['@creatorizebrasil'];
+    return selected.length ? selected : ['@matheushserpa'];
   }
 
   function brandHandlesInline() { return activeBrandHandles().join(' · '); }
@@ -1047,7 +1048,6 @@
     return handles.length > 1 ? handles.slice(1).join(' · ') : handles[0];
   }
   function activeBrandLogo() { return state.logoDataUrl || 'assets/creatorize-logo.png'; }
-  function activeBrandAvatar() { return state.logoDataUrl || 'assets/creatorize-logo-square.png'; }
 
   function syncBrandControls() {
     document.querySelectorAll('[data-brand-handle]').forEach(function (input) {
@@ -1217,7 +1217,7 @@
     return (
       '<div class="tw-card" data-accent="' + carouselAccentName(slide) + '" style="--slide-accent:' + carouselAccentValue(slide, '#FF5A0A') + ';">' +
         '<div class="tw-header">' +
-          '<img class="tw-avatar" src="' + activeBrandAvatar() + '" alt="Creatorize">' +
+          '<div class="tw-avatar tw-avatar-profile" role="img" aria-label="Matheus Serpa"></div>' +
           '<div class="tw-namecol">' +
             '<div class="tw-name-row">' + escapeHtml(TWEET_PROFILE.name) + ' ' + TWEET_CHECK_SVG + '</div>' +
             '<div class="tw-handle">' + escapeHtml(brandHandlesInline()) + '</div>' +
@@ -1331,7 +1331,7 @@
       : '<div class="ed-bg" style="background:radial-gradient(circle at 50% 26%,#5b210d,#090909 58%);"></div>';
     return '<div class="ed-card" data-accent="' + carouselAccentName(slide) + '" style="--slide-accent:' + carouselAccentValue(slide, '#FF5A0A') + ';">' + imageHtml +
       '<div class="ed-shade"></div><div class="ed-grain"></div><div class="ed-border"></div>' +
-      '<div class="ed-top"><span>CREATORIZE</span><span>CONTEÚDO · ESTRATÉGIA · MARCA</span><span>' + String(index + 1).padStart(2, '0') + '</span></div>' +
+      '<div class="ed-top"><span>MATHEUS SERPA</span><span>CONSÓRCIO · ESTRATÉGIA · PLANEJAMENTO</span><span>' + String(index + 1).padStart(2, '0') + '</span></div>' +
       icon + '<div class="ed-content position-' + editorialTextPlacement(slide) + '">' + (kicker ? '<div class="ed-kicker carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model3" data-carousel-text-key="title" style="' + carouselTextTransform(slide, 'model3', 'title') + '">' + kicker + '</div>' : '') +
       mainParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="ed-title carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model3" data-carousel-text-key="' + key + '" style="font-size:' + editorialFontSize(mainRaw) + 'px;' + carouselTextTransform(slide, 'model3', key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') + '</div>' +
       '<div class="ed-footer"><span>' + escapeHtml(brandHandleLeft()) + '</span><span class="ed-page">' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>' + escapeHtml(brandHandleRight()) + '</span></div>' +
@@ -2567,7 +2567,7 @@
             const fallback = ['@caiocreatorize', '@creatorizebrasil', '@matheushserpa'][index];
             return saved
               ? { value: normalizedHandle(saved.value) || fallback, enabled: !!saved.enabled }
-              : { value: fallback, enabled: index < 2 };
+              : { value: fallback, enabled: index === 2 };
           });
         }
         syncBrandControls();
