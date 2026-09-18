@@ -350,7 +350,7 @@
   .tw-card { --slide-accent:#FF5A0A; width: 1080px; height: 1350px; transform: scale(.2796); transform-origin: top left; box-sizing: border-box; padding: 64px; display: flex; flex-direction: column; justify-content: center; background: radial-gradient(circle at 88% 8%,rgba(255,90,10,.14),transparent 28%),#FFFDF9; font-family: 'Inter', Arial, sans-serif; color: #12100F; border-top: 18px solid var(--slide-accent); }
   .tw-header { display: flex; align-items: flex-start; gap: 20px; padding-bottom: 32px; flex: 0 0 auto; }
   .tw-avatar { width: 88px; height: 88px; border-radius: 50%; object-fit: cover; flex: 0 0 auto; background: #eee; }
-  .tw-avatar-profile { background-image:url('assets/matheus-serpa-profile.png'); background-repeat:no-repeat; background-size:570px 195px; background-position:-92px -59px; border:2px solid #050505; box-sizing:border-box; }
+  .tw-avatar-profile { background-image:url('assets/matheus-serpa-original.jpg'); background-repeat:no-repeat; background-size:525% auto; background-position:61% 20%; border:2px solid #050505; box-sizing:border-box; }
   .tw-namecol { display: flex; flex-direction: column; gap: 4px; padding-top: 6px; }
   .tw-name-row { display: flex; align-items: center; gap: 8px; font-weight: 700; font-size: 32px; color: #170604; }
   .tw-check { width: 26px; height: 26px; flex: 0 0 auto; }
@@ -526,7 +526,9 @@
   .btn-primary,.cs-switch-btn.active,.mb-chip.active,.bubble.user { background:#fff; color:#050505; border-color:#fff; box-shadow:none; }
   .cs-tweet-rail-wrap { background:#050505; }
   .tw-card { background:#fff; color:#050505; border-top-color:#111; }
-  .tw-check path:first-child { fill:#111; }
+  .tw-check path:first-child { fill:#1d9bf0; }
+  .tw-name-row { color:#0f1419; }
+  .tw-handle { color:#536471; }
   .tw-body b,.tw-title b { color:#050505; background:transparent; }
   .b4-card { background:radial-gradient(ellipse 780px 680px at 50% 86%,rgba(255,255,255,.12),transparent 67%),linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px),#050505; }
   .b4-page-index,.b4-handle,.b4-continue { color:#fff; }
@@ -544,7 +546,7 @@
   .ai-layer:hover,.ai-layer.dragging { outline-color:rgba(255,255,255,.8); }
   .ai-brand { color:#fff; }
   .ai-badge { background:#fff; color:#050505; }
-  .ed-logo img,.b4-logo-mark img,.tw-avatar,#logoThumb { filter:grayscale(1) contrast(1.15); }
+  .ed-logo img,.b4-logo-mark img,#logoThumb { filter:grayscale(1) contrast(1.15); }
   /* O painel de edição usa verde neon; as artes acima permanecem
      deliberadamente monocromáticas para exportação. */
   :root { --border:rgba(133,255,0,.28); --accent:#85FF00; --accent-2:#42FF00; --danger:#B6FF6A; --ok:#85FF00; }
@@ -958,12 +960,12 @@
   // ---------------------------------------------------------------------
   // Carousel Studio — Estilo Tweet/X: modelo próprio (o arquivo original
   // nunca foi enviado / se perdeu), recriado do zero a partir dos prints
-  // de referência que você mandou. Perfil fixo (foto real, recortada do
-  // print de referência), com texto e imagem editáveis
+  // de referência que você mandou. Perfil fixo do Matheus (recorte CSS da
+  // fotografia original enviada), com texto e imagem principal editáveis
   // por página — veja renderTweetEditor()/renderTweetRail() mais abaixo.
   // ---------------------------------------------------------------------
   const TWEET_PROFILE = {
-    name: 'Matheus Serpa | Consórcio',
+    name: 'Matheus Serpa',
   };
   const TWEET_CHECK_SVG = '<svg viewBox="0 0 24 24" class="tw-check"><path fill="#FF3B12" d="M12 0l2.3 2.1 3.1-.9.9 3.1 3.1.9-.4 3.2L24 12l-2.9 2.6.4 3.2-3.1.9-.9 3.1-3.1-.9L12 24l-2.3-2.1-3.1.9-.9-3.1-3.1-.9.4-3.2L0 12l2.9-2.6-.4-3.2 3.1-.9.9-3.1 3.1.9z"/><path fill="#fff" d="M9.6 16.2 6 12.6l1.4-1.4 2.2 2.2 5-5L16 9.8z"/></svg>';
   // Imagens padrão (Unsplash) usadas até você anexar as suas em cada página.
