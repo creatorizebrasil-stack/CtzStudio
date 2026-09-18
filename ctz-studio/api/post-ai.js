@@ -31,14 +31,41 @@ function responseText(response) {
 }
 
 async function openai(path, body) {
+  const apiKey = String(process.env.OPENAI_API_KEY || '').trim().replace(/^['"]|['"]$/g, '');
   const response = await fetch(OPENAI_URL + path, {
     method: 'POST',
-    headers: { 'Authorization': 'Bearer ' + process.env.OPENAI_API_KEY, 'Content-Type': 'application/json' },
+    headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
     body: JSON.stringify(body)
   });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error && data.error.message ? data.error.message : 'Falha na API de IA.');
+  const raw = await response.text();
+  let data = {};
+  try { data = raw ? JSON.parse(raw) : {}; } catch (_) {}
+  if (!response.ok) {
+    const details = data && data.error ? data.error : {};
+    const error = new Error(details.message || 'Falha na API de IA.');
+    error.status = response.status;
+    error.code = details.code || details.type || 'openai_error';
+    throw error;
+  }
   return data;
+}
+
+function publicOpenAIError(error) {
+  const code = String(error.code || '');
+  const message = String(error.message || '');
+  if (error.status === 401 || code === 'invalid_api_key') {
+    return { status: 401, code: 'invalid_api_key', message: 'A chave OPENAI_API_KEY da Vercel é inválida. Atualize a variável e faça um novo deploy.' };
+  }
+  if (code === 'insufficient_quota' || /quota|credit|billing/i.test(message)) {
+    return { status: 429, code: 'insufficient_quota', message: 'A conta da API OpenAI está sem créditos ou atingiu o limite de gastos. Verifique o faturamento da API.' };
+  }
+  if (error.status === 429 || /rate.?limit/i.test(message)) {
+    return { status: 429, code: 'rate_limit_exceeded', message: 'A API atingiu o limite temporário de requisições. Aguarde alguns instantes e tente novamente.' };
+  }
+  if (error.status === 403 || code === 'model_not_found' || /model.*(access|permission|not found)/i.test(message)) {
+    return { status: error.status || 403, code: code || 'model_access_error', message: 'O projeto da chave não tem acesso ao modelo solicitado. Verifique o projeto e as permissões da chave OpenAI.' };
+  }
+  return { status: error.status >= 400 && error.status < 600 ? error.status : 500, code: code || 'post_ai_error', message: message || 'Erro ao processar a solicitação.' };
 }
 
 async function analyze(image) {
@@ -138,8 +165,9 @@ module.exports = async function handler(req, res) {
     if (body.action === 'generate') return send(res, 200, await generate(body));
     return send(res, 400, { error: 'Ação inválida.' });
   } catch (error) {
-    console.error('post-ai:', error.message);
-    return send(res, 500, { error: error.message || 'Erro ao processar a solicitação.' });
+    const failure = publicOpenAIError(error);
+    console.error('post-ai:', failure.code, error.message);
+    return send(res, failure.status, { error: failure.message, code: failure.code });
   }
 };
 
