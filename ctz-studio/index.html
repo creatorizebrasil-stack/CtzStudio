@@ -13,7 +13,7 @@
 <meta name="twitter:card" content="summary" />
 <meta name="twitter:title" content="CTZ Studio | Criação de carrosséis" />
 <meta name="twitter:description" content="Crie, personalize e exporte carrosséis profissionais para redes sociais." />
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23070605'/%3E%3Cpath d='M43 18H27c-7 0-12 6-12 14s5 14 12 14h16v-8H28c-3 0-5-2-5-6s2-6 5-6h15z' fill='%23FF5A0A'/%3E%3C/svg%3E" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23050505'/%3E%3Cpath d='M43 18H27c-7 0-12 6-12 14s5 14 12 14h16v-8H28c-3 0-5-2-5-6s2-6 5-6h15z' fill='%23FFFFFF'/%3E%3C/svg%3E" />
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
@@ -517,9 +517,36 @@
   .ai-chat-form { display:flex; gap:8px; margin-top:8px; }
   .ai-chat-form input { flex:1; }
   .ai-toolbar { display:flex; flex-wrap:wrap; gap:8px; }
+  /* Identidade monocromática oficial: nenhum componente ou arte exportada
+     depende das antigas cores de produto. */
+  :root { --bg:#0a0a0a; --panel:#111; --panel-2:#181818; --border:rgba(255,255,255,.18); --text:#fff; --text-dim:#aaa; --accent:#fff; --accent-2:#cfcfcf; --danger:#fff; --ok:#ddd; }
+  body { background:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px),#0a0a0a; }
+  header h1 span,.tab-btn.active,.btn:hover { color:#fff; }
+  .btn-primary,.cs-switch-btn.active,.mb-chip.active,.bubble.user { background:#fff; color:#050505; border-color:#fff; box-shadow:none; }
+  .cs-tweet-rail-wrap { background:#050505; }
+  .tw-card { background:#fff; color:#050505; border-top-color:#111; }
+  .tw-check path:first-child { fill:#111; }
+  .tw-body b,.tw-title b { color:#050505; background:transparent; }
+  .b4-card { background:radial-gradient(ellipse 780px 680px at 50% 86%,rgba(255,255,255,.12),transparent 67%),linear-gradient(rgba(255,255,255,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.08) 1px,transparent 1px),#050505; }
+  .b4-page-index,.b4-handle,.b4-continue { color:#fff; }
+  .b4-title { text-shadow:none; }
+  .b4-body b,.b4-title b,.ed-title b,.ed-kicker b { color:#050505; background:#fff; }
+  .b4-image-wrap { background:#111; border-color:rgba(255,255,255,.45); box-shadow:0 20px 70px rgba(0,0,0,.35); }
+  .ed-page { color:#fff; }
+  .sh-card.orange,.sh-card.light { color:#050505; background:#fff; }
+  .sh-card.orange .sh-square,.sh-card.light .sh-square { background:#050505; }
+  .sh-card.black .sh-square,.sh-card.photo .sh-square { background:#fff; }
+  .sh-title b,.sh-body b { color:#050505; }
+  .sh-card.black .sh-title b,.sh-card.black .sh-body b,.sh-card.photo .sh-title b,.sh-card.photo .sh-body b { color:#050505; background:#fff; }
+  .ai-upload { border-color:rgba(255,255,255,.5); background:rgba(255,255,255,.04); }
+  .ai-artboard { background:radial-gradient(circle at 68% 30%,#777 0,#242424 28%,#050505 65%); box-shadow:0 25px 80px rgba(0,0,0,.45); }
+  .ai-layer:hover,.ai-layer.dragging { outline-color:rgba(255,255,255,.8); }
+  .ai-brand { color:#fff; }
+  .ai-badge { background:#fff; color:#050505; }
+  .ed-logo img,.b4-logo-mark img,.tw-avatar,#logoThumb { filter:grayscale(1) contrast(1.15); }
   @media (max-width:780px) { .ai-layout{grid-template-columns:1fr}.ai-analysis-grid{grid-template-columns:1fr} }
   ::-webkit-scrollbar { width: 10px; }
-  ::-webkit-scrollbar-thumb { background: #8F1B0D; border-radius: 6px; }
+  ::-webkit-scrollbar-thumb { background: #666; border-radius: 6px; }
 </style>
 </head>
 <body>
@@ -600,7 +627,7 @@
       <div id="csModel3Wrap" style="display:none;margin-bottom:20px;">
         <div class="cs-tweet-rail-wrap"><div class="cs-tweet-rail" id="csEditorialRail"></div></div>
         <div class="cs-tweet-row" style="margin-top:10px;">
-          <div class="note" style="flex:1;">Foto em tela cheia, efeito cinematográfico, ícone editorial e tipografia Creatorize. Use <code>**palavra**</code> para destacar em laranja.</div>
+          <div class="note" style="flex:1;">Foto em tela cheia, efeito cinematográfico e tipografia Creatorize em preto e branco. Use <code>**palavra**</code> para aplicar negrito.</div>
           <button type="button" class="btn" data-export-all="model3" style="flex:0 0 auto;">Baixar todas (PNG)</button>
         </div>
       </div>
@@ -608,7 +635,7 @@
       <div id="csModel4Wrap" style="display:none;margin-bottom:20px;">
         <div class="cs-tweet-rail-wrap"><div class="cs-tweet-rail" id="csSheetsRail"></div></div>
         <div class="cs-tweet-row" style="margin-top:10px;">
-          <div class="note" style="flex:1;">Sequência editorial com folhas fotográficas, laranja, claras e pretas. Escolha o fundo de cada página no editor abaixo.</div>
+          <div class="note" style="flex:1;">Sequência editorial monocromática com folhas fotográficas, brancas e pretas. Escolha o fundo de cada página no editor abaixo.</div>
           <button type="button" class="btn" data-export-all="model4" style="flex:0 0 auto;">Baixar todas (PNG)</button>
         </div>
       </div>
@@ -717,7 +744,7 @@
                 <option value="editorial">Editorial claro e premium</option>
               </select>
             </div>
-            <div class="field"><label>Direção da nova imagem</label><textarea id="aiVisualPrompt" rows="4" placeholder="Ex.: cenário tecnológico escuro, luz laranja, objeto central, alto contraste..."></textarea></div>
+            <div class="field"><label>Direção da nova imagem</label><textarea id="aiVisualPrompt" rows="4" placeholder="Ex.: cenário tecnológico em preto e branco, objeto central, alto contraste..."></textarea></div>
             <button type="button" class="btn btn-primary" id="btnGeneratePost">Gerar fundo autoral</button>
           </div>
           <div class="card">
@@ -1140,8 +1167,7 @@
   }
 
   function carouselAccentValue(slide, fallback) {
-    const colors = { starter: '#22C55E', launch: '#FF6B00', growth: '#2563EB', extensize: '#7C3AED', live: '#EF4444', academy: '#FACC15' };
-    return colors[carouselAccentName(slide)] || fallback || '#FF6B00';
+    return '#111111';
   }
 
   function carouselAccentName(slide) {
@@ -1643,9 +1669,9 @@
         '</div>' +
         '<textarea data-id="' + slide.id + '" placeholder="Texto curto desta página... use **palavra** para criar destaques em negrito.">' + escapeHtml(slide.text || '') + '</textarea>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Cor da identidade</label>' +
-          '<select class="design-accent-select" data-id="' + slide.id + '" style="min-width:220px;"><option value="auto"' + (accentKey === 'auto' ? ' selected' : '') + '>Automática do modelo</option><option value="starter"' + (accentKey === 'starter' ? ' selected' : '') + '>Starter · Verde #22C55E</option><option value="launch"' + (accentKey === 'launch' ? ' selected' : '') + '>Launch · Laranja #FF6B00</option><option value="growth"' + (accentKey === 'growth' ? ' selected' : '') + '>Growth Partner · Azul #2563EB</option><option value="extensize"' + (accentKey === 'extensize' ? ' selected' : '') + '>Extensize · Roxo #7C3AED</option><option value="live"' + (accentKey === 'live' ? ' selected' : '') + '>Live · Vermelho #EF4444</option><option value="academy"' + (accentKey === 'academy' ? ' selected' : '') + '>Academy · Amarelo #FACC15</option></select></div>' +
+          '<select class="design-accent-select" data-id="' + slide.id + '" style="min-width:220px;"><option value="auto" selected>Monocromático · Preto e branco</option></select></div>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Fundo em Folhas Creatorize</label>' +
-          '<select class="sheet-bg-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="auto"' + ((!slide.sheetBg || slide.sheetBg === 'auto') ? ' selected' : '') + '>Automático</option><option value="photo"' + (slide.sheetBg === 'photo' ? ' selected' : '') + '>Foto / retrato</option><option value="orange"' + (slide.sheetBg === 'orange' ? ' selected' : '') + '>Laranja</option><option value="light"' + (slide.sheetBg === 'light' ? ' selected' : '') + '>Claro</option><option value="black"' + (slide.sheetBg === 'black' ? ' selected' : '') + '>Preto</option></select></div>' +
+          '<select class="sheet-bg-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="auto"' + ((!slide.sheetBg || slide.sheetBg === 'auto') ? ' selected' : '') + '>Automático P&B</option><option value="photo"' + (slide.sheetBg === 'photo' ? ' selected' : '') + '>Foto / retrato P&B</option><option value="light"' + (slide.sheetBg === 'light' || slide.sheetBg === 'orange' ? ' selected' : '') + '>Branco</option><option value="black"' + (slide.sheetBg === 'black' ? ' selected' : '') + '>Preto</option></select></div>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Alinhamento do texto</label>' +
           '<select class="sheet-align-select" data-id="' + slide.id + '" style="min-width:170px;"><option value="center"' + ((!slide.sheetAlign || slide.sheetAlign === 'center') ? ' selected' : '') + '>Centralizado</option><option value="left"' + (slide.sheetAlign === 'left' ? ' selected' : '') + '>À esquerda</option><option value="right"' + (slide.sheetAlign === 'right' ? ' selected' : '') + '>À direita</option><option value="distributed"' + (slide.sheetAlign === 'distributed' ? ' selected' : '') + '>Espaçado / distribuído</option></select></div>' +
         '<div class="cs-tweet-row"><label style="font-size:11.5px;color:var(--text-dim);">Posição no Editorial</label>' +
