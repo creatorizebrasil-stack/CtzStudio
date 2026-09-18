@@ -1987,6 +1987,22 @@
     return entries.length ? entries : null;
   }
 
+  // Alguns roteiros chegam como um único parágrafo: "Folha 1 — Capa ...
+  // Folha 2 ... Folha 3 ...". Nesse caso os marcadores não estão no começo
+  // de linhas, então eles precisam virar limites de página antes da limpeza.
+  function parseInlinePageBrief(rawText) {
+    const source = String(rawText || '').replace(/\r?\n/g, ' ').trim();
+    const markerRe = /(?:^|\s)[*([]*(?:folha|slide|p[aá]gina)\s*#?\d+\s*[*)\]]*(?:\s*[-–—:|]\s*(?:capa|abertura|contexto|aten(?:ção|cao)|interesse|desejo|a[cç][aã]o|desenvolvimento|conclus[aã]o|encerramento|cta)?\s*)?/giu;
+    const markers = Array.from(source.matchAll(markerRe));
+    if (markers.length < 2) return null;
+    const entries = markers.map(function (marker, index) {
+      const start = marker.index + marker[0].length;
+      const end = index + 1 < markers.length ? markers[index + 1].index : source.length;
+      return { text: source.slice(start, end).trim(), credit: null };
+    }).filter(function (entry) { return !!entry.text; });
+    return entries.length > 1 ? entries : null;
+  }
+
   // Regras editoriais aplicadas a todo texto produzido pelo gerador. A
   // limpeza é deliberadamente conservadora: remove apenas rótulos e notas
   // claramente operacionais, sem reescrever fatos, nomes, números ou datas.
@@ -2093,6 +2109,7 @@
 
     const tableEntries = parseSlideTableBrief(rawText);
     const labeledEntries = !tableEntries ? parseSlideLabeledBrief(rawText) : null;
+    const inlineEntries = !tableEntries && !labeledEntries ? parseInlinePageBrief(rawText) : null;
     let requestedCount = parseInt(requestedCountRaw, 10);
     if (!requestedCount || requestedCount < 1) requestedCount = 1;
     if (requestedCount > 15) requestedCount = 15;
@@ -2102,6 +2119,8 @@
       pageEntries = tableEntries;
     } else if (labeledEntries) {
       pageEntries = labeledEntries;
+    } else if (inlineEntries) {
+      pageEntries = inlineEntries;
     } else {
       const sentences = removeRepeatedSentences(cleanGeneratedText(rawText));
       const pageTexts = autogenDistributeIntoPages(sentences, requestedCount);
@@ -2138,6 +2157,8 @@
       showMbToast('Carrossel gerado com ' + pageEntries.length + ' página(s) a partir da tabela colada — título, paleta e textos extras foram ignorados automaticamente.');
     } else if (labeledEntries) {
       showMbToast('Carrossel gerado com ' + pageEntries.length + ' página(s) a partir do briefing detalhado — número do slide, categoria e anotações de produção foram removidos automaticamente, mantendo só o texto final pro público.');
+    } else if (inlineEntries) {
+      showMbToast('Carrossel organizado em ' + pageEntries.length + ' página(s) — os marcadores Folha/Slide/Página foram usados apenas para separar o conteúdo e depois removidos.');
     } else {
       const requestedCount = Math.max(1, Math.min(parseInt(requestedCountRaw, 10) || 1, 15));
       if (pageEntries.length < requestedCount) {
