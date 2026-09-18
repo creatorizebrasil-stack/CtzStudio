@@ -378,7 +378,7 @@
   /* Negrito com leve destaque de escala (em vez de só peso/cor) — cresce
      proporcionalmente ao tamanho do corpo de cada slide, mas pouco, pra não
      quebrar a linha nem chamar atenção demais. */
-  .tw-body b { font-weight: 800; color: var(--slide-accent); font-size: 1.08em; }
+  .tw-body b,.tw-title b { font-weight: 800; color: #050505; font-size: 1.08em; }
   /* Imagem sempre limitada a metade da altura do formato 4:5 do card
      (proporção própria ~8:5), nunca "flex: 1" — é isso que garante que ela
      nunca vira o slide inteiro e que sobra espaço grande pro texto acima. */
@@ -429,7 +429,7 @@
   .b4-title { font-family: 'Sora', 'Inter', sans-serif; font-weight: 800; line-height: 1.04; letter-spacing: -.045em; color: #FFFFFF; margin-bottom: 20px; white-space: pre-wrap; text-transform: uppercase; text-shadow: 0 0 34px rgba(255,90,10,.22); }
   .b4-body { line-height: 1.5; color: #FFFFFF; white-space: pre-wrap; }
   /* Destaque amarelo quente, inspirado na referência visual. */
-  .b4-body b,.b4-title b { font-weight: 800; color: var(--slide-accent,#FF5A0A); font-size: 1.08em; }
+  .b4-body b,.b4-title b { font-weight: 800; color: #050505; background:var(--slide-accent,#FF5A0A); padding:0 .12em; border-radius:.08em; font-size: 1.08em; }
   .b4-image-wrap { position: relative; flex: 0 0 auto; width: 100%; aspect-ratio: 8 / 5; border-radius: 4px; overflow: hidden; background: #140B07; border: 1px solid rgba(255,106,26,.5); box-shadow: 0 20px 70px rgba(255,70,0,.22); }
   .b4-image-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transform-origin: center; cursor: grab; touch-action: none; }
   .b4-image-wrap img:active { cursor: grabbing; }
@@ -449,7 +449,7 @@
   .ed-content.position-bottom { top:auto; bottom:112px; }
   .ed-kicker { font-size:38px; line-height:1.08; font-weight:400; margin-bottom:18px; color:rgba(255,255,255,.92); }
   .ed-title { max-width:930px; font-family:'Sora','Inter',sans-serif; font-size:72px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; text-shadow:0 5px 24px rgba(0,0,0,.65); }
-  .ed-title b,.ed-kicker b { color:var(--slide-accent,#FF5A0A); font-weight:900; font-size:1.06em; }
+  .ed-title b,.ed-kicker b { color:#050505; background:var(--slide-accent,#FF5A0A); padding:0 .12em; border-radius:.08em; font-weight:900; font-size:1.06em; text-shadow:none; }
   .ed-logo { position:absolute; z-index:4; top:88px; left:64px; width:145px; height:84px; pointer-events:none; }
   .ed-logo img { display:block; width:100%; height:100%; object-fit:contain; object-position:left center; }
   .ed-footer { position:absolute; z-index:3; left:64px; right:64px; bottom:42px; display:flex; justify-content:space-between; font-size:18px; font-weight:700; color:rgba(255,255,255,.9); }
@@ -477,9 +477,11 @@
   .sh-title { font-family:'Sora','Inter',sans-serif; font-size:78px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; width:100%; max-width:880px; text-wrap:balance; overflow-wrap:break-word; }
   .carousel-movable-text { position:relative; cursor:move; touch-action:none; user-select:none; }
   .carousel-movable-text.dragging { cursor:grabbing; }
-  .sh-title b { color:var(--slide-accent,#FF5A0A); font-size:1.04em; }
+  .sh-title b { color:#050505; font-size:1.04em; }
   .sh-body { width:100%; max-width:760px; font-size:40px; line-height:1.16; font-weight:350; letter-spacing:-.025em; text-wrap:balance; overflow-wrap:break-word; }
-  .sh-body b { font-weight:800; }
+  .sh-body b { color:#050505; font-weight:800; }
+  .sh-card.black .sh-title b,.sh-card.black .sh-body b,
+  .sh-card.photo .sh-title b,.sh-card.photo .sh-body b { background:var(--slide-accent,#FF5A0A); padding:0 .12em; border-radius:.08em; }
   .sh-content.compact .sh-body { font-size:34px; line-height:1.13; }
   .sh-content.dense .sh-body { font-size:30px; line-height:1.1; }
   .sh-cta { flex:0 0 auto; background:#f3f0ea; color:#090909; padding:16px 38px; font-family:'Sora','Inter',sans-serif; font-size:28px; line-height:1.05; font-weight:800; text-wrap:balance; }
