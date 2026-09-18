@@ -1872,7 +1872,7 @@
   // número do slide, a categoria/pilar (Capa, Contexto, Conflito...), o
   // tipo de mídia (Foto/Texto) e qualquer anotação de referência de imagem
   // entre parênteses são descartados automaticamente.
-  const SLIDE_BRIEF_HEADER_RE = /^slide\s+\d+\b/i;
+  const SLIDE_BRIEF_HEADER_RE = /^[\s*([]*(?:slide|folha|p[aá]gina)\s*#?\d+\b/i;
   const SLIDE_BRIEF_LABEL_RE = /^(t[íi]tulo(?:\s*\/\s*n[úu]mero)?|subt[íi]tulo|subtexto|texto)\b[^:]*:\s*(.*)$/i;
   const SLIDE_BRIEF_NEGRITO_RE = /^negrito\s*:\s*(.*)$/i;
 
@@ -1990,7 +1990,8 @@
   // Regras editoriais aplicadas a todo texto produzido pelo gerador. A
   // limpeza é deliberadamente conservadora: remove apenas rótulos e notas
   // claramente operacionais, sem reescrever fatos, nomes, números ou datas.
-  const AUTOGEN_NOISE_LINE_RE = /^(?:observa(?:ção|cao)|instru(?:ção|cao)|dire(?:ção|cao)\s+visual|refer[eê]ncia(?:\s+de\s+imagem)?|imagem|foto|formato|paleta(?:\s+de\s+cores)?|objetivo|categoria|papel)\s*:/i;
+  const AUTOGEN_NOISE_LINE_RE = /^(?:observa(?:ção|cao)|instru(?:ção|cao)|dire(?:ção|cao)\s+visual|refer[eê]ncia(?:\s+de\s+imagem)?|imagem|foto|formato|paleta(?:\s+de\s+cores)?|objetivo|categoria|papel|layout|design|composi(?:ção|cao)|tipografia|posi(?:ção|cao)|nota(?:\s+de\s+produ(?:ção|cao))?|uso\s+interno)\s*:/i;
+  const AUTOGEN_SECTION_LABEL_RE = /^(?:capa|abertura|contexto|aten(?:ção|cao)|interesse|desejo|a[cç][aã]o|desenvolvimento|conclus[aã]o|encerramento|cta|headline|t[íi]tulo|subt[íi]tulo)(?:\s+\d+)?\s*(?:(?:[-–—:|]\s*)|$)/i;
   const AUTOGEN_HIGHLIGHT_TERMS = [
     'resultado', 'resultados', 'estratégia', 'estrategia', 'oportunidade',
     'crescimento', 'transformação', 'transformacao', 'economia', 'dinheiro',
