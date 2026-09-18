@@ -359,7 +359,7 @@
      o mesmo, e é o espaço sobrando (abaixo do texto / acima da imagem)
      que varia conforme o tamanho do conteúdo, não o contrário. */
   /* position:relative pra ancorar os dois indicadores de canto (crédito da
-     fonte à esquerda, continuidade "..." à direita) na ponta da folha, sem
+     fonte à esquerda, seta de continuidade à direita) na ponta da folha, sem
      depender de onde a última linha do texto termina — e sem entrar no
      fluxo do flex (que antes fazia o crédito "sem imagem" encavalar em
      cima do texto, já que .tw-body-wrap é flex em linha). */
@@ -369,7 +369,7 @@
   /* Indicador de continuidade: some quando ainda há mais páginas pra ler.
      Fica ancorado no canto inferior direito do bloco de texto, na ponta da
      folha — sutil, sem competir com os pontos de posição sobre a imagem. */
-  .tw-continue { position: absolute; right: 0; bottom: 0; font-size: 30px; font-weight: 800; letter-spacing: 5px; color: rgba(15, 20, 25, .32); }
+  .tw-continue { position: absolute; right: 0; bottom: 0; font-size: 34px; font-weight: 800; line-height: 1; color: rgba(15, 20, 25, .45); }
   /* Título opcional (1ª linha antes de uma linha em branco no texto da
      página — ver convenção documentada na aba Texto / Script): maior e
      mais forte que o corpo, pensado pra capa e CTA. */
@@ -425,7 +425,7 @@
      flutuar centralizado no espaço disponível. O bloco inteiro (ver
      .b4-content acima) é que fica centralizado no cartão. */
   .b4-text-col { flex: 0 1 auto; overflow: hidden; display: flex; flex-direction: column; justify-content: flex-start; padding-bottom: 24px; }
-  .b4-continue { text-align: right; margin-top: 14px; font-size: 26px; font-weight: 800; letter-spacing: 4px; color: rgba(255, 211, 74, .65); }
+  .b4-continue { text-align: right; margin-top: 14px; font-size: 32px; font-weight: 800; line-height: 1; color: rgba(255, 211, 74, .75); }
   .b4-title { font-family: 'Sora', 'Inter', sans-serif; font-weight: 800; line-height: 1.04; letter-spacing: -.045em; color: #FFFFFF; margin-bottom: 20px; white-space: pre-wrap; text-transform: uppercase; text-shadow: 0 0 34px rgba(255,90,10,.22); }
   .b4-body { line-height: 1.5; color: #FFFFFF; white-space: pre-wrap; }
   /* Destaque amarelo quente, inspirado na referência visual. */
@@ -450,8 +450,8 @@
   .ed-kicker { font-size:38px; line-height:1.08; font-weight:400; margin-bottom:18px; color:rgba(255,255,255,.92); }
   .ed-title { max-width:930px; font-family:'Sora','Inter',sans-serif; font-size:72px; line-height:.98; letter-spacing:-.055em; font-weight:900; text-transform:uppercase; text-shadow:0 5px 24px rgba(0,0,0,.65); }
   .ed-title b,.ed-kicker b { color:var(--slide-accent,#FF5A0A); font-weight:900; font-size:1.06em; }
-  .ed-logo { position:absolute; z-index:4; top:92px; left:64px; width:170px; height:108px; overflow:hidden; pointer-events:none; }
-  .ed-logo img { display:block; width:170px; height:170px; object-fit:cover; object-position:center top; mix-blend-mode:screen; }
+  .ed-logo { position:absolute; z-index:4; top:88px; left:64px; width:145px; height:84px; pointer-events:none; }
+  .ed-logo img { display:block; width:100%; height:100%; object-fit:contain; object-position:left center; }
   .ed-footer { position:absolute; z-index:3; left:64px; right:64px; bottom:42px; display:flex; justify-content:space-between; font-size:18px; font-weight:700; color:rgba(255,255,255,.9); }
   .ed-page { color:var(--slide-accent,#FF5A0A); letter-spacing:.12em; }
   /* ---- Folhas Creatorize — sistema editorial alternado ---- */
@@ -539,6 +539,7 @@
     <div class="tabs">
       <button class="tab-btn active" id="tabBtnScript" data-tab="script">Texto / Script</button>
       <button class="tab-btn" id="tabBtnCarousel" data-tab="carousel">Carousel Studio</button>
+      <button class="tab-btn" id="tabBtnBrand" data-tab="brand">Marca e assinatura</button>
       <button class="tab-btn" id="tabBtnMedia" data-tab="media" style="display:none;" aria-hidden="true" tabindex="-1">Banco de Mídia</button>
       <button class="tab-btn" id="tabBtnMaterials" data-tab="materials" style="display:none;" aria-hidden="true" tabindex="-1">Materiais</button>
       <button class="tab-btn" id="tabBtnPostAI" data-tab="postai">Recriar Post com IA</button>
@@ -546,19 +547,6 @@
 
     <div id="tabPanelCarousel" class="tab-panel" style="display:none;">
       <h2>Carousel Studio</h2>
-
-      <div id="csLogoSection" style="display:none;">
-        <h2>Logo CTZ Studio</h2>
-        <div class="card">
-          <div class="thumb-row">
-            <img id="logoThumb" class="thumb" style="width:80px;height:56px;object-fit:contain;" />
-            <div>
-              <input type="file" id="fileLogo" accept="image/*" />
-              <div class="filename" id="logoFilename">Nenhum logo enviado (PNG com fundo transparente).</div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <div class="cs-switcher">
         <button class="cs-switch-btn active" id="csBtnModel2" data-cs-target="model2">Estilo Tweet/X</button>
@@ -658,6 +646,42 @@
         </div>
       </div>
       <div class="mb-grid" id="materialsGrid"></div>
+    </div>
+
+    <div id="tabPanelBrand" class="tab-panel" style="display:none;">
+      <h2>Marca e assinatura</h2>
+      <div class="card" id="csLogoSection" style="margin-bottom:16px;">
+        <div style="font-size:13px;font-weight:700;margin-bottom:10px;">Logo dos conteúdos</div>
+        <div class="thumb-row">
+          <img id="logoThumb" class="thumb" src="assets/creatorize-logo.png" alt="Logo Creatorize" style="width:120px;height:72px;object-fit:contain;background:#111;" />
+          <div style="flex:1;">
+            <input type="file" id="fileLogo" accept="image/png,image/webp,image/svg+xml,image/jpeg" />
+            <div class="filename" id="logoFilename">Logo oficial Creatorize.</div>
+            <button type="button" class="btn btn-sm" id="btnResetLogo" style="margin-top:10px;">Restaurar logo oficial</button>
+          </div>
+        </div>
+        <div class="note" style="margin-top:10px;">Prefira PNG ou WebP com fundo transparente. A alteração é aplicada aos modelos que exibem logo.</div>
+      </div>
+
+      <div class="card">
+        <div style="font-size:13px;font-weight:700;margin-bottom:6px;">@ de marcação</div>
+        <div class="note" style="margin-bottom:14px;">Marque os perfis que devem aparecer na assinatura dos carrosséis. Você também pode editar cada @.</div>
+        <div id="brandHandleRows">
+          <label class="cs-tweet-row" style="margin-bottom:10px;">
+            <input type="checkbox" data-brand-enabled="0" checked style="width:auto;">
+            <input type="text" data-brand-handle="0" value="@caiocreatorize" aria-label="Primeiro perfil">
+          </label>
+          <label class="cs-tweet-row" style="margin-bottom:10px;">
+            <input type="checkbox" data-brand-enabled="1" checked style="width:auto;">
+            <input type="text" data-brand-handle="1" value="@creatorizebrasil" aria-label="Segundo perfil">
+          </label>
+          <label class="cs-tweet-row">
+            <input type="checkbox" data-brand-enabled="2" style="width:auto;">
+            <input type="text" data-brand-handle="2" value="@matheushserpa" aria-label="Terceiro perfil">
+          </label>
+        </div>
+        <div class="note" id="brandHandlePreview" style="margin-top:14px;"></div>
+      </div>
     </div>
 
     <div id="tabPanelPostAI" class="tab-panel" style="display:none;">
@@ -896,8 +920,6 @@
   // ---------------------------------------------------------------------
   const TWEET_PROFILE = {
     name: 'CTZ Studio | Creatorize',
-    handle: '@caiocreatorize · @creatorizebrasil',
-    avatar: 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIiB2aWV3Qm94PSIwIDAgMjAwIDIwMCI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJnIiB4MT0iMCIgeTE9IjAiIHgyPSIxIiB5Mj0iMSI+PHN0b3Agb2Zmc2V0PSIwIiBzdG9wLWNvbG9yPSIjRkYyQTBBIi8+PHN0b3Agb2Zmc2V0PSIxIiBzdG9wLWNvbG9yPSIjRkY4NTFCIi8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PGNpcmNsZSBjeD0iMTAwIiBjeT0iMTAwIiByPSIxMDAiIGZpbGw9IiMxNzA2MDQiLz48Y2lyY2xlIGN4PSIxMDAiIGN5PSIxMDAiIHI9Ijg4IiBmaWxsPSJ1cmwoI2cpIi8+PHRleHQgeD0iMTAwIiB5PSIxMjIiIGZvbnQtZmFtaWx5PSJBcmlhbCxzYW5zLXNlcmlmIiBmb250LXNpemU9IjYwIiBmb250LXdlaWdodD0iODAwIiBmaWxsPSIjRkZGOEYzIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5DVFo8L3RleHQ+PC9zdmc+',
   };
   const TWEET_CHECK_SVG = '<svg viewBox="0 0 24 24" class="tw-check"><path fill="#FF3B12" d="M12 0l2.3 2.1 3.1-.9.9 3.1 3.1.9-.4 3.2L24 12l-2.9 2.6.4 3.2-3.1.9-.9 3.1-3.1-.9L12 24l-2.3-2.1-3.1.9-.9-3.1-3.1-.9.4-3.2L0 12l2.9-2.6-.4-3.2 3.1-.9.9-3.1 3.1.9z"/><path fill="#fff" d="M9.6 16.2 6 12.6l1.4-1.4 2.2 2.2 5-5L16 9.8z"/></svg>';
   // Imagens padrão (Unsplash) usadas até você anexar as suas em cada página.
@@ -914,6 +936,11 @@
   const state = {
     logoDataUrl: null,
     logoImg: null,
+    brandHandles: [
+      { value: '@caiocreatorize', enabled: true },
+      { value: '@creatorizebrasil', enabled: true },
+      { value: '@matheushserpa', enabled: false },
+    ],
     // Estilo de preview ativo do carrossel: 'model2' (Estilo Tweet/X) ou
     // 'model1' (Padrão Tecnológico) — os dois renderizam o MESMO conteúdo
     // de tweetCarousel.slides, só com skins visuais diferentes.
@@ -956,6 +983,46 @@
   const fileLogo = document.getElementById('fileLogo');
   const logoThumb = document.getElementById('logoThumb');
   const logoFilename = document.getElementById('logoFilename');
+  const btnResetLogo = document.getElementById('btnResetLogo');
+
+  function normalizedHandle(value) {
+    const cleaned = String(value || '').trim().replace(/\s+/g, '').replace(/[^@A-Za-z0-9._-]/g, '');
+    if (!cleaned) return '';
+    return cleaned.charAt(0) === '@' ? cleaned : '@' + cleaned;
+  }
+
+  function activeBrandHandles() {
+    const selected = (state.brandHandles || []).filter(function (item) { return item.enabled; })
+      .map(function (item) { return normalizedHandle(item.value); }).filter(Boolean);
+    return selected.length ? selected : ['@creatorizebrasil'];
+  }
+
+  function brandHandlesInline() { return activeBrandHandles().join(' · '); }
+  function brandHandleLeft() { return activeBrandHandles()[0]; }
+  function brandHandleRight() {
+    const handles = activeBrandHandles();
+    return handles.length > 1 ? handles.slice(1).join(' · ') : handles[0];
+  }
+  function activeBrandLogo() { return state.logoDataUrl || 'assets/creatorize-logo.png'; }
+  function activeBrandAvatar() { return state.logoDataUrl || 'assets/creatorize-logo-square.png'; }
+
+  function syncBrandControls() {
+    document.querySelectorAll('[data-brand-handle]').forEach(function (input) {
+      const index = Number(input.getAttribute('data-brand-handle'));
+      if (state.brandHandles[index]) input.value = state.brandHandles[index].value;
+    });
+    document.querySelectorAll('[data-brand-enabled]').forEach(function (input) {
+      const index = Number(input.getAttribute('data-brand-enabled'));
+      input.checked = !!(state.brandHandles[index] && state.brandHandles[index].enabled);
+    });
+    const preview = document.getElementById('brandHandlePreview');
+    if (preview) preview.textContent = 'Assinatura ativa: ' + brandHandlesInline();
+  }
+
+  function refreshBranding() {
+    syncBrandControls();
+    renderTweetRail();
+  }
 
   fileLogo.addEventListener('change', function () {
     const file = fileLogo.files[0];
@@ -968,7 +1035,7 @@
       img.src = reader.result;
       logoThumb.src = reader.result;
       logoFilename.textContent = file.name;
-      renderTweetRail();
+      refreshBranding();
     };
     reader.readAsDataURL(file);
   });
@@ -982,10 +1049,7 @@
   // abaixo. O cs-switcher só troca qual rail fica visível.
   // ---------------------------------------------------------------------
   function logoMarkHtml() {
-    if (state.logoDataUrl) {
-      return '<img src="' + state.logoDataUrl + '" class="logo-mark" alt="CTZ Studio" style="width:100%;height:100%;object-fit:contain;">';
-    }
-    return '<div style="width:100%;height:100%;border-radius:4px;background:linear-gradient(135deg,#FF3B12,#FF851B);display:flex;align-items:center;justify-content:center;font-family:\'Sora\',sans-serif;font-weight:800;color:#170604;font-size:13px;">CTZ</div>';
+    return '<img src="' + activeBrandLogo() + '" class="logo-mark" alt="Creatorize" style="width:100%;height:100%;object-fit:contain;">';
   }
 
   const csSwitchButtons = [document.getElementById('csBtnModel1'), document.getElementById('csBtnModel2'), document.getElementById('csBtnModel3'), document.getElementById('csBtnModel4')];
@@ -1007,10 +1071,6 @@
     scriptStyleButtons.forEach(function (b) {
       b.classList.toggle('active', b.getAttribute('data-cs-target') === state.carouselStyle);
     });
-    // Logo só é usado no Padrão Tecnológico — no Estilo Tweet/X (modelo
-    // principal) esse card fica escondido, sem sentido pra quem só usa o
-    // Tweet/X nunca precisar ver isso.
-    if (csLogoSection) csLogoSection.style.display = state.carouselStyle === 'model1' ? 'block' : 'none';
   }
 
   csSwitchButtons.forEach(function (btn) {
@@ -1111,14 +1171,14 @@
     // cartão — atrapalhava a leitura nos cantos. O campo continua existindo
     // no editor de cada página, só pra uso na legenda do post depois.
     const hasMore = index < total - 1;
-    const continueHtml = hasMore ? '<div class="tw-continue">&bull;&bull;&bull;</div>' : '';
+    const continueHtml = hasMore ? '<div class="tw-continue" aria-label="Continue para a próxima página">&rarr;</div>' : '';
     return (
       '<div class="tw-card" data-accent="' + carouselAccentName(slide) + '" style="--slide-accent:' + carouselAccentValue(slide, '#FF5A0A') + ';">' +
         '<div class="tw-header">' +
-          '<img class="tw-avatar" src="' + TWEET_PROFILE.avatar + '" alt="CTZ Studio">' +
+          '<img class="tw-avatar" src="' + activeBrandAvatar() + '" alt="Creatorize">' +
           '<div class="tw-namecol">' +
             '<div class="tw-name-row">' + escapeHtml(TWEET_PROFILE.name) + ' ' + TWEET_CHECK_SVG + '</div>' +
-            '<div class="tw-handle">' + escapeHtml(TWEET_PROFILE.handle) + '</div>' +
+            '<div class="tw-handle">' + escapeHtml(brandHandlesInline()) + '</div>' +
           '</div>' +
         '</div>' +
         '<div class="tw-body-wrap' + (imgSrc ? '' : ' no-image') + '">' +
@@ -1178,7 +1238,7 @@
     // preenchido, o rodapé mostra só a assinatura @caiocreatorize · @creatorizebrasil.
     const creditText = escapeHtml((slide.credit || '').trim());
     const hasMore = index < total - 1;
-    const continueHtml = hasMore ? '<div class="b4-continue">&bull;&bull;&bull;</div>' : '';
+    const continueHtml = hasMore ? '<div class="b4-continue" aria-label="Continue para a próxima página">&rarr;</div>' : '';
     return (
       '<div class="b4-card" data-accent="' + carouselAccentName(slide) + '" style="--slide-accent:' + carouselAccentValue(slide, '#FF5A0A') + ';">' +
         '<div class="b4-content">' +
@@ -1196,7 +1256,7 @@
             : '') +
         '</div>' +
         '<div class="b4-footer">' +
-          '<span class="b4-handle">@caiocreatorize · @creatorizebrasil</span>' +
+          '<span class="b4-handle">' + escapeHtml(brandHandlesInline()) + '</span>' +
           (creditText ? '<span class="b4-credit">' + creditText + '</span>' : '') +
         '</div>' +
       '</div>'
@@ -1223,7 +1283,7 @@
     const kicker = parsed.title ? applyInlineBold(escapeHtml(parsed.title)) : '';
     const mainRaw = parsed.body || parsed.title || 'Escreva uma mensagem forte para esta página.';
     const mainParagraphs = mainRaw.split(/\n\s*\n/).map(function (paragraph) { return paragraph.trim(); }).filter(Boolean);
-    const icon = '<div class="ed-logo"><img src="assets/creatorize-logo.png" alt="Creatorize"></div>';
+    const icon = '<div class="ed-logo"><img src="' + activeBrandLogo() + '" alt="Creatorize"></div>';
     const imageHtml = imgSrc
       ? '<img class="ed-bg" data-editorial-slide-id="' + slide.id + '" src="' + imgSrc + '" alt="Foto de fundo da página ' + (index + 1) + '" style="transform:scale(' + zoom + ') translate(' + pos.x + '%, ' + pos.y + '%);">'
       : '<div class="ed-bg" style="background:radial-gradient(circle at 50% 26%,#5b210d,#090909 58%);"></div>';
@@ -1232,7 +1292,7 @@
       '<div class="ed-top"><span>CREATORIZE</span><span>CONTEÚDO · ESTRATÉGIA · MARCA</span><span>' + String(index + 1).padStart(2, '0') + '</span></div>' +
       icon + '<div class="ed-content position-' + editorialTextPlacement(slide) + '">' + (kicker ? '<div class="ed-kicker carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model3" data-carousel-text-key="title" style="' + carouselTextTransform(slide, 'model3', 'title') + '">' + kicker + '</div>' : '') +
       mainParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="ed-title carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model3" data-carousel-text-key="' + key + '" style="font-size:' + editorialFontSize(mainRaw) + 'px;' + carouselTextTransform(slide, 'model3', key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') + '</div>' +
-      '<div class="ed-footer"><span>@caiocreatorize</span><span class="ed-page">' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>@creatorizebrasil</span></div>' +
+      '<div class="ed-footer"><span>' + escapeHtml(brandHandleLeft()) + '</span><span class="ed-page">' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>' + escapeHtml(brandHandleRight()) + '</span></div>' +
       '</div>';
   }
 
@@ -1308,7 +1368,7 @@
       '<div class="sh-top"><span>CONTEÚDO</span><span>ESTRATÉGIA</span><span>MARCA</span></div>' +
       '<div class="sh-content ' + density + ' align-' + textAlign + '"><div class="sh-title carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model4" data-carousel-text-key="title" style="font-size:' + sheetsTitleSize(titleRaw, bodyRaw, isPhoto) + 'px;' + sheetsTextTransform(slide, 'title') + '">' + titleHtml + '</div>' +
       bodyParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="sh-body carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model4" data-carousel-text-key="' + key + '" style="' + sheetsTextTransform(slide, key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') + cta + '</div>' +
-      '<div class="sh-footer"><span>@caiocreatorize</span><span>' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>@creatorizebrasil</span></div></div>';
+      '<div class="sh-footer"><span>' + escapeHtml(brandHandleLeft()) + '</span><span>' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>' + escapeHtml(brandHandleRight()) + '</span></div></div>';
   }
 
   const csTweetRail = document.getElementById('csTweetRail');
@@ -2382,6 +2442,9 @@
     const data = {
       version: 2,
       logoDataUrl: state.logoDataUrl || null,
+      brandHandles: state.brandHandles.map(function (item) {
+        return { value: normalizedHandle(item.value), enabled: !!item.enabled };
+      }),
       carouselStyle: state.carouselStyle || 'model2',
       tweetCarousel: {
         slides: state.tweetCarousel.slides.map(function (s) {
@@ -2417,6 +2480,16 @@
         const data = JSON.parse(reader.result);
         state.logoDataUrl = data.logoDataUrl || null;
         state.logoImg = null;
+        if (Array.isArray(data.brandHandles) && data.brandHandles.length) {
+          state.brandHandles = [0, 1, 2].map(function (index) {
+            const saved = data.brandHandles[index];
+            const fallback = ['@caiocreatorize', '@creatorizebrasil', '@matheushserpa'][index];
+            return saved
+              ? { value: normalizedHandle(saved.value) || fallback, enabled: !!saved.enabled }
+              : { value: fallback, enabled: index < 2 };
+          });
+        }
+        syncBrandControls();
         setCarouselStyle(['model1', 'model2', 'model3', 'model4'].includes(data.carouselStyle) ? data.carouselStyle : 'model2');
         if (state.logoDataUrl) {
           const limg = new Image();
@@ -2425,8 +2498,8 @@
           logoThumb.src = state.logoDataUrl;
           logoFilename.textContent = 'Logo carregado do projeto.';
         } else {
-          logoThumb.removeAttribute('src');
-          logoFilename.textContent = 'Nenhum logo enviado (PNG com fundo transparente).';
+          logoThumb.src = 'assets/creatorize-logo.png';
+          logoFilename.textContent = 'Logo oficial Creatorize.';
         }
         const savedTweetSlides = (data.tweetCarousel && data.tweetCarousel.slides) || [];
         state.tweetCarousel.slides = savedTweetSlides.length
@@ -2506,6 +2579,36 @@
     aiReferencePreview.style.display = 'block';
     setAiStatus('Referência carregada. Clique em Analisar padrão.');
   });
+
+  if (btnResetLogo) btnResetLogo.addEventListener('click', function () {
+    state.logoDataUrl = null;
+    state.logoImg = null;
+    fileLogo.value = '';
+    logoThumb.src = 'assets/creatorize-logo.png';
+    logoFilename.textContent = 'Logo oficial Creatorize.';
+    refreshBranding();
+  });
+
+  document.querySelectorAll('[data-brand-handle]').forEach(function (input) {
+    input.addEventListener('input', function () {
+      const index = Number(input.getAttribute('data-brand-handle'));
+      state.brandHandles[index].value = input.value;
+      refreshBranding();
+    });
+    input.addEventListener('blur', function () {
+      const index = Number(input.getAttribute('data-brand-handle'));
+      state.brandHandles[index].value = normalizedHandle(input.value) || state.brandHandles[index].value;
+      refreshBranding();
+    });
+  });
+  document.querySelectorAll('[data-brand-enabled]').forEach(function (input) {
+    input.addEventListener('change', function () {
+      const index = Number(input.getAttribute('data-brand-enabled'));
+      state.brandHandles[index].enabled = input.checked;
+      refreshBranding();
+    });
+  });
+  syncBrandControls();
 
   function renderAiAnalysis(data) {
     const fields = [
@@ -2638,6 +2741,7 @@
   // ---------------------------------------------------------------------
   const tabButtons = [
     document.getElementById('tabBtnCarousel'),
+    document.getElementById('tabBtnBrand'),
     document.getElementById('tabBtnMedia'),
     document.getElementById('tabBtnMaterials'),
     document.getElementById('tabBtnScript'),
@@ -2645,6 +2749,7 @@
   ];
   const tabPanels = {
     carousel: document.getElementById('tabPanelCarousel'),
+    brand: document.getElementById('tabPanelBrand'),
     media: document.getElementById('tabPanelMedia'),
     materials: document.getElementById('tabPanelMaterials'),
     script: document.getElementById('tabPanelScript'),
