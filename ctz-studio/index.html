@@ -367,10 +367,6 @@
   .tw-body-wrap { position: relative; flex: 0 1 auto; overflow: hidden; padding-bottom: 32px; display: flex; align-items: flex-start; }
   .tw-body-wrap.no-image { padding-bottom: 46px; }
   .tw-text-col { width: 100%; }
-  /* Indicador de continuidade: some quando ainda há mais páginas pra ler.
-     Fica ancorado no canto inferior direito do bloco de texto, na ponta da
-     folha — sutil, sem competir com os pontos de posição sobre a imagem. */
-  .tw-continue { position: absolute; right: 0; bottom: 0; font-size: 34px; font-weight: 800; line-height: 1; color: rgba(15, 20, 25, .45); }
   /* Título opcional (1ª linha antes de uma linha em branco no texto da
      página — ver convenção documentada na aba Texto / Script): maior e
      mais forte que o corpo, pensado pra capa e CTA. */
@@ -1205,8 +1201,6 @@
     // O crédito da fonte (slide.credit) não é mais escrito em cima do
     // cartão — atrapalhava a leitura nos cantos. O campo continua existindo
     // no editor de cada página, só pra uso na legenda do post depois.
-    const hasMore = index < total - 1;
-    const continueHtml = hasMore ? '<div class="tw-continue" aria-label="Continue para a próxima página">&rarr;</div>' : '';
     return (
       '<div class="tw-card" data-accent="' + carouselAccentName(slide) + '" style="--slide-accent:' + carouselAccentValue(slide, '#FF5A0A') + ';">' +
         '<div class="tw-header">' +
@@ -1219,7 +1213,6 @@
         '<div class="tw-body-wrap' + (imgSrc ? '' : ' no-image') + '">' +
           '<div class="tw-text-col">' +
             bodyParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="tw-body carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model2" data-carousel-text-key="' + key + '" style="font-size:' + fontSize + 'px;' + carouselTextTransform(slide, 'model2', key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') +
-            continueHtml +
           '</div>' +
         '</div>' +
         (imgSrc ?
