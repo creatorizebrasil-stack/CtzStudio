@@ -482,6 +482,25 @@
   .sh-square { position:absolute; z-index:2; width:22px; height:22px; background:var(--slide-accent,#FF5A0A); }
   .sh-square.a { left:90px; top:590px; }.sh-square.b { right:88px; bottom:250px; }.sh-square.c { right:330px; top:360px; }
   .sh-footer { position:absolute; z-index:3; left:72px; right:72px; bottom:42px; display:flex; justify-content:space-between; font-size:18px; font-weight:650; }
+  /* ---- B4 Business — azul profundo, grade técnica e destaque ciano ---- */
+  .bf-card { width:1080px; height:1350px; transform:scale(.2796); transform-origin:top left; position:relative; overflow:hidden; box-sizing:border-box; font-family:'Inter',Arial,sans-serif; color:#fff; background:radial-gradient(circle at 78% 24%,rgba(0,190,255,.14),transparent 34%),linear-gradient(145deg,#071827 0%,#020a13 58%,#01050a 100%); }
+  .bf-grid { position:absolute; inset:0; opacity:.12; pointer-events:none; background-image:linear-gradient(rgba(58,193,232,.38) 1px,transparent 1px),linear-gradient(90deg,rgba(58,193,232,.38) 1px,transparent 1px); background-size:220px 220px; }
+  .bf-photo { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transform-origin:center; cursor:grab; touch-action:none; filter:saturate(.58) contrast(1.1) brightness(.74); }
+  .bf-photo:active { cursor:grabbing; }
+  .bf-photo-shade { position:absolute; inset:0; background:linear-gradient(90deg,rgba(1,8,16,.98) 0%,rgba(2,12,23,.9) 38%,rgba(2,12,23,.23) 72%,rgba(1,7,13,.48) 100%),linear-gradient(180deg,rgba(0,5,10,.16),rgba(0,5,10,.2) 62%,#020912 100%); }
+  .bf-card.cover .bf-photo-shade { background:linear-gradient(90deg,rgba(1,8,16,.08) 0%,rgba(1,8,16,.25) 42%,rgba(1,8,16,.92) 76%,rgba(1,8,16,.98) 100%),linear-gradient(180deg,rgba(0,0,0,.02),rgba(0,7,14,.12) 62%,rgba(0,5,10,.88) 100%); }
+  .bf-brand { position:absolute; z-index:4; top:62px; left:72px; display:flex; align-items:center; gap:18px; }
+  .bf-brand img { display:block; object-fit:contain; }
+  .bf-brand .full { width:230px; height:68px; object-position:left center; }
+  .bf-brand .icon { width:48px; height:48px; }
+  .bf-brand span { font-family:'Sora','Inter',sans-serif; font-size:18px; font-weight:800; letter-spacing:.13em; }
+  .bf-content { position:absolute; z-index:3; left:82px; right:82px; top:290px; bottom:142px; display:flex; flex-direction:column; justify-content:center; align-items:flex-start; max-width:720px; }
+  .bf-card.cover .bf-content { left:610px; right:68px; top:245px; bottom:165px; max-width:none; }
+  .bf-title { width:100%; font-family:'Sora','Inter',sans-serif; font-size:70px; line-height:1.03; letter-spacing:-.045em; font-weight:850; text-transform:uppercase; color:#28cdf4; text-wrap:balance; overflow-wrap:break-word; margin-bottom:28px; }
+  .bf-body { width:100%; font-size:37px; line-height:1.34; letter-spacing:-.018em; font-weight:400; color:#f6f9fb; text-wrap:balance; overflow-wrap:break-word; margin-top:18px; }
+  .bf-title b,.bf-body b { color:#28cdf4; font-weight:850; }
+  .bf-footer { position:absolute; z-index:4; left:72px; right:72px; bottom:48px; display:flex; align-items:center; justify-content:space-between; padding-top:18px; border-top:1px solid rgba(61,200,239,.34); font-size:18px; letter-spacing:.04em; color:rgba(255,255,255,.78); }
+  .bf-page { color:#28cdf4; font-weight:800; letter-spacing:.12em; }
   .chat-messages { display: flex; flex-direction: column; gap: 8px; margin-top: 14px; max-height: 50vh; overflow-y: auto; padding-right: 2px; }
   .bubble { padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; white-space: pre-wrap; }
   .bubble.user { background: var(--accent); color: #170604; align-self: flex-end; max-width: 85%; font-weight: 600; }
@@ -592,6 +611,7 @@
         <button class="cs-switch-btn" id="csBtnModel1" data-cs-target="model1">Padrão Tecnológico</button>
         <button class="cs-switch-btn" id="csBtnModel3" data-cs-target="model3">Editorial com Foto</button>
         <button class="cs-switch-btn" id="csBtnModel4" data-cs-target="model4">Folhas Creatorize</button>
+        <button class="cs-switch-btn" id="csBtnModel5" data-cs-target="model5">B4 Business</button>
       </div>
 
       <div class="card cs-autogen-card" style="margin-bottom:16px;">
@@ -647,6 +667,14 @@
         <div class="cs-tweet-row" style="margin-top:10px;">
           <div class="note" style="flex:1;">Sequência editorial monocromática com folhas fotográficas, brancas e pretas. Escolha o fundo de cada página no editor abaixo.</div>
           <button type="button" class="btn" data-export-all="model4" style="flex:0 0 auto;">Baixar todas (PNG)</button>
+        </div>
+      </div>
+
+      <div id="csModel5Wrap" style="display:none;margin-bottom:20px;">
+        <div class="cs-tweet-rail-wrap"><div class="cs-tweet-rail" id="csBfourRail"></div></div>
+        <div class="cs-tweet-row" style="margin-top:10px;">
+          <div class="note" style="flex:1;">Identidade B4 Business: azul profundo, grade tecnológica, destaques em ciano e logos oficiais. Use <code>**palavra**</code> para destacar trechos.</div>
+          <button type="button" class="btn" data-export-all="model5" style="flex:0 0 auto;">Baixar todas (PNG)</button>
         </div>
       </div>
 
@@ -803,6 +831,7 @@
           <button type="button" class="cs-switch-btn" id="scriptBtnModel1" data-cs-target="model1">Padrão Tecnológico</button>
           <button type="button" class="cs-switch-btn" id="scriptBtnModel3" data-cs-target="model3">Editorial com Foto</button>
           <button type="button" class="cs-switch-btn" id="scriptBtnModel4" data-cs-target="model4">Folhas Creatorize</button>
+          <button type="button" class="cs-switch-btn" id="scriptBtnModel5" data-cs-target="model5">B4 Business</button>
         </div>
       </div>
 
@@ -1090,8 +1119,8 @@
     return '<img src="' + activeBrandLogo() + '" class="logo-mark" alt="Creatorize" style="width:100%;height:100%;object-fit:contain;">';
   }
 
-  const csSwitchButtons = [document.getElementById('csBtnModel1'), document.getElementById('csBtnModel2'), document.getElementById('csBtnModel3'), document.getElementById('csBtnModel4')];
-  const csWraps = { model1: document.getElementById('csModel1Wrap'), model2: document.getElementById('csModel2Wrap'), model3: document.getElementById('csModel3Wrap'), model4: document.getElementById('csModel4Wrap') };
+  const csSwitchButtons = [document.getElementById('csBtnModel1'), document.getElementById('csBtnModel2'), document.getElementById('csBtnModel3'), document.getElementById('csBtnModel4'), document.getElementById('csBtnModel5')];
+  const csWraps = { model1: document.getElementById('csModel1Wrap'), model2: document.getElementById('csModel2Wrap'), model3: document.getElementById('csModel3Wrap'), model4: document.getElementById('csModel4Wrap'), model5: document.getElementById('csModel5Wrap') };
   const csLogoSection = document.getElementById('csLogoSection');
 
   // Estilo do carrossel é um estado único (state.carouselStyle) com duas UIs
@@ -1099,7 +1128,7 @@
   // pergunta "Gerar no modelo" na aba Texto / Script (onde o carrossel é
   // gerado) — as duas sempre refletem a mesma escolha.
   function setCarouselStyle(style) {
-    state.carouselStyle = ['model1', 'model2', 'model3', 'model4'].includes(style) ? style : 'model2';
+    state.carouselStyle = ['model1', 'model2', 'model3', 'model4', 'model5'].includes(style) ? style : 'model2';
     csSwitchButtons.forEach(function (b) {
       b.classList.toggle('active', b.getAttribute('data-cs-target') === state.carouselStyle);
     });
@@ -1397,10 +1426,50 @@
       '<div class="sh-footer"><span>' + escapeHtml(brandHandleLeft()) + '</span><span>' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span><span>' + escapeHtml(brandHandleRight()) + '</span></div></div>';
   }
 
+  function bfourBodyFontSize(text, hasTitle) {
+    const len = (text || '').length;
+    if (len <= 120) return hasTitle ? 40 : 50;
+    if (len <= 240) return hasTitle ? 35 : 43;
+    if (len <= 380) return 30;
+    return 26;
+  }
+
+  function bfourTitleFontSize(text, isCover) {
+    const len = (text || '').length;
+    if (isCover) {
+      if (len <= 34) return 70;
+      if (len <= 60) return 56;
+      if (len <= 90) return 44;
+      return 36;
+    }
+    if (len <= 40) return 70;
+    if (len <= 75) return 58;
+    if (len <= 110) return 48;
+    return 40;
+  }
+
+  function renderBfourSlideCardHtml(slide, index, total) {
+    const imgSrc = tweetSlideImageSrc(slide);
+    const zoom = slide.imageZoom || 1;
+    const pos = slide.imagePos || { x: 0, y: 0 };
+    const parsed = parseSlideMarkup(slide.text);
+    const titleRaw = parsed.title || '';
+    const bodyRaw = parsed.body || (titleRaw ? '' : (slide.text || '').trim()) || 'Escreva o conteúdo desta página ao lado...';
+    const bodyParagraphs = bodyRaw.split(/\n\s*\n/).map(function (paragraph) { return paragraph.trim(); }).filter(Boolean);
+    const isCover = index === 0 && !!imgSrc;
+    const photoHtml = imgSrc ? '<img class="bf-photo" data-bfour-slide-id="' + slide.id + '" src="' + imgSrc + '" alt="Imagem da página ' + (index + 1) + '" style="transform:scale(' + zoom + ') translate(' + pos.x + '%, ' + pos.y + '%);">' : '';
+    const titleHtml = titleRaw ? '<div class="bf-title carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model5" data-carousel-text-key="title" style="font-size:' + bfourTitleFontSize(titleRaw, isCover) + 'px;' + carouselTextTransform(slide, 'model5', 'title') + '">' + applyInlineBold(escapeHtml(titleRaw)) + '</div>' : '';
+    return '<div class="bf-card' + (isCover ? ' cover' : '') + '">' + photoHtml + (imgSrc ? '<div class="bf-photo-shade"></div>' : '') + '<div class="bf-grid"></div>' +
+      '<div class="bf-brand">' + (isCover ? '<img class="full" src="assets/bfour-white.png" alt="B4 Business">' : '<img class="icon" src="assets/bfour-icon.png" alt="B4"><span>B4 BUSINESS</span>') + '</div>' +
+      '<div class="bf-content">' + titleHtml + bodyParagraphs.map(function (paragraph, paragraphIndex) { const key = 'paragraph-' + paragraphIndex; return '<div class="bf-body carousel-movable-text" data-carousel-text-slide="' + slide.id + '" data-carousel-text-style="model5" data-carousel-text-key="' + key + '" style="font-size:' + bfourBodyFontSize(bodyRaw, !!titleRaw) + 'px;' + carouselTextTransform(slide, 'model5', key) + '">' + applyInlineBold(escapeHtml(paragraph)).replace(/\n/g, '<br>') + '</div>'; }).join('') + '</div>' +
+      '<div class="bf-footer"><span>B4 BUSINESS</span><span class="bf-page">' + String(index + 1).padStart(2, '0') + ' / ' + String(total).padStart(2, '0') + '</span></div></div>';
+  }
+
   const csTweetRail = document.getElementById('csTweetRail');
   const csBrandRail = document.getElementById('csBrandRail');
   const csEditorialRail = document.getElementById('csEditorialRail');
   const csSheetsRail = document.getElementById('csSheetsRail');
+  const csBfourRail = document.getElementById('csBfourRail');
   const csTweetEditor = document.getElementById('csTweetEditor');
 
   // Rótulo + botão de exportar PNG abaixo de cada página da esteira — mesmo
@@ -1434,6 +1503,11 @@
     if (csSheetsRail) {
       csSheetsRail.innerHTML = slides.map(function (slide, i) {
         return '<div class="tw-frame-item"><div class="tw-frame">' + renderSheetsSlideCardHtml(slide, i, slides.length) + '</div>' + frameActionsHtml(i, 'model4') + '</div>';
+      }).join('');
+    }
+    if (csBfourRail) {
+      csBfourRail.innerHTML = slides.map(function (slide, i) {
+        return '<div class="tw-frame-item"><div class="tw-frame">' + renderBfourSlideCardHtml(slide, i, slides.length) + '</div>' + frameActionsHtml(i, 'model5') + '</div>';
       }).join('');
     }
     attachTweetImageDrag();
@@ -1526,10 +1600,12 @@
     wireImageDrag(csBrandRail, 'data-brand-slide-id');
     wireImageDrag(csEditorialRail, 'data-editorial-slide-id');
     wireImageDrag(csSheetsRail, 'data-sheets-slide-id');
+    wireImageDrag(csBfourRail, 'data-bfour-slide-id');
     wireCarouselTextDrag(csTweetRail);
     wireCarouselTextDrag(csBrandRail);
     wireCarouselTextDrag(csEditorialRail);
     wireCarouselTextDrag(csSheetsRail);
+    wireCarouselTextDrag(csBfourRail);
   }
 
   // ---------------------------------------------------------------------
@@ -1549,7 +1625,9 @@
         ? renderEditorialSlideCardHtml(slide, index, total)
         : style === 'model4'
           ? renderSheetsSlideCardHtml(slide, index, total)
-          : renderTweetSlideCardHtml(slide, index, total);
+          : style === 'model5'
+            ? renderBfourSlideCardHtml(slide, index, total)
+            : renderTweetSlideCardHtml(slide, index, total);
     const holder = document.createElement('div');
     holder.style.cssText = 'position:fixed;left:-99999px;top:0;pointer-events:none;';
     holder.innerHTML = html;
@@ -2555,7 +2633,7 @@
           });
         }
         syncBrandControls();
-        setCarouselStyle(['model1', 'model2', 'model3', 'model4'].includes(data.carouselStyle) ? data.carouselStyle : 'model2');
+        setCarouselStyle(['model1', 'model2', 'model3', 'model4', 'model5'].includes(data.carouselStyle) ? data.carouselStyle : 'model2');
         if (state.logoDataUrl) {
           const limg = new Image();
           limg.onload = function () { state.logoImg = limg; };
